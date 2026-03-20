@@ -4,6 +4,10 @@ import os
 from math import asin, cos, radians, sin, sqrt
 from pathlib import Path
 
+# Before any google.* import: newer google-auth probes GCE metadata for
+# "universe domain" unless this is set — on a laptop that times out and breaks BQ.
+os.environ.setdefault("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "googleapis.com")
+
 import folium
 import google.auth
 import pandas as pd
@@ -17,6 +21,16 @@ PROJECT_ID = "onda-maverick"
 OFFSHORE_BUOYS_TABLE = "onda-maverick.surf_system_data.offshore_buoys"
 VIRTUAL_OFFSHORE_POINTS_TABLE = "onda-maverick.surf_system_data.virtual_offshore_points"
 QUERY_LIMIT = 500
+
+# Canonical schemas (BigQuery) — tables differ; queries are built per-table.
+# offshore_buoys:     buoy_id INT, buoy_name, lat, lon, depth_m, ...
+# virtual_offshore_points: vop_id STRING, lat, long, depth_m, ...
+
+
+def _query_to_df(client: bigquery.Client, sql: str) -> pd.DataFrame:
+    """REST path only — avoids BigQuery Storage client + extra auth/metadata probes."""
+    job = client.query(sql)
+    return job.to_dataframe(create_bqstorage_client=False)
 
 
 @st.cache_resource(show_spinner=False)
@@ -49,7 +63,7 @@ def _table_columns(table_fqn: str) -> set[str]:
     FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.COLUMNS`
     WHERE table_name = '{table_id}'
     """
-    cols_df = client.query(query).to_dataframe()
+    cols_df = _query_to_df(client, query)
     return {str(c) for c in cols_df["column_name"].tolist()}
 
 
@@ -60,6 +74,12 @@ def _pick_first_column(columns: set[str], candidates: list[str]) -> str | None:
     return None
 
 
+def _bq_ident(col: str) -> str:
+    """Quote column names for BigQuery (e.g. reserved word `long`)."""
+    safe = col.replace("`", "")
+    return f"`{safe}`"
+
+
 @st.cache_data(ttl=600, show_spinner=False)
 def _load_map_points() -> tuple[pd.DataFrame, pd.DataFrame]:
     client = _bq_client()
@@ -67,14 +87,14 @@ def _load_map_points() -> tuple[pd.DataFrame, pd.DataFrame]:
     vop_cols = _table_columns(VIRTUAL_OFFSHORE_POINTS_TABLE)
 
     buoy_id_col = _pick_first_column(buoy_cols, ["buoy_id", "id"])
-    buoy_name_col = _pick_first_column(buoy_cols, ["name", "buoy_name", "station_name"])
+    buoy_name_col = _pick_first_column(buoy_cols, ["buoy_name", "name", "station_name"])
     buoy_lat_col = _pick_first_column(buoy_cols, ["lat", "latitude"])
-    buoy_lon_col = _pick_first_column(buoy_cols, ["lon", "lng", "longitude"])
+    buoy_lon_col = _pick_first_column(buoy_cols, ["lon", "long", "lng", "longitude"])
     buoy_depth_col = _pick_first_column(buoy_cols, ["depth", "depth_m", "water_depth"])
 
-    vop_id_col = _pick_first_column(vop_cols, ["id", "vop_id", "point_id"])
+    vop_id_col = _pick_first_column(vop_cols, ["vop_id", "id", "point_id"])
     vop_lat_col = _pick_first_column(vop_cols, ["lat", "latitude"])
-    vop_lon_col = _pick_first_column(vop_cols, ["lon", "lng", "longitude"])
+    vop_lon_col = _pick_first_column(vop_cols, ["lon", "long", "lng", "longitude"])
     vop_depth_col = _pick_first_column(vop_cols, ["depth", "depth_m", "water_depth"])
 
     if not buoy_id_col or not buoy_lat_col or not buoy_lon_col:
@@ -84,35 +104,43 @@ def _load_map_points() -> tuple[pd.DataFrame, pd.DataFrame]:
             f"Missing required VOP columns in `{VIRTUAL_OFFSHORE_POINTS_TABLE}`: {sorted(vop_cols)}"
         )
 
-    buoy_name_expr = f"CAST({buoy_name_col} AS STRING)" if buoy_name_col else "''"
-    buoy_depth_expr = f"CAST({buoy_depth_col} AS FLOAT64)" if buoy_depth_col else "CAST(NULL AS FLOAT64)"
-    vop_depth_expr = f"CAST({vop_depth_col} AS FLOAT64)" if vop_depth_col else "CAST(NULL AS FLOAT64)"
+    bid_b = _bq_ident(buoy_id_col)
+    blat_b = _bq_ident(buoy_lat_col)
+    blon_b = _bq_ident(buoy_lon_col)
+    vid = _bq_ident(vop_id_col)
+    vlat = _bq_ident(vop_lat_col)
+    vlon = _bq_ident(vop_lon_col)
+
+    buoy_name_expr = f"CAST({_bq_ident(buoy_name_col)} AS STRING)" if buoy_name_col else "''"
+    buoy_depth_expr = f"CAST({_bq_ident(buoy_depth_col)} AS FLOAT64)" if buoy_depth_col else "CAST(NULL AS FLOAT64)"
+    vop_depth_expr = f"CAST({_bq_ident(vop_depth_col)} AS FLOAT64)" if vop_depth_col else "CAST(NULL AS FLOAT64)"
 
     buoys_query = f"""
     SELECT
-      CAST({buoy_id_col} AS INT64) AS id,
+      CAST({bid_b} AS INT64) AS id,
       {buoy_name_expr} AS name,
-      CAST({buoy_lat_col} AS FLOAT64) AS lat,
-      CAST({buoy_lon_col} AS FLOAT64) AS lon,
+      CAST({blat_b} AS FLOAT64) AS lat,
+      CAST({blon_b} AS FLOAT64) AS lon,
       {buoy_depth_expr} AS depth
     FROM `{OFFSHORE_BUOYS_TABLE}`
-    WHERE {buoy_lat_col} IS NOT NULL AND {buoy_lon_col} IS NOT NULL
+    WHERE {blat_b} IS NOT NULL AND {blon_b} IS NOT NULL
     LIMIT {QUERY_LIMIT}
     """
 
+    # vop_id is STRING in surf_system_data.virtual_offshore_points — do not cast to INT64.
     vop_query = f"""
     SELECT
-      CAST({vop_id_col} AS INT64) AS id,
-      CAST({vop_lat_col} AS FLOAT64) AS lat,
-      CAST({vop_lon_col} AS FLOAT64) AS lon,
+      CAST({vid} AS STRING) AS id,
+      CAST({vlat} AS FLOAT64) AS lat,
+      CAST({vlon} AS FLOAT64) AS lon,
       {vop_depth_expr} AS depth
     FROM `{VIRTUAL_OFFSHORE_POINTS_TABLE}`
-    WHERE {vop_lat_col} IS NOT NULL AND {vop_lon_col} IS NOT NULL
+    WHERE {vlat} IS NOT NULL AND {vlon} IS NOT NULL
     LIMIT {QUERY_LIMIT}
     """
 
-    buoys = client.query(buoys_query).to_dataframe()
-    vops = client.query(vop_query).to_dataframe()
+    buoys = _query_to_df(client, buoys_query)
+    vops = _query_to_df(client, vop_query)
     if "name" not in buoys.columns:
         buoys["name"] = ""
 

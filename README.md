@@ -46,3 +46,17 @@ Features:
 Authentication:
 - uses Google Application Default Credentials for the Streamlit runtime.
 
+### Local Windows (venv + ADC)
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\garre\AppData\Roaming\gcloud\application_default_credentials.json"
+.\.venv\Scripts\python.exe -m streamlit run app.py
+```
+
+The app sets `GOOGLE_CLOUD_UNIVERSE_DOMAIN=googleapis.com` so `google-auth` does not try to reach
+`metadata.google.internal` on your laptop (that causes timeouts).
+
+If the Map tab still shows an old error after a code change: **Streamlit menu → Clear cache**, then refresh.
+

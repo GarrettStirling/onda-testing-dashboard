@@ -1,3 +1,8 @@
+import os
+
+# Local laptops: newer google-auth probes GCE metadata for universe domain unless set.
+os.environ.setdefault("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "googleapis.com")
+
 import streamlit as st
 
 from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
