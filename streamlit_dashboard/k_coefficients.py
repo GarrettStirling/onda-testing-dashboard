@@ -322,14 +322,11 @@ def render_k_coefficients_tab() -> None:
 
     labels = load_break_labels(str(breaks_csv_path))
 
-    break_ids = sorted(
-        {
-            int(x)
-            for x in set(df_analytic["break_id"].unique()).intersection(df_swan["break_id"].unique())
-        }
-    )
+    analytic_ids = {int(x) for x in df_analytic["break_id"].unique()}
+    swan_ids = {int(x) for x in df_swan["break_id"].unique()}
+    break_ids = sorted(analytic_ids | swan_ids)
     if not break_ids:
-        st.error("No overlapping break_id values found between the two CSVs.")
+        st.error("No break_id values found in either CSV.")
         return
 
     st.caption(
@@ -353,22 +350,28 @@ def render_k_coefficients_tab() -> None:
         c1, c2 = st.columns(2, gap="large")
 
         with c1:
-            analytic_png = _ensure_plot_png(
-                cache_dir=cache_dir,
-                df=df_analytic,
-                break_id=int(break_id),
-                dataset_name="analytical",
-            )
-            st.image(analytic_png, use_container_width=True)
+            if int(break_id) in analytic_ids:
+                analytic_png = _ensure_plot_png(
+                    cache_dir=cache_dir,
+                    df=df_analytic,
+                    break_id=int(break_id),
+                    dataset_name="analytical",
+                )
+                st.image(analytic_png, use_container_width=True)
+            else:
+                st.caption("No Analytic data")
             st.caption("Analytic")
 
         with c2:
-            swan_png = _ensure_plot_png(
-                cache_dir=cache_dir,
-                df=df_swan,
-                break_id=int(break_id),
-                dataset_name="swan",
-            )
-            st.image(swan_png, use_container_width=True)
+            if int(break_id) in swan_ids:
+                swan_png = _ensure_plot_png(
+                    cache_dir=cache_dir,
+                    df=df_swan,
+                    break_id=int(break_id),
+                    dataset_name="swan",
+                )
+                st.image(swan_png, use_container_width=True)
+            else:
+                st.caption("No SWAN data")
             st.caption("SWAN")
 
