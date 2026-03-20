@@ -360,7 +360,7 @@ def render_k_coefficients_tab() -> None:
                     break_id=int(break_id),
                     dataset_name="analytical",
                 )
-                st.image(analytic_png, use_container_width=True)
+                st.image(analytic_png, width="stretch")
             else:
                 st.caption("No Analytic data")
             st.caption("Analytic")
@@ -373,7 +373,7 @@ def render_k_coefficients_tab() -> None:
                     break_id=int(break_id),
                     dataset_name="swan",
                 )
-                st.image(swan_png, use_container_width=True)
+                st.image(swan_png, width="stretch")
             else:
                 st.caption("No SWAN data")
             st.caption("SWAN")

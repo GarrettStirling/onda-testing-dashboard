@@ -34,29 +34,73 @@ def _bq_client() -> bigquery.Client:
 
 
 @st.cache_data(ttl=600, show_spinner=False)
+def _table_columns(table_fqn: str) -> set[str]:
+    client = _bq_client()
+    project_id, dataset_id, table_id = table_fqn.split(".")
+    query = f"""
+    SELECT column_name
+    FROM `{project_id}.{dataset_id}.INFORMATION_SCHEMA.COLUMNS`
+    WHERE table_name = '{table_id}'
+    """
+    cols_df = client.query(query).to_dataframe()
+    return {str(c) for c in cols_df["column_name"].tolist()}
+
+
+def _pick_first_column(columns: set[str], candidates: list[str]) -> str | None:
+    for c in candidates:
+        if c in columns:
+            return c
+    return None
+
+
+@st.cache_data(ttl=600, show_spinner=False)
 def _load_map_points() -> tuple[pd.DataFrame, pd.DataFrame]:
     client = _bq_client()
+    buoy_cols = _table_columns(OFFSHORE_BUOYS_TABLE)
+    vop_cols = _table_columns(VIRTUAL_OFFSHORE_POINTS_TABLE)
+
+    buoy_id_col = _pick_first_column(buoy_cols, ["buoy_id", "id"])
+    buoy_name_col = _pick_first_column(buoy_cols, ["name", "buoy_name", "station_name"])
+    buoy_lat_col = _pick_first_column(buoy_cols, ["lat", "latitude"])
+    buoy_lon_col = _pick_first_column(buoy_cols, ["lon", "lng", "longitude"])
+    buoy_depth_col = _pick_first_column(buoy_cols, ["depth", "depth_m", "water_depth"])
+
+    vop_id_col = _pick_first_column(vop_cols, ["id", "vop_id", "point_id"])
+    vop_lat_col = _pick_first_column(vop_cols, ["lat", "latitude"])
+    vop_lon_col = _pick_first_column(vop_cols, ["lon", "lng", "longitude"])
+    vop_depth_col = _pick_first_column(vop_cols, ["depth", "depth_m", "water_depth"])
+
+    if not buoy_id_col or not buoy_lat_col or not buoy_lon_col:
+        raise RuntimeError(f"Missing required buoy columns in `{OFFSHORE_BUOYS_TABLE}`: {sorted(buoy_cols)}")
+    if not vop_id_col or not vop_lat_col or not vop_lon_col:
+        raise RuntimeError(
+            f"Missing required VOP columns in `{VIRTUAL_OFFSHORE_POINTS_TABLE}`: {sorted(vop_cols)}"
+        )
+
+    buoy_name_expr = f"CAST({buoy_name_col} AS STRING)" if buoy_name_col else "''"
+    buoy_depth_expr = f"CAST({buoy_depth_col} AS FLOAT64)" if buoy_depth_col else "CAST(NULL AS FLOAT64)"
+    vop_depth_expr = f"CAST({vop_depth_col} AS FLOAT64)" if vop_depth_col else "CAST(NULL AS FLOAT64)"
 
     buoys_query = f"""
     SELECT
-      CAST(buoy_id AS INT64) AS id,
-      CAST(name AS STRING) AS name,
-      CAST(lat AS FLOAT64) AS lat,
-      CAST(lon AS FLOAT64) AS lon,
-      CAST(depth AS FLOAT64) AS depth
+      CAST({buoy_id_col} AS INT64) AS id,
+      {buoy_name_expr} AS name,
+      CAST({buoy_lat_col} AS FLOAT64) AS lat,
+      CAST({buoy_lon_col} AS FLOAT64) AS lon,
+      {buoy_depth_expr} AS depth
     FROM `{OFFSHORE_BUOYS_TABLE}`
-    WHERE lat IS NOT NULL AND lon IS NOT NULL
+    WHERE {buoy_lat_col} IS NOT NULL AND {buoy_lon_col} IS NOT NULL
     LIMIT {QUERY_LIMIT}
     """
 
     vop_query = f"""
     SELECT
-      CAST(id AS INT64) AS id,
-      CAST(lat AS FLOAT64) AS lat,
-      CAST(lon AS FLOAT64) AS lon,
-      CAST(depth AS FLOAT64) AS depth
+      CAST({vop_id_col} AS INT64) AS id,
+      CAST({vop_lat_col} AS FLOAT64) AS lat,
+      CAST({vop_lon_col} AS FLOAT64) AS lon,
+      {vop_depth_expr} AS depth
     FROM `{VIRTUAL_OFFSHORE_POINTS_TABLE}`
-    WHERE lat IS NOT NULL AND lon IS NOT NULL
+    WHERE {vop_lat_col} IS NOT NULL AND {vop_lon_col} IS NOT NULL
     LIMIT {QUERY_LIMIT}
     """
 
