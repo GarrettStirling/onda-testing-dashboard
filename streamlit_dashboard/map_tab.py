@@ -5,6 +5,7 @@ from math import asin, cos, radians, sin, sqrt
 from pathlib import Path
 
 import folium
+import google.auth
 import pandas as pd
 import streamlit as st
 from folium.plugins import Draw, MousePosition
@@ -20,17 +21,23 @@ QUERY_LIMIT = 500
 
 @st.cache_resource(show_spinner=False)
 def _bq_client() -> bigquery.Client:
-    # Local-dev fallback:
-    # If GOOGLE_APPLICATION_CREDENTIALS is not set, point it at the standard
-    # ADC file written by `gcloud auth application-default login`.
-    if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-        win_adc = Path.home() / "AppData" / "Roaming" / "gcloud" / "application_default_credentials.json"
-        unix_adc = Path.home() / ".config" / "gcloud" / "application_default_credentials.json"
-        adc_path = win_adc if win_adc.exists() else unix_adc
-        if adc_path.exists():
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(adc_path)
+    # Prefer explicit local ADC file loading to avoid metadata-server fallbacks.
+    explicit_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    if explicit_path and Path(explicit_path).exists():
+        creds, project = google.auth.load_credentials_from_file(explicit_path)
+        return bigquery.Client(project=PROJECT_ID or project, credentials=creds)
 
-    return bigquery.Client(project=PROJECT_ID)
+    # Local-dev fallback to standard gcloud ADC file locations.
+    win_adc = Path.home() / "AppData" / "Roaming" / "gcloud" / "application_default_credentials.json"
+    unix_adc = Path.home() / ".config" / "gcloud" / "application_default_credentials.json"
+    adc_path = win_adc if win_adc.exists() else unix_adc
+    if adc_path.exists():
+        creds, project = google.auth.load_credentials_from_file(str(adc_path))
+        return bigquery.Client(project=PROJECT_ID or project, credentials=creds)
+
+    # Last resort: standard ADC resolution.
+    creds, project = google.auth.default()
+    return bigquery.Client(project=PROJECT_ID or project, credentials=creds)
 
 
 @st.cache_data(ttl=600, show_spinner=False)
