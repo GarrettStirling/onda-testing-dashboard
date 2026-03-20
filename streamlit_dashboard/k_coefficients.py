@@ -11,7 +11,20 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import streamlit as st
+try:
+    import streamlit as st
+except ModuleNotFoundError:  # allows smoke-testing plotting without streamlit installed
+    st = None
+
+    def _cache_data_identity(*_args, **_kwargs):
+        def _wrap(fn):
+            return fn
+
+        return _wrap
+
+    cache_data = _cache_data_identity
+else:
+    cache_data = st.cache_data
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -61,7 +74,7 @@ def _resolve_breaks_with_names_csv_path() -> Path:
     return BACKEND_BREAKS_WITH_NAMES_CSV
 
 
-@st.cache_data(show_spinner=False)
+@cache_data(show_spinner=False)
 def load_break_labels(breaks_csv_path: str) -> dict[int, str]:
     if not Path(breaks_csv_path).exists():
         return {}
@@ -83,7 +96,7 @@ def load_break_labels(breaks_csv_path: str) -> dict[int, str]:
     return labels
 
 
-@st.cache_data(show_spinner=False)
+@cache_data(show_spinner=False)
 def load_k_matrix(csv_path: str) -> pd.DataFrame:
     """
     Load full k-matrix CSV once; files are small (~tens of thousands of rows).
@@ -124,16 +137,50 @@ def _make_polar_kfactor_plot(group: pd.DataFrame, *, title: str | None = None) -
     p_max = int(max(periods))
     r_vals = np.array([p_max + 1 - p for p in periods], dtype=float)  # reversed periods
 
-    # Continuity grid for 0..360 step=5 (fill missing directions with NaN).
-    all_dirs_deg = np.arange(0, 365, 5)
-    k_full = np.full((len(all_dirs_deg), len(r_vals)), np.nan, dtype=float)
-    for i, d in enumerate(all_dirs_deg):
-        if d in pivot.index:
-            k_full[i, :] = pivot.loc[d].values.astype(float)
+    # Build *direction-bin* wedges based on the actual `swell_dir` sampling.
+    #
+    # Why: the backend plot script assumes a fixed 5° grid. When our local
+    # k-matrix uses coarser direction steps (e.g. only every 10°), a fixed
+    # 5° grid causes visible "gaps" between colored bars.
+    #
+    # Goal: make wedges touch on the W-facing sector, while preserving the
+    # largest directional gap (typically the E-facing "missing" region).
+    dirs_arr = np.array(dirs_deg, dtype=float)
+    if len(dirs_arr) < 2:
+        # Degenerate case: only one direction. Use a full 360° wedge width.
+        theta_edges_rad = np.array([0.0, 2 * np.pi], dtype=float)
+        k_grid = pivot.values.astype(float)  # (1, n_periods)
+    else:
+        # Circular deltas between consecutive directions.
+        deltas = np.diff(dirs_arr, append=dirs_arr[0] + 360.0)
+        max_gap_idx = int(np.argmax(deltas))  # gap between dirs[max_gap_idx] and dirs[max_gap_idx+1]
 
-    theta_edges = np.radians(np.append(all_dirs_deg, all_dirs_deg[-1] + 5))
+        # Start drawing right after the big gap and end right before it.
+        # This preserves the big empty sector instead of filling it.
+        start_idx = (max_gap_idx + 1) % len(dirs_arr)
+        dirs_order = np.concatenate([dirs_arr[start_idx:], dirs_arr[:start_idx]])
+
+        # Unwrap angles to make them strictly increasing for polar.
+        dirs_unwrapped = dirs_order.copy()
+        for i in range(1, len(dirs_unwrapped)):
+            if dirs_unwrapped[i] <= dirs_unwrapped[i - 1]:
+                dirs_unwrapped[i:] += 360.0
+
+        # Direction bin edges for pcolormesh:
+        # - first edge at the first direction (gap preserved)
+        # - middle edges at midpoints between adjacent directions
+        # - last edge at the last direction (gap preserved)
+        theta_edges_deg = np.empty(len(dirs_unwrapped) + 1, dtype=float)
+        theta_edges_deg[0] = dirs_unwrapped[0]
+        theta_edges_deg[-1] = dirs_unwrapped[-1]
+        theta_edges_deg[1:-1] = (dirs_unwrapped[:-1] + dirs_unwrapped[1:]) / 2.0
+        theta_edges_rad = np.radians(theta_edges_deg)
+
+        # Reorder k-values to match drawing order.
+        pivot_ordered = pivot.reindex(index=[int(d) for d in dirs_order])
+        k_grid = pivot_ordered.values.astype(float)  # (n_dirs_in_sector, n_periods)
+
     r_edges = np.append(r_vals, r_vals[-1] + 1)
-    T, R = np.meshgrid(theta_edges[:-1], r_edges[:-1], indexing="ij")
 
     fig, ax = plt.subplots(figsize=(4.9, 4.9), subplot_kw={"projection": "polar"})
     fig.patch.set_facecolor("#0f111a")
@@ -142,10 +189,14 @@ def _make_polar_kfactor_plot(group: pd.DataFrame, *, title: str | None = None) -
     ax.set_theta_direction(-1)
 
     norm = mcolors.Normalize(vmin=K_VMIN, vmax=K_VMAX)
+    # pcolormesh with 1D theta/r edges:
+    # - theta_edges length = n_theta_bins + 1
+    # - r_edges length = n_r_bins + 1
+    # - C shape should be (n_r_bins, n_theta_bins)
     mesh = ax.pcolormesh(
-        T,
-        R,
-        k_full,
+        theta_edges_rad,
+        r_edges,
+        k_grid.T,
         cmap=CMAP,
         norm=norm,
         shading="auto",
@@ -226,6 +277,9 @@ def _ensure_plot_png(
 
 
 def render_k_coefficients_tab() -> None:
+    if st is None:
+        raise RuntimeError("streamlit is required to render the dashboard tab.")
+
     st.header("K Coefficients")
 
     if not ANALYTIC_CSV.exists():
