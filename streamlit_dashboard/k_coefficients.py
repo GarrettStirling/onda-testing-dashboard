@@ -167,12 +167,15 @@ def _make_polar_kfactor_plot(group: pd.DataFrame, *, title: str | None = None) -
                 dirs_unwrapped[i:] += 360.0
 
         # Direction bin edges for pcolormesh:
-        # - first edge at the first direction (gap preserved)
         # - middle edges at midpoints between adjacent directions
-        # - last edge at the last direction (gap preserved)
+        # - outer edges use half-step extension so endpoint bins are not skinny
+        #   (important for ranges like 180..360 sampled every 10°)
+        # This still preserves one large empty sector (the skipped max gap).
         theta_edges_deg = np.empty(len(dirs_unwrapped) + 1, dtype=float)
-        theta_edges_deg[0] = dirs_unwrapped[0]
-        theta_edges_deg[-1] = dirs_unwrapped[-1]
+        first_step = dirs_unwrapped[1] - dirs_unwrapped[0]
+        last_step = dirs_unwrapped[-1] - dirs_unwrapped[-2]
+        theta_edges_deg[0] = dirs_unwrapped[0] - (first_step / 2.0)
+        theta_edges_deg[-1] = dirs_unwrapped[-1] + (last_step / 2.0)
         theta_edges_deg[1:-1] = (dirs_unwrapped[:-1] + dirs_unwrapped[1:]) / 2.0
         theta_edges_rad = np.radians(theta_edges_deg)
 
