@@ -30,3 +30,19 @@ Break labels are read from `data/reference/breaks_with_names.csv` (local referen
 If that file is missing, the dashboard falls back to
 `../onda-backend/temp_component_testing/intermediates/breaks_with_names.csv`.
 
+## Map Tab (BigQuery)
+
+The `Map` tab queries BigQuery and renders:
+
+- `onda-maverick.surf_system_data.offshore_buoys` (blue)
+- `onda-maverick.surf_system_data.virtual_offshore_points` (orange)
+
+Features:
+- depth slider filter
+- hover/click point metadata (id/name/depth)
+- click-anywhere coordinate capture with easy copy
+- draw polyline to measure distance (km and miles)
+
+Authentication:
+- uses Google Application Default Credentials for the Streamlit runtime.
+

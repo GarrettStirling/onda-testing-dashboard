@@ -2,3 +2,6 @@ streamlit
 pandas
 numpy
 matplotlib
+google-cloud-bigquery
+folium
+streamlit-folium
