@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 from math import asin, cos, radians, sin, sqrt
+from pathlib import Path
 
 import folium
 import pandas as pd
@@ -18,6 +20,16 @@ QUERY_LIMIT = 500
 
 @st.cache_resource(show_spinner=False)
 def _bq_client() -> bigquery.Client:
+    # Local-dev fallback:
+    # If GOOGLE_APPLICATION_CREDENTIALS is not set, point it at the standard
+    # ADC file written by `gcloud auth application-default login`.
+    if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        win_adc = Path.home() / "AppData" / "Roaming" / "gcloud" / "application_default_credentials.json"
+        unix_adc = Path.home() / ".config" / "gcloud" / "application_default_credentials.json"
+        adc_path = win_adc if win_adc.exists() else unix_adc
+        if adc_path.exists():
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(adc_path)
+
     return bigquery.Client(project=PROJECT_ID)
 
 
@@ -84,7 +96,12 @@ def render_map_tab() -> None:
         buoys_df, vops_df = _load_map_points()
     except Exception as exc:
         st.error(f"BigQuery query failed: {exc}")
-        st.info("Make sure Application Default Credentials are available for this Streamlit runtime.")
+        st.info(
+            "Make sure Application Default Credentials are available for this Streamlit runtime. "
+            "For local PowerShell, set "
+            "`$env:GOOGLE_APPLICATION_CREDENTIALS='C:\\Users\\garre\\AppData\\Roaming\\gcloud\\application_default_credentials.json'` "
+            "before running `streamlit run app.py`."
+        )
         return
 
     if buoys_df.empty and vops_df.empty:
