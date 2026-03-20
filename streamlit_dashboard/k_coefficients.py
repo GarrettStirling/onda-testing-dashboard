@@ -207,7 +207,15 @@ def _make_polar_kfactor_plot(group: pd.DataFrame, *, title: str | None = None) -
     ax.set_xticklabels(["N", "NE", "E", "SE", "S", "SW", "W", "NW"], fontsize=7, color="#cbd5e1")
 
     # Radial ticks
-    tick_periods = [p for p in [6, 8, 10, 13, 16, 20, 22] if p in periods]
+    tick_periods_all = list(periods)
+    if len(tick_periods_all) <= 8:
+        tick_periods = tick_periods_all
+    else:
+        # Keep the plot readable: pick up to 7 evenly spaced period ticks.
+        n_ticks = 7
+        idxs = np.linspace(0, len(tick_periods_all) - 1, n_ticks).round().astype(int)
+        tick_periods = [tick_periods_all[i] for i in sorted(set(idxs))]
+
     tick_r = [p_max + 1 - p for p in tick_periods]
     ax.set_yticks(tick_r)
     ax.set_yticklabels([f"{p}s" for p in tick_periods], fontsize=6, color="#cbd5e1")
@@ -217,23 +225,19 @@ def _make_polar_kfactor_plot(group: pd.DataFrame, *, title: str | None = None) -
     if title:
         ax.set_title(title, pad=16, fontsize=10, fontweight="bold", color="#e5e7eb")
 
-    # Subtle helper label (kept small to reduce clutter)
-    ax.text(
-        np.radians(135),
-        float(max(r_edges)) * 1.08,
-        "← longer period   shorter period →",
-        fontsize=6,
-        color="#94a3b8",
-        ha="center",
-        transform=ax.transData,
-    )
-
     # Ensure spines/ticks are legible on dark background
     for spine in ax.spines.values():
         spine.set_color("#334155")
 
-    # `mesh` is intentionally unused beyond creation (no per-plot colorbar to keep layout compact).
-    _ = mesh
+    # Colorbar legend (dark theme)
+    cbar = fig.colorbar(mesh, ax=ax, pad=0.06, shrink=0.75, aspect=18)
+    cbar.set_label(
+        "K factor (H_s,spot / H_s,offshore)",
+        fontsize=7,
+        color="#cbd5e1",
+    )
+    cbar.ax.tick_params(labelsize=6, colors="#cbd5e1")
+    cbar.outline.set_edgecolor("#334155")
     return fig
 
 
@@ -356,6 +360,7 @@ def render_k_coefficients_tab() -> None:
                 dataset_name="analytical",
             )
             st.image(analytic_png, use_container_width=True)
+            st.caption("Analytic")
 
         with c2:
             swan_png = _ensure_plot_png(
@@ -365,4 +370,5 @@ def render_k_coefficients_tab() -> None:
                 dataset_name="swan",
             )
             st.image(swan_png, use_container_width=True)
+            st.caption("SWAN")
 
