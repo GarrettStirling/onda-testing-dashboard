@@ -31,6 +31,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 BACKEND_ROOT = REPO_ROOT.parent / "onda-backend"
 
 ANALYTIC_CSV = REPO_ROOT / "data" / "k_coef" / "k_coefficient_matrix_analytic.csv"
+ANALYTIC_VOP_CSV = REPO_ROOT / "data" / "k_coef" / "k_coefficient_matrix_analytic_vop.csv"
 SWAN_CSV = REPO_ROOT / "data" / "k_coef" / "k_coefficient_matrix_swan.csv"
 
 # Matches defaults from `onda-backend/scripts/plot_refraction_coefficients.py`
@@ -254,6 +255,7 @@ def _csv_mtime(path: Path) -> float:
 def _plot_cache_dir(*, breaks_with_names_csv_path: Path) -> Path:
     key = (
         f"{int(_csv_mtime(ANALYTIC_CSV))}_"
+        f"{int(_csv_mtime(ANALYTIC_VOP_CSV))}_"
         f"{int(_csv_mtime(SWAN_CSV))}_"
         f"{int(_csv_mtime(breaks_with_names_csv_path))}"
     )
@@ -295,6 +297,7 @@ def render_k_coefficients_tab() -> None:
     if not SWAN_CSV.exists():
         st.error(f"Missing swan CSV: `{SWAN_CSV}`")
         return
+    has_analytic_vop = ANALYTIC_VOP_CSV.exists()
 
     breaks_csv_path = _resolve_breaks_with_names_csv_path()
 
@@ -314,26 +317,31 @@ def render_k_coefficients_tab() -> None:
     cache_dir = _plot_cache_dir(breaks_with_names_csv_path=breaks_csv_path)
 
     with st.expander("Data sources", expanded=False):
-        st.write(f"Analytical CSV: `{ANALYTIC_CSV}`")
+        st.write(f"Analytic (Buoy) CSV: `{ANALYTIC_CSV}`")
+        st.write(f"Analytic (VOP) CSV: `{ANALYTIC_VOP_CSV}`")
         st.write(f"Swan CSV: `{SWAN_CSV}`")
         st.write(f"Break labels: `{breaks_csv_path}`")
+        if not has_analytic_vop:
+            st.caption("`k_coefficient_matrix_analytic_vop.csv` not found yet; middle column will show placeholders.")
 
     # Load data (cached by Streamlit)
     with st.spinner("Loading k-coefficient CSVs..."):
         df_analytic = load_k_matrix(str(ANALYTIC_CSV))
+        df_analytic_vop = load_k_matrix(str(ANALYTIC_VOP_CSV)) if has_analytic_vop else None
         df_swan = load_k_matrix(str(SWAN_CSV))
 
     labels = load_break_labels(str(breaks_csv_path))
 
     analytic_ids = {int(x) for x in df_analytic["break_id"].unique()}
+    analytic_vop_ids = {int(x) for x in df_analytic_vop["break_id"].unique()} if df_analytic_vop is not None else set()
     swan_ids = {int(x) for x in df_swan["break_id"].unique()}
-    break_ids = sorted(analytic_ids | swan_ids)
+    break_ids = sorted(analytic_ids | analytic_vop_ids | swan_ids)
     if not break_ids:
         st.error("No break_id values found in either CSV.")
         return
 
     st.caption(
-        "Dark polar heatmaps. Each row shows one break: analytical (left) and swan (right)."
+        "Dark polar heatmaps. Each row shows one break: Analytic (Buoy) left, Analytic (VOP) middle, SWAN right."
     )
 
     selected_break_ids = st.multiselect(
@@ -350,7 +358,7 @@ def render_k_coefficients_tab() -> None:
         label = labels.get(int(break_id)) or f"Break {break_id}"
 
         st.markdown(f"### {label}")
-        c1, c2 = st.columns(2, gap="large")
+        c1, c2, c3 = st.columns(3, gap="large")
 
         with c1:
             if int(break_id) in analytic_ids:
@@ -362,10 +370,23 @@ def render_k_coefficients_tab() -> None:
                 )
                 st.image(analytic_png, width="stretch")
             else:
-                st.caption("No Analytic data")
-            st.caption("Analytic")
+                st.caption("No Analytic (Buoy) data")
+            st.caption("Analytic (Buoy)")
 
         with c2:
+            if int(break_id) in analytic_vop_ids and df_analytic_vop is not None:
+                analytic_vop_png = _ensure_plot_png(
+                    cache_dir=cache_dir,
+                    df=df_analytic_vop,
+                    break_id=int(break_id),
+                    dataset_name="analytic_vop",
+                )
+                st.image(analytic_vop_png, width="stretch")
+            else:
+                st.caption("No Analytic (VOP) data")
+            st.caption("Analytic (VOP)")
+
+        with c3:
             if int(break_id) in swan_ids:
                 swan_png = _ensure_plot_png(
                     cache_dir=cache_dir,
