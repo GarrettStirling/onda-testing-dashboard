@@ -14,6 +14,7 @@ import pandas as pd
 import streamlit as st
 from folium.plugins import Draw, MousePosition
 from google.cloud import bigquery
+from google.oauth2 import service_account
 from streamlit_folium import st_folium
 
 
@@ -35,6 +36,21 @@ def _query_to_df(client: bigquery.Client, sql: str) -> pd.DataFrame:
 
 @st.cache_resource(show_spinner=False)
 def _bq_client() -> bigquery.Client:
+    # Hosted Streamlit: prefer service-account credentials from secrets.
+    # Expected in .streamlit/secrets.toml as:
+    # [gcp_service_account]
+    # type = "service_account"
+    # project_id = "..."
+    # private_key_id = "..."
+    # private_key = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+    # client_email = "..."
+    # ... remaining JSON fields ...
+    if "gcp_service_account" in st.secrets:
+        info = dict(st.secrets["gcp_service_account"])
+        creds = service_account.Credentials.from_service_account_info(info)
+        project = str(info.get("project_id") or PROJECT_ID)
+        return bigquery.Client(project=project, credentials=creds)
+
     # Prefer explicit local ADC file loading to avoid metadata-server fallbacks.
     explicit_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
     if explicit_path and Path(explicit_path).exists():
@@ -179,7 +195,8 @@ def render_map_tab() -> None:
             "Make sure Application Default Credentials are available for this Streamlit runtime. "
             "For local PowerShell, set "
             "`$env:GOOGLE_APPLICATION_CREDENTIALS='C:\\Users\\garre\\AppData\\Roaming\\gcloud\\application_default_credentials.json'` "
-            "before running `streamlit run app.py`."
+            "before running `streamlit run app.py`. For hosted Streamlit, add a full service-account JSON "
+            "under `[gcp_service_account]` in app secrets."
         )
         return
 

@@ -1,4 +1,6 @@
 .streamlit_cache/
+# Local Streamlit secrets (never commit service account JSON)
+.streamlit/secrets.toml
 .venv/
 __pycache__/
 *.pyc
