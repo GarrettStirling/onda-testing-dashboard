@@ -36,20 +36,17 @@ def _query_to_df(client: bigquery.Client, sql: str) -> pd.DataFrame:
 
 @st.cache_resource(show_spinner=False)
 def _bq_client() -> bigquery.Client:
-    # Hosted Streamlit: prefer service-account credentials from secrets.
-    # Expected in .streamlit/secrets.toml as:
-    # [gcp_service_account]
-    # type = "service_account"
-    # project_id = "..."
-    # private_key_id = "..."
-    # private_key = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-    # client_email = "..."
-    # ... remaining JSON fields ...
-    if "gcp_service_account" in st.secrets:
-        info = dict(st.secrets["gcp_service_account"])
-        creds = service_account.Credentials.from_service_account_info(info)
-        project = str(info.get("project_id") or PROJECT_ID)
-        return bigquery.Client(project=project, credentials=creds)
+    # Hosted Streamlit: service account in secrets. Locally there is often no
+    # secrets.toml — touching st.secrets then raises "No secrets found", so
+    # we must try/except and fall through to ADC.
+    try:
+        if "gcp_service_account" in st.secrets:
+            info = dict(st.secrets["gcp_service_account"])
+            creds = service_account.Credentials.from_service_account_info(info)
+            project = str(info.get("project_id") or PROJECT_ID)
+            return bigquery.Client(project=project, credentials=creds)
+    except Exception:
+        pass
 
     # Prefer explicit local ADC file loading to avoid metadata-server fallbacks.
     explicit_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")

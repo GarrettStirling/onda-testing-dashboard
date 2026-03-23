@@ -40,11 +40,12 @@ Loads polar (“radar-style”) heatmaps per **break** (dark theme, colorbar). D
 
 | Column | File | Role in UI |
 |--------|------|------------|
-| Left | `k_coefficient_matrix_analytic.csv` | **Analytic (Buoy)** |
-| Middle | `k_coefficient_matrix_analytic_vop.csv` | **Analytic (VOP)** — optional until you generate it |
-| Right | `k_coefficient_matrix_swan.csv` | **SWAN** |
+| 1 | `k_coefficient_matrix_analytic.csv` | **Analytic (Buoy)** |
+| 2 | `k_coefficient_matrix_analytic_vop.csv` | **Analytic (VOP)** — optional until generated |
+| 3 | `k_coefficient_matrix_analytic_fan.csv` | **Analytical Fan** — optional until generated |
+| 4 | `k_coefficient_matrix_swan.csv` | **SWAN** |
 
-Expected columns (same schema for all three): `break_id`, `swell_dir`, `swell_period`, `k_factor`.
+Expected columns (same schema for all four): `break_id`, `swell_dir`, `swell_period`, `k_factor`.
 
 ### Break labels
 
