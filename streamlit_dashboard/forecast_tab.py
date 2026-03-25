@@ -3,6 +3,7 @@
 Builds ``buoy_cdip_nearest_join.csv``: each buoy row gets the nearest CDIP row (same break)
 within a time tolerance (default 2.5 h), so 1/4/7 vs 2/5/8 style grids still match.
 Plots use buoy ``wave_time_pst`` as x; CDIP values are drawn at that time from the join.
+Forecasts render with **Plotly** (hover, vertical spike across panels, unified tooltips).
 
 Sources:
   - data/forecasts/buoy_scaled_components.csv
@@ -11,19 +12,14 @@ Sources:
 
 from __future__ import annotations
 
-import io
 from pathlib import Path
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import pytz
 import streamlit as st
+from plotly.subplots import make_subplots
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUOY_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_scaled_components.csv"
@@ -110,6 +106,30 @@ def _heights_to_ft(series: pd.Series) -> pd.Series:
     return pd.to_numeric(series, errors="coerce").astype(float) * M_TO_FT
 
 
+def _normalize_buoy_component_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Support current CSV schema (``primary_wave_height``, …) and legacy ``*_buoy_scaled`` names."""
+    out = df.copy()
+    pairs = [
+        ("primary_wave_height_buoy_scaled", "primary_wave_height"),
+        ("secondary_wave_height_buoy_scaled", "secondary_wave_height"),
+        ("tertiary_wave_height_buoy_scaled", "tertiary_wave_height"),
+        ("primary_period_buoy_scaled", "primary_period"),
+        ("secondary_period_buoy_scaled", "secondary_period"),
+        ("tertiary_period_buoy_scaled", "tertiary_period"),
+        ("primary_direction_buoy_scaled", "primary_direction"),
+        ("secondary_direction_buoy_scaled", "secondary_direction"),
+        ("tertiary_direction_buoy_scaled", "tertiary_direction"),
+    ]
+    for old, new in pairs:
+        if old not in out.columns:
+            continue
+        if new in out.columns:
+            out = out.drop(columns=[old])
+        else:
+            out = out.rename(columns={old: new})
+    return out
+
+
 @st.cache_data(show_spinner=False)
 def _load_buoy_forecast(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
@@ -121,6 +141,7 @@ def _load_buoy_forecast(path: str) -> pd.DataFrame:
         )
     else:
         df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
+    df = _normalize_buoy_component_columns(df)
     return df.sort_values(["break_id", "wave_time_pst"])
 
 
@@ -200,38 +221,86 @@ def _joined_forecast_dataframe(
     return joined
 
 
-def _break_circular(series: pd.Series, threshold: float = 180.0) -> pd.Series:
-    s = series.copy().astype(float)
-    jumps = s.diff().abs() > threshold
-    s[jumps] = np.nan
-    return s
+def _legend_show_once(seen: set[str], name: str) -> bool:
+    """Plotly one legend entry per logical series (same name repeated on 3 subplots)."""
+    if name in seen:
+        return False
+    seen.add(name)
+    return True
 
 
-def _apply_dark_style(fig: plt.Figure, axes: list) -> None:
-    fig.patch.set_facecolor(BG_DARK)
-    for ax in axes:
-        ax.set_facecolor(BG_PANEL)
-        ax.tick_params(colors=TEXT_COLOR, labelsize=9)
-        ax.yaxis.label.set_color(TEXT_COLOR)
-        ax.xaxis.label.set_color(TEXT_COLOR)
-        ax.title.set_color(TEXT_COLOR)
-        for spine in ax.spines.values():
-            spine.set_edgecolor(SPINE_COLOR)
-        ax.grid(True, color=GRID_COLOR, linewidth=0.6, linestyle="--", alpha=0.8)
-        ax.set_axisbelow(True)
+def _hex_to_rgba(hex_color: str, alpha: float) -> str:
+    h = hex_color.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
 
 
-def _format_x_axis(ax, span_days: float) -> None:
-    """Tick density from plotted time span (no user slider)."""
-    if span_days <= 3.5:
-        ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 6, 12, 18]))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d %H:%M"))
-    else:
-        ax.xaxis.set_major_locator(mdates.DayLocator())
-        ax.xaxis.set_minor_locator(mdates.HourLocator(byhour=[6, 12, 18]))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
-    ax.tick_params(axis="x", which="minor", length=3, color=SPINE_COLOR)
-    plt.setp(ax.get_xticklabels(), rotation=30, ha="right")
+def _forecast_hover_xaxis_tickformat(span_days: float) -> str:
+    return "%b %d %H:%M" if span_days <= 3.5 else "%b %d"
+
+
+def _y_range_padded(
+    *series: pd.Series,
+    frac: float = 0.08,
+    floor_zero: bool = False,
+    min_span: float = 0.0,
+) -> tuple[float, float]:
+    """Finite min/max across series, expand span by ``frac`` on each side; optional floor at 0 and minimum span."""
+    parts: list[pd.Series] = []
+    for s in series:
+        x = pd.to_numeric(s, errors="coerce").dropna()
+        if len(x) > 0:
+            parts.append(x)
+    if not parts:
+        return (0.0, 1.0)
+    c = pd.concat(parts, ignore_index=True)
+    lo, hi = float(c.min()), float(c.max())
+    if not np.isfinite(lo) or not np.isfinite(hi):
+        return (0.0, 1.0)
+    if lo > hi:
+        lo, hi = hi, lo
+    span = hi - lo
+    if span < min_span:
+        mid = (lo + hi) / 2.0
+        lo = mid - min_span / 2.0
+        hi = mid + min_span / 2.0
+        span = min_span
+    pad = max(span * frac, 1e-9)
+    lo2, hi2 = lo - pad, hi + pad
+    if floor_zero:
+        lo2 = max(0.0, lo2)
+    return (lo2, hi2)
+
+
+def _add_ts_line(
+    fig: go.Figure,
+    row: int,
+    x: pd.Series,
+    y: pd.Series,
+    *,
+    name: str,
+    color: str,
+    dash: str = "solid",
+    width: float = 2,
+    unit: str,
+    opacity: float = 1.0,
+    showlegend: bool = True,
+) -> None:
+    """One time-series trace with hover text ``name`` + value + ``unit``."""
+    line_color = _hex_to_rgba(color, opacity) if opacity < 1.0 else color
+    fig.add_trace(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="lines",
+            name=name,
+            showlegend=showlegend,
+            line=dict(color=line_color, width=width, dash=dash),
+            hovertemplate=f"<b>{name}</b><br>%{{y:.3f}}{unit}<extra></extra>",
+        ),
+        row=row,
+        col=1,
+    )
 
 
 def _plot_break_forecast(
@@ -240,16 +309,27 @@ def _plot_break_forecast(
     show_cdip_sig: bool,
     overlay_cdip_mop: bool,
     label: str,
-) -> plt.Figure:
-    """x-axis = buoy ``wave_time_pst``; CDIP series from nearest-join columns (same timestamps)."""
+) -> go.Figure:
+    """Interactive Plotly figure: shared x, vertical spike across panels, unified hover per row."""
     joined_g = joined_g.copy().sort_values("wave_time_pst")
 
     if joined_g.empty:
-        fig, ax = plt.subplots(figsize=(10, 2))
-        fig.patch.set_facecolor(BG_DARK)
-        ax.set_facecolor(BG_PANEL)
-        ax.text(0.5, 0.5, "No buoy forecast rows in window", ha="center", va="center", color=TEXT_COLOR)
-        ax.axis("off")
+        fig = go.Figure()
+        fig.add_annotation(
+            text="No buoy forecast rows in window",
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            showarrow=False,
+            font=dict(color=TEXT_COLOR, size=14),
+        )
+        fig.update_layout(
+            paper_bgcolor=BG_DARK,
+            plot_bgcolor=BG_PANEL,
+            height=220,
+            margin=dict(l=40, r=40, t=40, b=40),
+        )
         return fig
 
     t_b = joined_g["wave_time_pst"]
@@ -261,257 +341,6 @@ def _plot_break_forecast(
     show_any_cdip = show_cdip_sig or overlay_cdip_mop
     has_sig = "cdip_significant_wave_height" in joined_g.columns and joined_g["cdip_significant_wave_height"].notna().any()
     has_mop = "cdip_primary_wave_height" in joined_g.columns and joined_g["cdip_primary_wave_height"].notna().any()
-
-    # Subplots: height, direction, period
-    fig, axes = plt.subplots(
-        3,
-        1,
-        figsize=(13, 9),
-        sharex=True,
-        gridspec_kw={"hspace": 0.08, "height_ratios": [1.2, 1, 1]},
-    )
-    ax_h, ax_d, ax_p = axes
-    _apply_dark_style(fig, list(axes))
-
-    # --- Height: buoy pri/sec/ter, then optional CDIP MOP overlay, then bold CDIP sig ---
-    ax_h.plot(
-        t_b,
-        _heights_to_ft(joined_g["primary_wave_height_buoy_scaled"]),
-        color=C_PRIMARY,
-        lw=LW_MAIN,
-        label="Primary (buoy components)",
-        zorder=4,
-    )
-    ax_h.plot(
-        t_b,
-        _heights_to_ft(joined_g["secondary_wave_height_buoy_scaled"]),
-        color=C_SECONDARY,
-        lw=LW_SEC,
-        linestyle="--",
-        label="Secondary (buoy components)",
-        zorder=3,
-    )
-    ax_h.plot(
-        t_b,
-        _heights_to_ft(joined_g["tertiary_wave_height_buoy_scaled"]),
-        color=C_TERTIARY,
-        lw=LW_TER,
-        linestyle=":",
-        label="Tertiary (buoy components)",
-        zorder=2,
-    )
-
-    if overlay_cdip_mop and has_mop:
-        ax_h.plot(
-            t_b,
-            _heights_to_ft(joined_g["cdip_primary_wave_height"]),
-            color=C_PRIMARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            linestyle="-",
-            label="Primary (CDIP MOP)",
-            zorder=3,
-        )
-        ax_h.plot(
-            t_b,
-            _heights_to_ft(joined_g["cdip_secondary_wave_height"]),
-            color=C_SECONDARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            linestyle="--",
-            label="Secondary (CDIP MOP)",
-            zorder=2,
-        )
-        ter_h = joined_g["cdip_tertiary_wave_height"] if "cdip_tertiary_wave_height" in joined_g.columns else None
-        if ter_h is not None and ter_h.notna().any():
-            ax_h.plot(
-                t_b,
-                _heights_to_ft(ter_h),
-                color=C_TERTIARY,
-                lw=LW_OVERLAY,
-                alpha=ALPHA_OVERLAY,
-                linestyle=":",
-                label="Tertiary (CDIP MOP)",
-                zorder=1,
-            )
-
-    if show_cdip_sig and has_sig:
-        ax_h.plot(
-            t_b,
-            _heights_to_ft(joined_g["cdip_significant_wave_height"]),
-            color=C_SIG,
-            lw=LW_SIG,
-            label="Sig. height (CDIP)",
-            zorder=6,
-            alpha=0.95,
-        )
-
-    ax_h.set_ylabel("Height (ft)", fontsize=10)
-    cols_h = [
-        joined_g["primary_wave_height_buoy_scaled"],
-        joined_g["secondary_wave_height_buoy_scaled"],
-        joined_g["tertiary_wave_height_buoy_scaled"],
-    ]
-    ymax = float(pd.concat(cols_h).max()) * M_TO_FT
-    if show_cdip_sig and has_sig:
-        sig_max = pd.to_numeric(joined_g["cdip_significant_wave_height"], errors="coerce").max()
-        if pd.notna(sig_max):
-            ymax = max(ymax, float(sig_max) * M_TO_FT)
-    ax_h.set_ylim(bottom=0, top=max(ymax * 1.12, 1.0))
-    ax_h.legend(
-        loc="upper right",
-        fontsize=7,
-        framealpha=0.25,
-        facecolor=BG_PANEL,
-        edgecolor=SPINE_COLOR,
-        labelcolor=TEXT_COLOR,
-        ncol=2,
-    )
-
-    # --- Direction ---
-    ax_d.plot(
-        t_b,
-        _break_circular(joined_g["primary_direction_buoy_scaled"]),
-        color=C_PRIMARY,
-        lw=LW_MAIN,
-        label="Primary (buoy components)",
-        zorder=4,
-    )
-    ax_d.plot(
-        t_b,
-        _break_circular(joined_g["secondary_direction_buoy_scaled"]),
-        color=C_SECONDARY,
-        lw=LW_SEC,
-        linestyle="--",
-        label="Secondary (buoy components)",
-        zorder=3,
-    )
-    ax_d.plot(
-        t_b,
-        _break_circular(joined_g["tertiary_direction_buoy_scaled"]),
-        color=C_TERTIARY,
-        lw=LW_TER,
-        linestyle=":",
-        label="Tertiary (buoy components)",
-        zorder=2,
-    )
-
-    if overlay_cdip_mop and has_mop:
-        ax_d.plot(
-            t_b,
-            _break_circular(pd.to_numeric(joined_g["cdip_primary_direction"], errors="coerce")),
-            color=C_PRIMARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            label="Primary (CDIP MOP)",
-            zorder=3,
-        )
-        ax_d.plot(
-            t_b,
-            _break_circular(pd.to_numeric(joined_g["cdip_secondary_direction"], errors="coerce")),
-            color=C_SECONDARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            linestyle="--",
-            label="Secondary (CDIP MOP)",
-            zorder=2,
-        )
-        if "cdip_tertiary_direction" in joined_g.columns and joined_g["cdip_tertiary_direction"].notna().any():
-            ax_d.plot(
-                t_b,
-                _break_circular(pd.to_numeric(joined_g["cdip_tertiary_direction"], errors="coerce")),
-                color=C_TERTIARY,
-                lw=LW_OVERLAY,
-                alpha=ALPHA_OVERLAY,
-                linestyle=":",
-                label="Tertiary (CDIP MOP)",
-                zorder=1,
-            )
-
-    ax_d.set_ylabel("Direction (° from north)", fontsize=10)
-    ax_d.set_ylim(0, 360)
-    ax_d.set_yticks(range(0, 361, 45))
-    ax_d.yaxis.set_major_formatter(mticker.FormatStrFormatter("%d°"))
-    for deg in [0, 90, 180, 270, 360]:
-        ax_d.axhline(deg, color=SPINE_COLOR, linewidth=0.5, linestyle="-", alpha=0.6)
-    ax_d.legend(
-        loc="upper right",
-        fontsize=7,
-        framealpha=0.25,
-        facecolor=BG_PANEL,
-        edgecolor=SPINE_COLOR,
-        labelcolor=TEXT_COLOR,
-        ncol=2,
-    )
-
-    # --- Period ---
-    ax_p.plot(
-        t_b,
-        joined_g["primary_period_buoy_scaled"],
-        color=C_PRIMARY,
-        lw=LW_MAIN,
-        label="Primary (buoy components)",
-    )
-    ax_p.plot(
-        t_b,
-        joined_g["secondary_period_buoy_scaled"],
-        color=C_SECONDARY,
-        lw=LW_SEC,
-        linestyle="--",
-        label="Secondary (buoy components)",
-    )
-    ax_p.plot(
-        t_b,
-        joined_g["tertiary_period_buoy_scaled"],
-        color=C_TERTIARY,
-        lw=LW_TER,
-        linestyle=":",
-        label="Tertiary (buoy components)",
-    )
-
-    if overlay_cdip_mop and has_mop:
-        ax_p.plot(
-            t_b,
-            pd.to_numeric(joined_g["cdip_primary_period"], errors="coerce"),
-            color=C_PRIMARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            label="Primary (CDIP MOP)",
-        )
-        ax_p.plot(
-            t_b,
-            pd.to_numeric(joined_g["cdip_secondary_period"], errors="coerce"),
-            color=C_SECONDARY,
-            lw=LW_OVERLAY,
-            alpha=ALPHA_OVERLAY,
-            linestyle="--",
-            label="Secondary (CDIP MOP)",
-        )
-        if "cdip_tertiary_period" in joined_g.columns and joined_g["cdip_tertiary_period"].notna().any():
-            ax_p.plot(
-                t_b,
-                pd.to_numeric(joined_g["cdip_tertiary_period"], errors="coerce"),
-                color=C_TERTIARY,
-                lw=LW_OVERLAY,
-                alpha=ALPHA_OVERLAY,
-                linestyle=":",
-                label="Tertiary (CDIP MOP)",
-            )
-
-    ax_p.set_ylabel("Period (s)", fontsize=10)
-    ax_p.set_ylim(bottom=0)
-    ax_p.legend(
-        loc="upper right",
-        fontsize=7,
-        framealpha=0.25,
-        facecolor=BG_PANEL,
-        edgecolor=SPINE_COLOR,
-        labelcolor=TEXT_COLOR,
-        ncol=2,
-    )
-
-    _format_x_axis(ax_p, span_days)
-    ax_p.set_xlabel("Date (US/Pacific)", fontsize=10)
 
     title = label if label else f"Break {int(joined_g['break_id'].iloc[0])}"
     has_any_match = has_sig or has_mop
@@ -527,14 +356,332 @@ def _plot_break_forecast(
         cdip_note = " — buoy + CDIP MOP"
     else:
         cdip_note = " — buoy (CDIP on, no data for selected layers)"
-    fig.suptitle(
-        f"Forecast — {title}{cdip_note}",
-        color=TEXT_COLOR,
-        fontsize=13,
-        fontweight="bold",
-        y=0.98,
+
+    fig = make_subplots(
+        rows=3,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.07,
+        row_heights=[0.38, 0.31, 0.31],
+        subplot_titles=("Height (ft)", "Direction (° from north)", "Period (s)"),
     )
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.92, bottom=0.1, hspace=0.12)
+
+    leg: set[str] = set()
+
+    # --- Row 1: height ---
+    _add_ts_line(
+        fig,
+        1,
+        t_b,
+        _heights_to_ft(joined_g["primary_wave_height"]),
+        name="Primary (buoy components)",
+        color=C_PRIMARY,
+        dash="solid",
+        width=LW_MAIN,
+        unit=" ft",
+        opacity=1.0,
+        showlegend=_legend_show_once(leg, "Primary (buoy components)"),
+    )
+    _add_ts_line(
+        fig,
+        1,
+        t_b,
+        _heights_to_ft(joined_g["secondary_wave_height"]),
+        name="Secondary (buoy components)",
+        color=C_SECONDARY,
+        dash="dash",
+        width=LW_SEC,
+        unit=" ft",
+        opacity=1.0,
+        showlegend=_legend_show_once(leg, "Secondary (buoy components)"),
+    )
+    _add_ts_line(
+        fig,
+        1,
+        t_b,
+        _heights_to_ft(joined_g["tertiary_wave_height"]),
+        name="Tertiary (buoy components)",
+        color=C_TERTIARY,
+        dash="dot",
+        width=LW_TER,
+        unit=" ft",
+        opacity=1.0,
+        showlegend=_legend_show_once(leg, "Tertiary (buoy components)"),
+    )
+
+    if overlay_cdip_mop and has_mop:
+        _add_ts_line(
+            fig,
+            1,
+            t_b,
+            _heights_to_ft(joined_g["cdip_primary_wave_height"]),
+            name="Primary (CDIP MOP)",
+            color=C_PRIMARY,
+            dash="solid",
+            width=LW_OVERLAY,
+            unit=" ft",
+            opacity=ALPHA_OVERLAY,
+            showlegend=_legend_show_once(leg, "Primary (CDIP MOP)"),
+        )
+        _add_ts_line(
+            fig,
+            1,
+            t_b,
+            _heights_to_ft(joined_g["cdip_secondary_wave_height"]),
+            name="Secondary (CDIP MOP)",
+            color=C_SECONDARY,
+            dash="dash",
+            width=LW_OVERLAY,
+            unit=" ft",
+            opacity=ALPHA_OVERLAY,
+            showlegend=_legend_show_once(leg, "Secondary (CDIP MOP)"),
+        )
+        ter_h = joined_g["cdip_tertiary_wave_height"] if "cdip_tertiary_wave_height" in joined_g.columns else None
+        if ter_h is not None and ter_h.notna().any():
+            _add_ts_line(
+                fig,
+                1,
+                t_b,
+                _heights_to_ft(ter_h),
+                name="Tertiary (CDIP MOP)",
+                color=C_TERTIARY,
+                dash="dot",
+                width=LW_OVERLAY,
+                unit=" ft",
+                opacity=ALPHA_OVERLAY,
+                showlegend=_legend_show_once(leg, "Tertiary (CDIP MOP)"),
+            )
+
+    if show_cdip_sig and has_sig:
+        _add_ts_line(
+            fig,
+            1,
+            t_b,
+            _heights_to_ft(joined_g["cdip_significant_wave_height"]),
+            name="Sig. height (CDIP)",
+            color=C_SIG,
+            dash="solid",
+            width=LW_SIG,
+            unit=" ft",
+            opacity=0.95,
+            showlegend=_legend_show_once(leg, "Sig. height (CDIP)"),
+        )
+
+    # --- Row 2: direction (raw 0–360°; no artificial NaNs — steep segments = wrap past north) ---
+    def _add_dir(name: str, series: pd.Series, color: str, dash: str, width: float, opacity: float = 1.0) -> None:
+        y = pd.to_numeric(series, errors="coerce")
+        line_color = _hex_to_rgba(color, opacity) if opacity < 1.0 else color
+        fig.add_trace(
+            go.Scatter(
+                x=t_b,
+                y=y,
+                mode="lines",
+                name=name,
+                showlegend=_legend_show_once(leg, name),
+                line=dict(color=line_color, width=width, dash=dash),
+                hovertemplate=f"<b>{name}</b><br>%{{y:.1f}}°<extra></extra>",
+            ),
+            row=2,
+            col=1,
+        )
+
+    _add_dir("Primary (buoy components)", joined_g["primary_direction"], C_PRIMARY, "solid", LW_MAIN)
+    _add_dir("Secondary (buoy components)", joined_g["secondary_direction"], C_SECONDARY, "dash", LW_SEC)
+    _add_dir("Tertiary (buoy components)", joined_g["tertiary_direction"], C_TERTIARY, "dot", LW_TER)
+
+    if overlay_cdip_mop and has_mop:
+        _add_dir(
+            "Primary (CDIP MOP)",
+            pd.to_numeric(joined_g["cdip_primary_direction"], errors="coerce"),
+            C_PRIMARY,
+            "solid",
+            LW_OVERLAY,
+            ALPHA_OVERLAY,
+        )
+        _add_dir(
+            "Secondary (CDIP MOP)",
+            pd.to_numeric(joined_g["cdip_secondary_direction"], errors="coerce"),
+            C_SECONDARY,
+            "dash",
+            LW_OVERLAY,
+            ALPHA_OVERLAY,
+        )
+        if "cdip_tertiary_direction" in joined_g.columns and joined_g["cdip_tertiary_direction"].notna().any():
+            _add_dir(
+                "Tertiary (CDIP MOP)",
+                pd.to_numeric(joined_g["cdip_tertiary_direction"], errors="coerce"),
+                C_TERTIARY,
+                "dot",
+                LW_OVERLAY,
+                ALPHA_OVERLAY,
+            )
+
+    # --- Row 3: period ---
+    _add_ts_line(
+        fig,
+        3,
+        t_b,
+        pd.to_numeric(joined_g["primary_period"], errors="coerce"),
+        name="Primary (buoy components)",
+        color=C_PRIMARY,
+        width=LW_MAIN,
+        unit=" s",
+        showlegend=_legend_show_once(leg, "Primary (buoy components)"),
+    )
+    _add_ts_line(
+        fig,
+        3,
+        t_b,
+        pd.to_numeric(joined_g["secondary_period"], errors="coerce"),
+        name="Secondary (buoy components)",
+        color=C_SECONDARY,
+        dash="dash",
+        width=LW_SEC,
+        unit=" s",
+        showlegend=_legend_show_once(leg, "Secondary (buoy components)"),
+    )
+    _add_ts_line(
+        fig,
+        3,
+        t_b,
+        pd.to_numeric(joined_g["tertiary_period"], errors="coerce"),
+        name="Tertiary (buoy components)",
+        color=C_TERTIARY,
+        dash="dot",
+        width=LW_TER,
+        unit=" s",
+        showlegend=_legend_show_once(leg, "Tertiary (buoy components)"),
+    )
+
+    if overlay_cdip_mop and has_mop:
+        _add_ts_line(
+            fig,
+            3,
+            t_b,
+            pd.to_numeric(joined_g["cdip_primary_period"], errors="coerce"),
+            name="Primary (CDIP MOP)",
+            color=C_PRIMARY,
+            width=LW_OVERLAY,
+            unit=" s",
+            opacity=ALPHA_OVERLAY,
+            showlegend=_legend_show_once(leg, "Primary (CDIP MOP)"),
+        )
+        _add_ts_line(
+            fig,
+            3,
+            t_b,
+            pd.to_numeric(joined_g["cdip_secondary_period"], errors="coerce"),
+            name="Secondary (CDIP MOP)",
+            color=C_SECONDARY,
+            dash="dash",
+            width=LW_OVERLAY,
+            unit=" s",
+            opacity=ALPHA_OVERLAY,
+            showlegend=_legend_show_once(leg, "Secondary (CDIP MOP)"),
+        )
+        if "cdip_tertiary_period" in joined_g.columns and joined_g["cdip_tertiary_period"].notna().any():
+            _add_ts_line(
+                fig,
+                3,
+                t_b,
+                pd.to_numeric(joined_g["cdip_tertiary_period"], errors="coerce"),
+                name="Tertiary (CDIP MOP)",
+                color=C_TERTIARY,
+                dash="dot",
+                width=LW_OVERLAY,
+                unit=" s",
+                opacity=ALPHA_OVERLAY,
+                showlegend=_legend_show_once(leg, "Tertiary (CDIP MOP)"),
+            )
+
+    # Y ranges from everything drawn on each row (small padding; not fixed 0–360 / tozero)
+    h_for_range: list[pd.Series] = [
+        _heights_to_ft(joined_g["primary_wave_height"]),
+        _heights_to_ft(joined_g["secondary_wave_height"]),
+        _heights_to_ft(joined_g["tertiary_wave_height"]),
+    ]
+    if overlay_cdip_mop and has_mop:
+        h_for_range.append(_heights_to_ft(joined_g["cdip_primary_wave_height"]))
+        h_for_range.append(_heights_to_ft(joined_g["cdip_secondary_wave_height"]))
+        if "cdip_tertiary_wave_height" in joined_g.columns:
+            h_for_range.append(_heights_to_ft(joined_g["cdip_tertiary_wave_height"]))
+    if show_cdip_sig and has_sig:
+        h_for_range.append(_heights_to_ft(joined_g["cdip_significant_wave_height"]))
+    y_r_h = _y_range_padded(*h_for_range, frac=0.08, floor_zero=True, min_span=0.35)
+
+    d_for_range: list[pd.Series] = [
+        joined_g["primary_direction"],
+        joined_g["secondary_direction"],
+        joined_g["tertiary_direction"],
+    ]
+    if overlay_cdip_mop and has_mop:
+        d_for_range.append(joined_g["cdip_primary_direction"])
+        d_for_range.append(joined_g["cdip_secondary_direction"])
+        if "cdip_tertiary_direction" in joined_g.columns:
+            d_for_range.append(joined_g["cdip_tertiary_direction"])
+    y_r_d = _y_range_padded(*d_for_range, frac=0.08, floor_zero=False, min_span=12.0)
+
+    p_for_range: list[pd.Series] = [
+        joined_g["primary_period"],
+        joined_g["secondary_period"],
+        joined_g["tertiary_period"],
+    ]
+    if overlay_cdip_mop and has_mop:
+        p_for_range.append(joined_g["cdip_primary_period"])
+        p_for_range.append(joined_g["cdip_secondary_period"])
+        if "cdip_tertiary_period" in joined_g.columns:
+            p_for_range.append(joined_g["cdip_tertiary_period"])
+    y_r_p = _y_range_padded(*p_for_range, frac=0.08, floor_zero=False, min_span=0.75)
+
+    tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
+    fig.update_layout(
+        title=dict(
+            text=f"Forecast — {title}{cdip_note}",
+            font=dict(color=TEXT_COLOR, size=15),
+            x=0.5,
+            xanchor="center",
+        ),
+        paper_bgcolor=BG_DARK,
+        plot_bgcolor=BG_PANEL,
+        font=dict(color=TEXT_COLOR, size=11),
+        hovermode="x unified",
+        hoverlabel=dict(bgcolor=BG_PANEL, bordercolor=SPINE_COLOR, font_size=12),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            bgcolor="rgba(22,27,34,0.92)",
+            bordercolor=SPINE_COLOR,
+            borderwidth=1,
+            font=dict(size=10),
+        ),
+        margin=dict(l=56, r=20, t=96, b=48),
+        height=820,
+    )
+    fig.update_xaxes(
+        showspikes=True,
+        spikecolor="#8b949e",
+        spikesnap="cursor",
+        spikemode="across",
+        spikethickness=1,
+        gridcolor=GRID_COLOR,
+        showgrid=True,
+        zeroline=False,
+        tickformat=tick_fmt,
+    )
+    fig.update_xaxes(showticklabels=False, row=1, col=1)
+    fig.update_xaxes(showticklabels=False, row=2, col=1)
+    fig.update_xaxes(title_text="Date (US/Pacific)", row=3, col=1)
+
+    fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
+    fig.update_yaxes(range=list(y_r_h), row=1, col=1)
+    fig.update_yaxes(range=list(y_r_d), row=2, col=1)
+    fig.update_yaxes(range=list(y_r_p), row=3, col=1)
+
+    fig.update_annotations(font=dict(color=TEXT_COLOR, size=12))
+
     return fig
 
 
@@ -544,7 +691,9 @@ def render_forecast_tab() -> None:
         "Buoy rows drive the time axis. CDIP values are attached with **nearest** timestamps per break "
         f"(≤ **match window** hours apart) and written to `{JOINED_CSV.name}`. "
         "Staggered grids (e.g. buoy 1/4/7 vs CDIP 2/5/8) still match; if buoy and CDIP date ranges "
-        "never overlap, CDIP columns stay empty."
+        "never overlap, CDIP columns stay empty. "
+        "**Tertiary** period/direction gaps usually mean no third swell in the CSV (NaN there). "
+        "Direction may show a **steep diagonal** when bearing wraps past north (0°/360°) — that is not missing data."
     )
 
     if not BUOY_CSV.exists():
@@ -615,10 +764,6 @@ def render_forecast_tab() -> None:
                 overlay_cdip_mop=overlay_cdip_mop,
                 label=id_to_label.get(bid, f"Break {bid}"),
             )
-            buf = io.BytesIO()
-            fig.savefig(buf, format="png", dpi=140, bbox_inches="tight", facecolor=BG_DARK)
-            plt.close(fig)
-            buf.seek(0)
-            st.image(buf, width="stretch")
+            st.plotly_chart(fig, width="stretch")
         except Exception as exc:
             st.error(f"Plot failed for break {bid}: {exc}")

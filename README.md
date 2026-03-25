@@ -18,7 +18,7 @@ Streamlit app to visualize outputs from the **`onda-backend`** pipeline: K-coeff
 ## Requirements
 
 - Python 3.10+ recommended  
-- Dependencies: `requirements.txt` (`streamlit`, `pandas`, `numpy`, `matplotlib`, `pytz`, `google-cloud-bigquery`, `folium`, `streamlit-folium`, `db-dtypes`)
+- Dependencies: `requirements.txt` (`streamlit`, `pandas`, `numpy`, `matplotlib`, `plotly`, `pytz`, `google-cloud-bigquery`, `folium`, `streamlit-folium`, `db-dtypes`)
 
 ## Run locally (recommended: venv)
 
@@ -78,7 +78,7 @@ Reads local CSVs under `data/forecasts/`:
 
 The app builds the join with `pandas.merge_asof(..., direction="nearest")` on **US/Pacific** timestamps. Buoy and CDIP grids do **not** need identical times (e.g. buoy 1/4/7 vs CDIP 2/5/8 is fine). CDIP values are plotted at the **buoy** timestep; `cdip_obs_time_pst` and `cdip_match_delta_seconds` in the saved CSV show which CDIP observation was attached.
 
-For each selected **break**, **three stacked subplots** (height ft, direction °, period s) use the joined table: buoy lines from the original columns; optional **CDIP significant height** and **CDIP MOP overlay** (off by default) from `cdip_*` columns (see `onda-backend/scripts/plot_cdip_data.py` palette).
+For each selected **break**, **three stacked subplots** (height ft, direction °, period s) use the joined table: buoy lines from the original columns; optional **CDIP significant height** and **CDIP MOP overlay** (off by default) from `cdip_*` columns (see `onda-backend/scripts/plot_cdip_data.py` palette). Charts are **interactive** (Plotly): hover shows a **vertical line across all three panels** and a **unified tooltip** per row listing each series with values and units (ft, °, s).
 
 **Nearest CDIP match window** (hours): increase if matches are missing and your skew is larger than the default (~2.5 h).
 
