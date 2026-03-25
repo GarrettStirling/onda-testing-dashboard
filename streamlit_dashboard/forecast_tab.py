@@ -108,6 +108,95 @@ def _load_cdip_forecast(path: str) -> pd.DataFrame:
     return df.sort_values(["break_id", "wave_time_pst"])
 
 
+def _best_cdip_time_shift_hours(buoy_g: pd.DataFrame, cdip_g: pd.DataFrame) -> float:
+    """Pick shift in {-2..2} h that minimizes median clock skew (buoy vs shifted CDIP times).
+
+    Uses ``merge_asof`` (nearest, 4 h tolerance — enough for typical 3 h buoy/CDIP cadence).
+    Tie-break: smallest ``|h|`` so a 1 h pipeline skew prefers ±1 over ±2 when medians tie.
+    If nothing matches well (all medians > 4 h or <5 pairs), returns 0.
+    """
+    b = buoy_g.sort_values("wave_time_pst")[
+        ["wave_time_pst", "primary_wave_height_buoy_scaled"]
+    ].dropna(subset=["primary_wave_height_buoy_scaled"])
+    if len(b) < 5 or cdip_g.empty or "primary_wave_height" not in cdip_g.columns:
+        return 0.0
+    c = cdip_g.sort_values("wave_time_pst")[["wave_time_pst", "primary_wave_height"]].dropna(
+        subset=["primary_wave_height"]
+    )
+    if len(c) < 3:
+        return 0.0
+
+    b = b.rename(columns={"wave_time_pst": "buoy_t"})
+    tol = pd.Timedelta(hours=4)
+    best_h = 0.0
+    best_key: tuple[float, int] | None = None
+
+    for h in (-2, -1, 0, 1, 2):
+        c2 = c.copy()
+        c2["cdip_t"] = c2["wave_time_pst"] + pd.Timedelta(hours=h)
+        c2 = c2.sort_values("cdip_t")[["cdip_t", "primary_wave_height"]]
+
+        m = pd.merge_asof(
+            b.sort_values("buoy_t"),
+            c2,
+            left_on="buoy_t",
+            right_on="cdip_t",
+            direction="nearest",
+            tolerance=tol,
+        )
+        m = m.dropna(subset=["primary_wave_height", "primary_wave_height_buoy_scaled"])
+        if len(m) < 5:
+            continue
+        med_dt = float((m["buoy_t"] - m["cdip_t"]).abs().dt.total_seconds().median())
+        key = (med_dt, abs(int(h)))
+        if best_key is None or key < best_key:
+            best_key = key
+            best_h = float(h)
+
+    if best_key is None:
+        return 0.0
+    med_best, _ = best_key
+    if med_best > 4 * 3600:
+        return 0.0
+    return best_h
+
+
+def _resolve_cdip_shift_hours(
+    buoy_g: pd.DataFrame,
+    cdip_g: pd.DataFrame | None,
+    mode: str,
+) -> float:
+    """``mode``: ``auto`` | numeric hour string like ``0``, ``-1``, ``+1``."""
+    if cdip_g is None or cdip_g.empty:
+        return 0.0
+    if mode == "auto":
+        return _best_cdip_time_shift_hours(buoy_g, cdip_g)
+    try:
+        return float(mode)
+    except ValueError:
+        return 0.0
+
+
+def _cdip_window_and_times(
+    buoy_g: pd.DataFrame,
+    cdip_g: pd.DataFrame,
+    shift_hours: float,
+) -> tuple[pd.DataFrame, pd.Series | None]:
+    """Rows whose *plotted* time (CDIP PST + shift) overlaps the buoy span; returns aligned plot times."""
+    t_min_b = buoy_g["wave_time_pst"].min()
+    t_max_b = buoy_g["wave_time_pst"].max()
+    margin = pd.Timedelta(hours=8)
+    shift_td = pd.Timedelta(hours=float(shift_hours))
+    c = cdip_g.sort_values("wave_time_pst").copy()
+    t_plot = c["wave_time_pst"] + shift_td
+    mask = (t_plot >= t_min_b - margin) & (t_plot <= t_max_b + margin)
+    win = c.loc[mask]
+    if win.empty:
+        return pd.DataFrame(), None
+    t_c = win["wave_time_pst"] + shift_td
+    return win, t_c
+
+
 def _break_circular(series: pd.Series, threshold: float = 180.0) -> pd.Series:
     s = series.copy().astype(float)
     jumps = s.diff().abs() > threshold
@@ -147,10 +236,12 @@ def _plot_break_forecast(
     buoy_g: pd.DataFrame,
     cdip_g: pd.DataFrame | None,
     *,
-    show_cdip: bool,
+    show_cdip_sig: bool,
+    overlay_cdip_mop: bool,
+    cdip_align_mode: str,
     label: str,
 ) -> plt.Figure:
-    """Three subplots: height, direction, period. Buoy always; CDIP (sig + MOP) when ``show_cdip``."""
+    """Three subplots: buoy components always; optional CDIP sig and/or MOP with shared time shift."""
     buoy_g = buoy_g.copy()
     buoy_g = buoy_g.sort_values("wave_time_pst")
 
@@ -168,19 +259,12 @@ def _plot_break_forecast(
         0.25,
     )
 
+    show_any_cdip = show_cdip_sig or overlay_cdip_mop
     cdip_win = pd.DataFrame()
     t_c = None
-    if show_cdip and cdip_g is not None and not cdip_g.empty:
-        cdip_win = cdip_g.copy().sort_values("wave_time_pst")
-        t_min_b = buoy_g["wave_time_pst"].min()
-        t_max_b = buoy_g["wave_time_pst"].max()
-        margin = pd.Timedelta(hours=6)
-        cdip_win = cdip_win[
-            (cdip_win["wave_time_pst"] >= t_min_b - margin)
-            & (cdip_win["wave_time_pst"] <= t_max_b + margin)
-        ]
-        if not cdip_win.empty:
-            t_c = cdip_win["wave_time_pst"]
+    if show_any_cdip and cdip_g is not None and not cdip_g.empty:
+        shift_h = _resolve_cdip_shift_hours(buoy_g, cdip_g, cdip_align_mode)
+        cdip_win, t_c = _cdip_window_and_times(buoy_g, cdip_g, shift_h)
 
     # Subplots: height, direction, period
     fig, axes = plt.subplots(
@@ -221,7 +305,7 @@ def _plot_break_forecast(
         zorder=2,
     )
 
-    if show_cdip and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
         ax_h.plot(
             t_c,
             _heights_to_ft(cdip_win["primary_wave_height"]),
@@ -255,16 +339,16 @@ def _plot_break_forecast(
                 zorder=1,
             )
 
-        if "significant_wave_height" in cdip_win.columns:
-            ax_h.plot(
-                t_c,
-                _heights_to_ft(cdip_win["significant_wave_height"]),
-                color=C_SIG,
-                lw=LW_SIG,
-                label="Sig. height (CDIP)",
-                zorder=6,
-                alpha=0.95,
-            )
+    if show_cdip_sig and not cdip_win.empty and t_c is not None and "significant_wave_height" in cdip_win.columns:
+        ax_h.plot(
+            t_c,
+            _heights_to_ft(cdip_win["significant_wave_height"]),
+            color=C_SIG,
+            lw=LW_SIG,
+            label="Sig. height (CDIP)",
+            zorder=6,
+            alpha=0.95,
+        )
 
     ax_h.set_ylabel("Height (ft)", fontsize=10)
     cols_h = [
@@ -273,7 +357,7 @@ def _plot_break_forecast(
         buoy_g["tertiary_wave_height_buoy_scaled"],
     ]
     ymax = float(pd.concat(cols_h).max()) * M_TO_FT
-    if show_cdip and not cdip_win.empty and "significant_wave_height" in cdip_win.columns:
+    if show_cdip_sig and not cdip_win.empty and "significant_wave_height" in cdip_win.columns:
         sig_max = pd.to_numeric(cdip_win["significant_wave_height"], errors="coerce").max()
         if pd.notna(sig_max):
             ymax = max(ymax, float(sig_max) * M_TO_FT)
@@ -316,7 +400,7 @@ def _plot_break_forecast(
         zorder=2,
     )
 
-    if show_cdip and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
         ax_d.plot(
             t_c,
             _break_circular(pd.to_numeric(cdip_win["primary_direction"], errors="coerce")),
@@ -389,7 +473,7 @@ def _plot_break_forecast(
         label="Tertiary (buoy components)",
     )
 
-    if show_cdip and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
         ax_p.plot(
             t_c,
             pd.to_numeric(cdip_win["primary_period"], errors="coerce"),
@@ -434,7 +518,17 @@ def _plot_break_forecast(
     ax_p.set_xlabel("Date (US/Pacific)", fontsize=10)
 
     title = label if label else f"Break {break_id}"
-    cdip_note = " — buoy + CDIP" if show_cdip else " — buoy only"
+    has_cdip = not cdip_win.empty
+    if not show_any_cdip:
+        cdip_note = " — buoy only"
+    elif not has_cdip:
+        cdip_note = " — buoy (no CDIP in buoy window)"
+    elif show_cdip_sig and overlay_cdip_mop:
+        cdip_note = " — buoy + CDIP sig + MOP"
+    elif show_cdip_sig:
+        cdip_note = " — buoy + CDIP sig"
+    else:
+        cdip_note = " — buoy + CDIP MOP"
     fig.suptitle(
         f"Forecast — {title}{cdip_note}",
         color=TEXT_COLOR,
@@ -449,8 +543,9 @@ def _plot_break_forecast(
 def render_forecast_tab() -> None:
     st.header("Forecasts")
     st.caption(
-        "Same axes: buoy-scaled series from `buoy_scaled_components.csv`. "
-        "Toggle on to add CDIP from `cdip_data_p.csv` (significant height + MOP pri/sec/ter)."
+        "Buoy components from `buoy_scaled_components.csv`. Optional CDIP sig height and/or MOP overlay from "
+        "`cdip_data_p.csv`; **Auto** aligns CDIP time to buoy by correlating primary heights (±2 h). "
+        "If date ranges do not overlap, no CDIP lines appear until you refresh the CSVs."
     )
 
     if not BUOY_CSV.exists():
@@ -475,11 +570,32 @@ def render_forecast_tab() -> None:
         st.write(f"CDIP MOP processed: `{CDIP_CSV}`")
         st.write(f"Break labels: `{BREAKS_CSV}`")
 
-    show_cdip = st.checkbox(
-        "Show CDIP data on same charts (`cdip_data_p.csv`: sig height + MOP pri/sec/ter)",
+    show_cdip_sig = st.checkbox(
+        "Show CDIP significant wave height (`cdip_data_p.csv`)",
         value=True,
-        help="Off: buoy-scaled lines only. On: same subplots also show CDIP significant height and MOP components.",
+        help="Bold line on the height panel. Uses the same time alignment as MOP (below).",
     )
+    overlay_cdip_mop = st.checkbox(
+        "Overlay CDIP MOP (pri/sec/ter on all three panels)",
+        value=False,
+        help="Semi-transparent CDIP component lines for comparison with buoy components. Off by default.",
+    )
+    align_labels = {
+        "Auto (match primary height)": "auto",
+        "0 h (no shift)": "0",
+        "-1 h": "-1",
+        "+1 h": "1",
+        "-2 h": "-2",
+        "+2 h": "2",
+    }
+    choice = st.selectbox(
+        "CDIP time vs buoy clock",
+        options=list(align_labels.keys()),
+        index=0,
+        help="Auto picks the shift in ±2 h that best matches buoy vs CDIP primary height. "
+        "Choose a fixed offset if Auto is wrong or your files share no overlap (Auto → 0 h).",
+    )
+    cdip_align_mode = align_labels[choice]
 
     options = break_ids
     labels_opt = [labels.get(bid, f"Break {bid}") for bid in options]
@@ -505,7 +621,9 @@ def render_forecast_tab() -> None:
                 int(bid),
                 bsub,
                 csub,
-                show_cdip=show_cdip,
+                show_cdip_sig=show_cdip_sig,
+                overlay_cdip_mop=overlay_cdip_mop,
+                cdip_align_mode=cdip_align_mode,
                 label=id_to_label.get(bid, f"Break {bid}"),
             )
             buf = io.BytesIO()

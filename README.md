@@ -94,7 +94,11 @@ Reads local CSVs under `data/forecasts/`:
 
 For each selected **break** (surf spot), the tab shows **three stacked subplots** (top → bottom): **wave height (ft)**, **direction (°)**, **period (s)**. Each subplot draws three lines for primary / secondary / tertiary from the buoy-scaled file over the **full buoy time range** in the CSV.
 
-- **Show CDIP data on same charts** (checkbox): **off** — buoy-scaled lines only. **on** — the same three panels also plot CDIP significant wave height (height panel) and CDIP MOP pri/sec/ter on all panels (see `onda-backend/scripts/plot_cdip_data.py` palette). CDIP rows are filtered to the buoy span plus a small margin so both series share the same axes.
+- **Show CDIP significant wave height** (checkbox): adds the bold CDIP sig-height line on the height panel when `cdip_data_p.csv` has rows whose *aligned* times fall in the buoy window.
+- **Overlay CDIP MOP** (checkbox, **off** by default): adds semi-transparent CDIP pri/sec/ter on all three panels (see `onda-backend/scripts/plot_cdip_data.py` palette).
+- **CDIP time vs buoy clock**: **Auto** tries shifts in ±2 h and picks the one that best correlates buoy vs CDIP **primary wave height** (`merge_asof`, 2 h tolerance). Fixed **−2 … +2 h** overrides Auto when you know the clock offset. The same shift applies to sig height and MOP so overlays line up.
+
+If the two CSVs use **non-overlapping date ranges**, no CDIP lines appear until both files cover the same period.
 
 Break titles use `data/reference/breaks_with_names.csv` when present.
 
