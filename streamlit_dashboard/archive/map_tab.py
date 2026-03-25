@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""
+ARCHIVED (not currently used by app.py).
+
+This was the Map tab implementation (Folium + BigQuery). It is kept here so it can
+be brought back later without losing the code.
+"""
+
 import os
 from math import asin, cos, radians, sin, sqrt
 from pathlib import Path

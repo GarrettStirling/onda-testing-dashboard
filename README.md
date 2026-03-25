@@ -1,15 +1,15 @@
 # ONDA Testing Dashboard (Streamlit)
 
-Streamlit app to visualize outputs from the **`onda-backend`** pipeline: K-coefficient radar plots from local CSVs, **forecast** time series (buoy-scaled components + CDIP), and an interactive map of offshore buoys / virtual offshore points from **BigQuery**.
+Streamlit app to visualize outputs from the **`onda-backend`** pipeline: K-coefficient radar plots from local CSVs and **forecast** time series (buoy components + CDIP).
 
 ## Repo layout
 
 | Path | Purpose |
 |------|---------|
-| `app.py` | Entrypoint: tabs **K Coefficients**, **Map**, **Forecasts** |
+| `app.py` | Entrypoint: tabs **K Coefficients**, **Forecasts** |
 | `streamlit_dashboard/k_coefficients.py` | K-matrix CSV loading, polar plots, caching |
-| `streamlit_dashboard/map_tab.py` | Folium map + BigQuery queries |
 | `streamlit_dashboard/forecast_tab.py` | Buoy + CDIP forecast plots |
+| `streamlit_dashboard/archive/map_tab.py` | **Archived** Map tab (Folium + BigQuery). Not currently used by `app.py`. |
 | `.streamlit/config.toml` | Dark UI theme |
 | `data/k_coef/` | K-coefficient CSVs (written by backend or copied here) |
 | `data/forecasts/` | `buoy_scaled_components.csv`, `cdip_data_p.csv` |
@@ -66,23 +66,6 @@ Aligned with `onda-backend/scripts/plot_refraction_coefficients.py` (polar layou
 
 ---
 
-## Map tab (BigQuery)
-
-Queries:
-
-- `onda-maverick.surf_system_data.offshore_buoys` (blue markers)  
-- `onda-maverick.surf_system_data.virtual_offshore_points` (orange markers)
-
-**Features:** depth slider, hover/popup (id / buoy name / depth where columns exist), ocean basemap, click-to-copy lat/lon, polyline measure (km + miles).
-
-**Schemas differ** between tables (e.g. buoys use `buoy_name`, `lon`, `depth_m`; VOPs use `vop_id` STRING, `long`, `depth_m`). The app resolves columns via `INFORMATION_SCHEMA` and quotes reserved names like `` `long` ``.
-
-### Dependencies
-
-`db-dtypes` is required for `job.to_dataframe()` on BigQuery results.
-
----
-
 ## Forecasts tab
 
 Reads local CSVs under `data/forecasts/`:
@@ -126,7 +109,7 @@ $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\garre\AppData\Roaming\gcloud\appli
 
 ### Hosted Streamlit (Community Cloud) — for later
 
-Your laptop ADC file **is not available** on Streamlit Cloud. The Map tab expects a **service account** supplied via **app secrets** (see below). Without secrets, BigQuery calls will fail with metadata / auth errors.
+Your laptop ADC file **is not available** on Streamlit Cloud. If you later re-enable the archived Map tab, it will require a **service account** supplied via **app secrets** (see below) for BigQuery access.
 
 #### 1) Where to add secrets in Streamlit
 
@@ -136,7 +119,7 @@ Your laptop ADC file **is not available** on Streamlit Cloud. The Map tab expect
 4. Paste the TOML block below (fill in values from your downloaded JSON).  
 5. **Save**, then **Reboot** the app so `st.secrets` reloads.
 
-The code reads `st.secrets["gcp_service_account"]` in `streamlit_dashboard/map_tab.py` and builds a BigQuery client from that.
+If you re-enable the archived Map tab, the code reads `st.secrets["gcp_service_account"]` in `streamlit_dashboard/archive/map_tab.py` and builds a BigQuery client from that.
 
 #### 2) Where the secret values come from (Google Cloud)
 
