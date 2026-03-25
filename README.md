@@ -1,22 +1,24 @@
 # ONDA Testing Dashboard (Streamlit)
 
-Streamlit app to visualize outputs from the **`onda-backend`** pipeline: K-coefficient radar plots from local CSVs, and an interactive map of offshore buoys / virtual offshore points from **BigQuery**.
+Streamlit app to visualize outputs from the **`onda-backend`** pipeline: K-coefficient radar plots from local CSVs, **forecast** time series (buoy-scaled components + CDIP), and an interactive map of offshore buoys / virtual offshore points from **BigQuery**.
 
 ## Repo layout
 
 | Path | Purpose |
 |------|---------|
-| `app.py` | Entrypoint: tabs **K Coefficients** and **Map** |
+| `app.py` | Entrypoint: tabs **K Coefficients**, **Map**, **Forecasts** |
 | `streamlit_dashboard/k_coefficients.py` | K-matrix CSV loading, polar plots, caching |
 | `streamlit_dashboard/map_tab.py` | Folium map + BigQuery queries |
+| `streamlit_dashboard/forecast_tab.py` | Buoy + CDIP forecast plots |
 | `.streamlit/config.toml` | Dark UI theme |
 | `data/k_coef/` | K-coefficient CSVs (written by backend or copied here) |
+| `data/forecasts/` | `buoy_scaled_components.csv`, `cdip_data_p.csv` |
 | `data/reference/breaks_with_names.csv` | Break labels (`break_id`, spot/break names) |
 
 ## Requirements
 
 - Python 3.10+ recommended  
-- Dependencies: `requirements.txt` (`streamlit`, `pandas`, `numpy`, `matplotlib`, `google-cloud-bigquery`, `folium`, `streamlit-folium`, `db-dtypes`)
+- Dependencies: `requirements.txt` (`streamlit`, `pandas`, `numpy`, `matplotlib`, `pytz`, `google-cloud-bigquery`, `folium`, `streamlit-folium`, `db-dtypes`)
 
 ## Run locally (recommended: venv)
 
@@ -78,6 +80,23 @@ Queries:
 ### Dependencies
 
 `db-dtypes` is required for `job.to_dataframe()` on BigQuery results.
+
+---
+
+## Forecasts tab
+
+Reads local CSVs under `data/forecasts/`:
+
+| File | Role |
+|------|------|
+| `buoy_scaled_components.csv` | Primary time series: pri/sec/ter **height**, **direction**, **period** (buoy-scaled columns). |
+| `cdip_data_p.csv` | CDIP: **`significant_wave_height`** plus MOP **pri/sec/ter** (heights, directions, periods). |
+
+For each selected **break** (surf spot), the tab shows **three stacked subplots** (top → bottom): **wave height (ft)**, **direction (°)**, **period (s)**. Each subplot draws three lines for primary / secondary / tertiary from the buoy-scaled file over the **full buoy time range** in the CSV.
+
+- **Show CDIP data on same charts** (checkbox): **off** — buoy-scaled lines only. **on** — the same three panels also plot CDIP significant wave height (height panel) and CDIP MOP pri/sec/ter on all panels (see `onda-backend/scripts/plot_cdip_data.py` palette). CDIP rows are filtered to the buoy span plus a small margin so both series share the same axes.
+
+Break titles use `data/reference/breaks_with_names.csv` when present.
 
 ---
 
@@ -157,3 +176,4 @@ universe_domain = "googleapis.com"
 | Map auth errors locally | Confirm `gcloud auth application-default login` and optional `GOOGLE_APPLICATION_CREDENTIALS` |
 | Map auth errors on Streamlit Cloud | Add `[gcp_service_account]` secrets and reboot app |
 | `db-dtypes` error | `pip install db-dtypes` (already in `requirements.txt`) |
+| Forecast tab empty / error | Ensure `data/forecasts/buoy_scaled_components.csv` exists; `cdip_data_p.csv` optional for sig height + MOP overlay |
