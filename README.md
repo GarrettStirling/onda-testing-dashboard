@@ -91,14 +91,15 @@ Reads local CSVs under `data/forecasts/`:
 |------|------|
 | `buoy_scaled_components.csv` | Primary time series: pri/sec/ter **height**, **direction**, **period** (buoy-scaled columns). |
 | `cdip_data_p.csv` | CDIP: **`significant_wave_height`** plus MOP **pri/sec/ter** (heights, directions, periods). |
+| `buoy_cdip_nearest_join.csv` | **Generated** when you open the Forecasts tab: one row per buoy row, plus `cdip_*` columns from the **nearest** CDIP row (same `break_id`) within a configurable hour window. |
 
-For each selected **break** (surf spot), the tab shows **three stacked subplots** (top → bottom): **wave height (ft)**, **direction (°)**, **period (s)**. Each subplot draws three lines for primary / secondary / tertiary from the buoy-scaled file over the **full buoy time range** in the CSV.
+The app builds the join with `pandas.merge_asof(..., direction="nearest")` on **US/Pacific** timestamps. Buoy and CDIP grids do **not** need identical times (e.g. buoy 1/4/7 vs CDIP 2/5/8 is fine). CDIP values are plotted at the **buoy** timestep; `cdip_obs_time_pst` and `cdip_match_delta_seconds` in the saved CSV show which CDIP observation was attached.
 
-- **Show CDIP significant wave height** (checkbox): adds the bold CDIP sig-height line on the height panel when `cdip_data_p.csv` has rows whose *aligned* times fall in the buoy window.
-- **Overlay CDIP MOP** (checkbox, **off** by default): adds semi-transparent CDIP pri/sec/ter on all three panels (see `onda-backend/scripts/plot_cdip_data.py` palette).
-- **CDIP time vs buoy clock**: **Auto** tries shifts in ±2 h and picks the one that best correlates buoy vs CDIP **primary wave height** (`merge_asof`, 2 h tolerance). Fixed **−2 … +2 h** overrides Auto when you know the clock offset. The same shift applies to sig height and MOP so overlays line up.
+For each selected **break**, **three stacked subplots** (height ft, direction °, period s) use the joined table: buoy lines from the original columns; optional **CDIP significant height** and **CDIP MOP overlay** (off by default) from `cdip_*` columns (see `onda-backend/scripts/plot_cdip_data.py` palette).
 
-If the two CSVs use **non-overlapping date ranges**, no CDIP lines appear until both files cover the same period.
+**Nearest CDIP match window** (hours): increase if matches are missing and your skew is larger than the default (~2.5 h).
+
+If buoy and CDIP **date ranges do not overlap**, every `cdip_*` cell is empty until both files cover the same period.
 
 Break titles use `data/reference/breaks_with_names.csv` when present.
 

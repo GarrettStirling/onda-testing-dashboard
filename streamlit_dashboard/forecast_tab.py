@@ -1,8 +1,12 @@
-"""Forecast tab: buoy-scaled swell components + CDIP sig height + optional CDIP MOP overlay.
+"""Forecast tab: buoy components + CDIP via nearest-time join.
 
-Data:
-  - data/forecasts/buoy_scaled_components.csv  (pri/sec/ter scaled from buoys)
-  - data/forecasts/cdip_data_p.csv             (CDIP MOP processed; sig + components)
+Builds ``buoy_cdip_nearest_join.csv``: each buoy row gets the nearest CDIP row (same break)
+within a time tolerance (default 2.5 h), so 1/4/7 vs 2/5/8 style grids still match.
+Plots use buoy ``wave_time_pst`` as x; CDIP values are drawn at that time from the join.
+
+Sources:
+  - data/forecasts/buoy_scaled_components.csv
+  - data/forecasts/cdip_data_p.csv
 """
 
 from __future__ import annotations
@@ -24,7 +28,26 @@ import streamlit as st
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUOY_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_scaled_components.csv"
 CDIP_CSV = REPO_ROOT / "data" / "forecasts" / "cdip_data_p.csv"
+JOINED_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_cdip_nearest_join.csv"
 BREAKS_CSV = REPO_ROOT / "data" / "reference" / "breaks_with_names.csv"
+
+# Max |buoy_time − cdip_time| for a match (nearest). 2.5 h covers ~1 h skew on 3 h grids.
+DEFAULT_NEAREST_TOLERANCE_HOURS = 2.5
+
+CDIP_MERGE_COLUMNS = [
+    "significant_wave_height",
+    "primary_wave_height",
+    "primary_period",
+    "primary_direction",
+    "secondary_wave_height",
+    "secondary_period",
+    "secondary_direction",
+    "tertiary_wave_height",
+    "tertiary_period",
+    "tertiary_direction",
+    "source",
+    "ingested_at",
+]
 
 PST = pytz.timezone("US/Pacific")
 M_TO_FT = 3.28084
@@ -108,93 +131,73 @@ def _load_cdip_forecast(path: str) -> pd.DataFrame:
     return df.sort_values(["break_id", "wave_time_pst"])
 
 
-def _best_cdip_time_shift_hours(buoy_g: pd.DataFrame, cdip_g: pd.DataFrame) -> float:
-    """Pick shift in {-2..2} h that minimizes median clock skew (buoy vs shifted CDIP times).
+def _empty_cdip_join_columns(df_buoy: pd.DataFrame) -> pd.DataFrame:
+    out = df_buoy.copy()
+    for col in CDIP_MERGE_COLUMNS:
+        out[f"cdip_{col}"] = np.nan
+    out["cdip_obs_time_pst"] = pd.NaT
+    out["cdip_match_delta_seconds"] = np.nan
+    return out
 
-    Uses ``merge_asof`` (nearest, 4 h tolerance — enough for typical 3 h buoy/CDIP cadence).
-    Tie-break: smallest ``|h|`` so a 1 h pipeline skew prefers ±1 over ±2 when medians tie.
-    If nothing matches well (all medians > 4 h or <5 pairs), returns 0.
-    """
-    b = buoy_g.sort_values("wave_time_pst")[
-        ["wave_time_pst", "primary_wave_height_buoy_scaled"]
-    ].dropna(subset=["primary_wave_height_buoy_scaled"])
-    if len(b) < 5 or cdip_g.empty or "primary_wave_height" not in cdip_g.columns:
-        return 0.0
-    c = cdip_g.sort_values("wave_time_pst")[["wave_time_pst", "primary_wave_height"]].dropna(
-        subset=["primary_wave_height"]
-    )
-    if len(c) < 3:
-        return 0.0
 
-    b = b.rename(columns={"wave_time_pst": "buoy_t"})
-    tol = pd.Timedelta(hours=4)
-    best_h = 0.0
-    best_key: tuple[float, int] | None = None
+def build_buoy_cdip_nearest_join(
+    df_buoy: pd.DataFrame,
+    df_cdip: pd.DataFrame | None,
+    tolerance_hours: float,
+) -> pd.DataFrame:
+    """Left = every buoy row; attach nearest CDIP row per ``break_id`` (``merge_asof``, ``direction=nearest``)."""
+    if df_cdip is None or df_cdip.empty:
+        return _empty_cdip_join_columns(df_buoy).sort_values(["break_id", "wave_time_pst"])
 
-    for h in (-2, -1, 0, 1, 2):
-        c2 = c.copy()
-        c2["cdip_t"] = c2["wave_time_pst"] + pd.Timedelta(hours=h)
-        c2 = c2.sort_values("cdip_t")[["cdip_t", "primary_wave_height"]]
+    tol = pd.Timedelta(hours=float(tolerance_hours))
+    parts: list[pd.DataFrame] = []
+
+    for bid, b_raw in df_buoy.groupby("break_id", sort=True):
+        b = b_raw.sort_values("wave_time_pst").copy()
+        c = df_cdip[df_cdip["break_id"] == bid].sort_values("wave_time_pst").copy()
+        if c.empty:
+            parts.append(_empty_cdip_join_columns(b))
+            continue
+
+        c2 = c.rename(columns={"wave_time_pst": "cdip_obs_time_pst"})
+        rename_map = {col: f"cdip_{col}" for col in CDIP_MERGE_COLUMNS if col in c2.columns}
+        c2 = c2.rename(columns=rename_map)
+        right_cols = ["cdip_obs_time_pst"] + [rename_map[c] for c in CDIP_MERGE_COLUMNS if c in rename_map]
+        right_cols = [x for x in right_cols if x in c2.columns]
+        c2 = c2[right_cols].sort_values("cdip_obs_time_pst")
 
         m = pd.merge_asof(
-            b.sort_values("buoy_t"),
+            b,
             c2,
-            left_on="buoy_t",
-            right_on="cdip_t",
+            left_on="wave_time_pst",
+            right_on="cdip_obs_time_pst",
             direction="nearest",
             tolerance=tol,
         )
-        m = m.dropna(subset=["primary_wave_height", "primary_wave_height_buoy_scaled"])
-        if len(m) < 5:
-            continue
-        med_dt = float((m["buoy_t"] - m["cdip_t"]).abs().dt.total_seconds().median())
-        key = (med_dt, abs(int(h)))
-        if best_key is None or key < best_key:
-            best_key = key
-            best_h = float(h)
+        m["cdip_match_delta_seconds"] = (m["wave_time_pst"] - m["cdip_obs_time_pst"]).dt.total_seconds()
+        parts.append(m)
 
-    if best_key is None:
-        return 0.0
-    med_best, _ = best_key
-    if med_best > 4 * 3600:
-        return 0.0
-    return best_h
+    return pd.concat(parts, ignore_index=True).sort_values(["break_id", "wave_time_pst"])
 
 
-def _resolve_cdip_shift_hours(
-    buoy_g: pd.DataFrame,
-    cdip_g: pd.DataFrame | None,
-    mode: str,
-) -> float:
-    """``mode``: ``auto`` | numeric hour string like ``0``, ``-1``, ``+1``."""
-    if cdip_g is None or cdip_g.empty:
-        return 0.0
-    if mode == "auto":
-        return _best_cdip_time_shift_hours(buoy_g, cdip_g)
-    try:
-        return float(mode)
-    except ValueError:
-        return 0.0
+def _buoy_cdip_mtime_pair() -> tuple[float, float]:
+    b = BUOY_CSV.stat().st_mtime if BUOY_CSV.exists() else 0.0
+    c = CDIP_CSV.stat().st_mtime if CDIP_CSV.exists() else 0.0
+    return (b, c)
 
 
-def _cdip_window_and_times(
-    buoy_g: pd.DataFrame,
-    cdip_g: pd.DataFrame,
-    shift_hours: float,
-) -> tuple[pd.DataFrame, pd.Series | None]:
-    """Rows whose *plotted* time (CDIP PST + shift) overlaps the buoy span; returns aligned plot times."""
-    t_min_b = buoy_g["wave_time_pst"].min()
-    t_max_b = buoy_g["wave_time_pst"].max()
-    margin = pd.Timedelta(hours=8)
-    shift_td = pd.Timedelta(hours=float(shift_hours))
-    c = cdip_g.sort_values("wave_time_pst").copy()
-    t_plot = c["wave_time_pst"] + shift_td
-    mask = (t_plot >= t_min_b - margin) & (t_plot <= t_max_b + margin)
-    win = c.loc[mask]
-    if win.empty:
-        return pd.DataFrame(), None
-    t_c = win["wave_time_pst"] + shift_td
-    return win, t_c
+@st.cache_data(show_spinner="Building buoy↔CDIP nearest join…")
+def _joined_forecast_dataframe(
+    buoy_mtime: float,
+    cdip_mtime: float,
+    tolerance_hours: float,
+) -> pd.DataFrame:
+    df_b = _load_buoy_forecast(str(BUOY_CSV))
+    df_c = _load_cdip_forecast(str(CDIP_CSV)) if CDIP_CSV.exists() else None
+    joined = build_buoy_cdip_nearest_join(df_b, df_c, tolerance_hours)
+    JOINED_CSV.parent.mkdir(parents=True, exist_ok=True)
+    joined.to_csv(JOINED_CSV, index=False)
+    return joined
 
 
 def _break_circular(series: pd.Series, threshold: float = 180.0) -> pd.Series:
@@ -232,20 +235,16 @@ def _format_x_axis(ax, span_days: float) -> None:
 
 
 def _plot_break_forecast(
-    break_id: int,
-    buoy_g: pd.DataFrame,
-    cdip_g: pd.DataFrame | None,
+    joined_g: pd.DataFrame,
     *,
     show_cdip_sig: bool,
     overlay_cdip_mop: bool,
-    cdip_align_mode: str,
     label: str,
 ) -> plt.Figure:
-    """Three subplots: buoy components always; optional CDIP sig and/or MOP with shared time shift."""
-    buoy_g = buoy_g.copy()
-    buoy_g = buoy_g.sort_values("wave_time_pst")
+    """x-axis = buoy ``wave_time_pst``; CDIP series from nearest-join columns (same timestamps)."""
+    joined_g = joined_g.copy().sort_values("wave_time_pst")
 
-    if buoy_g.empty:
+    if joined_g.empty:
         fig, ax = plt.subplots(figsize=(10, 2))
         fig.patch.set_facecolor(BG_DARK)
         ax.set_facecolor(BG_PANEL)
@@ -253,18 +252,15 @@ def _plot_break_forecast(
         ax.axis("off")
         return fig
 
-    t_b = buoy_g["wave_time_pst"]
+    t_b = joined_g["wave_time_pst"]
     span_days = max(
-        (buoy_g["wave_time_pst"].max() - buoy_g["wave_time_pst"].min()).total_seconds() / 86400.0,
+        (joined_g["wave_time_pst"].max() - joined_g["wave_time_pst"].min()).total_seconds() / 86400.0,
         0.25,
     )
 
     show_any_cdip = show_cdip_sig or overlay_cdip_mop
-    cdip_win = pd.DataFrame()
-    t_c = None
-    if show_any_cdip and cdip_g is not None and not cdip_g.empty:
-        shift_h = _resolve_cdip_shift_hours(buoy_g, cdip_g, cdip_align_mode)
-        cdip_win, t_c = _cdip_window_and_times(buoy_g, cdip_g, shift_h)
+    has_sig = "cdip_significant_wave_height" in joined_g.columns and joined_g["cdip_significant_wave_height"].notna().any()
+    has_mop = "cdip_primary_wave_height" in joined_g.columns and joined_g["cdip_primary_wave_height"].notna().any()
 
     # Subplots: height, direction, period
     fig, axes = plt.subplots(
@@ -280,7 +276,7 @@ def _plot_break_forecast(
     # --- Height: buoy pri/sec/ter, then optional CDIP MOP overlay, then bold CDIP sig ---
     ax_h.plot(
         t_b,
-        _heights_to_ft(buoy_g["primary_wave_height_buoy_scaled"]),
+        _heights_to_ft(joined_g["primary_wave_height_buoy_scaled"]),
         color=C_PRIMARY,
         lw=LW_MAIN,
         label="Primary (buoy components)",
@@ -288,7 +284,7 @@ def _plot_break_forecast(
     )
     ax_h.plot(
         t_b,
-        _heights_to_ft(buoy_g["secondary_wave_height_buoy_scaled"]),
+        _heights_to_ft(joined_g["secondary_wave_height_buoy_scaled"]),
         color=C_SECONDARY,
         lw=LW_SEC,
         linestyle="--",
@@ -297,7 +293,7 @@ def _plot_break_forecast(
     )
     ax_h.plot(
         t_b,
-        _heights_to_ft(buoy_g["tertiary_wave_height_buoy_scaled"]),
+        _heights_to_ft(joined_g["tertiary_wave_height_buoy_scaled"]),
         color=C_TERTIARY,
         lw=LW_TER,
         linestyle=":",
@@ -305,10 +301,10 @@ def _plot_break_forecast(
         zorder=2,
     )
 
-    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and has_mop:
         ax_h.plot(
-            t_c,
-            _heights_to_ft(cdip_win["primary_wave_height"]),
+            t_b,
+            _heights_to_ft(joined_g["cdip_primary_wave_height"]),
             color=C_PRIMARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
@@ -317,8 +313,8 @@ def _plot_break_forecast(
             zorder=3,
         )
         ax_h.plot(
-            t_c,
-            _heights_to_ft(cdip_win["secondary_wave_height"]),
+            t_b,
+            _heights_to_ft(joined_g["cdip_secondary_wave_height"]),
             color=C_SECONDARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
@@ -326,10 +322,10 @@ def _plot_break_forecast(
             label="Secondary (CDIP MOP)",
             zorder=2,
         )
-        ter_h = cdip_win["tertiary_wave_height"]
-        if ter_h.notna().any():
+        ter_h = joined_g["cdip_tertiary_wave_height"] if "cdip_tertiary_wave_height" in joined_g.columns else None
+        if ter_h is not None and ter_h.notna().any():
             ax_h.plot(
-                t_c,
+                t_b,
                 _heights_to_ft(ter_h),
                 color=C_TERTIARY,
                 lw=LW_OVERLAY,
@@ -339,10 +335,10 @@ def _plot_break_forecast(
                 zorder=1,
             )
 
-    if show_cdip_sig and not cdip_win.empty and t_c is not None and "significant_wave_height" in cdip_win.columns:
+    if show_cdip_sig and has_sig:
         ax_h.plot(
-            t_c,
-            _heights_to_ft(cdip_win["significant_wave_height"]),
+            t_b,
+            _heights_to_ft(joined_g["cdip_significant_wave_height"]),
             color=C_SIG,
             lw=LW_SIG,
             label="Sig. height (CDIP)",
@@ -352,13 +348,13 @@ def _plot_break_forecast(
 
     ax_h.set_ylabel("Height (ft)", fontsize=10)
     cols_h = [
-        buoy_g["primary_wave_height_buoy_scaled"],
-        buoy_g["secondary_wave_height_buoy_scaled"],
-        buoy_g["tertiary_wave_height_buoy_scaled"],
+        joined_g["primary_wave_height_buoy_scaled"],
+        joined_g["secondary_wave_height_buoy_scaled"],
+        joined_g["tertiary_wave_height_buoy_scaled"],
     ]
     ymax = float(pd.concat(cols_h).max()) * M_TO_FT
-    if show_cdip_sig and not cdip_win.empty and "significant_wave_height" in cdip_win.columns:
-        sig_max = pd.to_numeric(cdip_win["significant_wave_height"], errors="coerce").max()
+    if show_cdip_sig and has_sig:
+        sig_max = pd.to_numeric(joined_g["cdip_significant_wave_height"], errors="coerce").max()
         if pd.notna(sig_max):
             ymax = max(ymax, float(sig_max) * M_TO_FT)
     ax_h.set_ylim(bottom=0, top=max(ymax * 1.12, 1.0))
@@ -375,7 +371,7 @@ def _plot_break_forecast(
     # --- Direction ---
     ax_d.plot(
         t_b,
-        _break_circular(buoy_g["primary_direction_buoy_scaled"]),
+        _break_circular(joined_g["primary_direction_buoy_scaled"]),
         color=C_PRIMARY,
         lw=LW_MAIN,
         label="Primary (buoy components)",
@@ -383,7 +379,7 @@ def _plot_break_forecast(
     )
     ax_d.plot(
         t_b,
-        _break_circular(buoy_g["secondary_direction_buoy_scaled"]),
+        _break_circular(joined_g["secondary_direction_buoy_scaled"]),
         color=C_SECONDARY,
         lw=LW_SEC,
         linestyle="--",
@@ -392,7 +388,7 @@ def _plot_break_forecast(
     )
     ax_d.plot(
         t_b,
-        _break_circular(buoy_g["tertiary_direction_buoy_scaled"]),
+        _break_circular(joined_g["tertiary_direction_buoy_scaled"]),
         color=C_TERTIARY,
         lw=LW_TER,
         linestyle=":",
@@ -400,10 +396,10 @@ def _plot_break_forecast(
         zorder=2,
     )
 
-    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and has_mop:
         ax_d.plot(
-            t_c,
-            _break_circular(pd.to_numeric(cdip_win["primary_direction"], errors="coerce")),
+            t_b,
+            _break_circular(pd.to_numeric(joined_g["cdip_primary_direction"], errors="coerce")),
             color=C_PRIMARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
@@ -411,8 +407,8 @@ def _plot_break_forecast(
             zorder=3,
         )
         ax_d.plot(
-            t_c,
-            _break_circular(pd.to_numeric(cdip_win["secondary_direction"], errors="coerce")),
+            t_b,
+            _break_circular(pd.to_numeric(joined_g["cdip_secondary_direction"], errors="coerce")),
             color=C_SECONDARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
@@ -420,10 +416,10 @@ def _plot_break_forecast(
             label="Secondary (CDIP MOP)",
             zorder=2,
         )
-        if "tertiary_direction" in cdip_win.columns and cdip_win["tertiary_direction"].notna().any():
+        if "cdip_tertiary_direction" in joined_g.columns and joined_g["cdip_tertiary_direction"].notna().any():
             ax_d.plot(
-                t_c,
-                _break_circular(pd.to_numeric(cdip_win["tertiary_direction"], errors="coerce")),
+                t_b,
+                _break_circular(pd.to_numeric(joined_g["cdip_tertiary_direction"], errors="coerce")),
                 color=C_TERTIARY,
                 lw=LW_OVERLAY,
                 alpha=ALPHA_OVERLAY,
@@ -451,14 +447,14 @@ def _plot_break_forecast(
     # --- Period ---
     ax_p.plot(
         t_b,
-        buoy_g["primary_period_buoy_scaled"],
+        joined_g["primary_period_buoy_scaled"],
         color=C_PRIMARY,
         lw=LW_MAIN,
         label="Primary (buoy components)",
     )
     ax_p.plot(
         t_b,
-        buoy_g["secondary_period_buoy_scaled"],
+        joined_g["secondary_period_buoy_scaled"],
         color=C_SECONDARY,
         lw=LW_SEC,
         linestyle="--",
@@ -466,35 +462,35 @@ def _plot_break_forecast(
     )
     ax_p.plot(
         t_b,
-        buoy_g["tertiary_period_buoy_scaled"],
+        joined_g["tertiary_period_buoy_scaled"],
         color=C_TERTIARY,
         lw=LW_TER,
         linestyle=":",
         label="Tertiary (buoy components)",
     )
 
-    if overlay_cdip_mop and not cdip_win.empty and t_c is not None:
+    if overlay_cdip_mop and has_mop:
         ax_p.plot(
-            t_c,
-            pd.to_numeric(cdip_win["primary_period"], errors="coerce"),
+            t_b,
+            pd.to_numeric(joined_g["cdip_primary_period"], errors="coerce"),
             color=C_PRIMARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
             label="Primary (CDIP MOP)",
         )
         ax_p.plot(
-            t_c,
-            pd.to_numeric(cdip_win["secondary_period"], errors="coerce"),
+            t_b,
+            pd.to_numeric(joined_g["cdip_secondary_period"], errors="coerce"),
             color=C_SECONDARY,
             lw=LW_OVERLAY,
             alpha=ALPHA_OVERLAY,
             linestyle="--",
             label="Secondary (CDIP MOP)",
         )
-        if "tertiary_period" in cdip_win.columns and cdip_win["tertiary_period"].notna().any():
+        if "cdip_tertiary_period" in joined_g.columns and joined_g["cdip_tertiary_period"].notna().any():
             ax_p.plot(
-                t_c,
-                pd.to_numeric(cdip_win["tertiary_period"], errors="coerce"),
+                t_b,
+                pd.to_numeric(joined_g["cdip_tertiary_period"], errors="coerce"),
                 color=C_TERTIARY,
                 lw=LW_OVERLAY,
                 alpha=ALPHA_OVERLAY,
@@ -517,18 +513,20 @@ def _plot_break_forecast(
     _format_x_axis(ax_p, span_days)
     ax_p.set_xlabel("Date (US/Pacific)", fontsize=10)
 
-    title = label if label else f"Break {break_id}"
-    has_cdip = not cdip_win.empty
+    title = label if label else f"Break {int(joined_g['break_id'].iloc[0])}"
+    has_any_match = has_sig or has_mop
     if not show_any_cdip:
         cdip_note = " — buoy only"
-    elif not has_cdip:
-        cdip_note = " — buoy (no CDIP in buoy window)"
-    elif show_cdip_sig and overlay_cdip_mop:
+    elif not has_any_match:
+        cdip_note = " — buoy (no CDIP match within tolerance)"
+    elif show_cdip_sig and overlay_cdip_mop and has_sig and has_mop:
         cdip_note = " — buoy + CDIP sig + MOP"
-    elif show_cdip_sig:
+    elif show_cdip_sig and has_sig:
         cdip_note = " — buoy + CDIP sig"
-    else:
+    elif overlay_cdip_mop and has_mop:
         cdip_note = " — buoy + CDIP MOP"
+    else:
+        cdip_note = " — buoy (CDIP on, no data for selected layers)"
     fig.suptitle(
         f"Forecast — {title}{cdip_note}",
         color=TEXT_COLOR,
@@ -543,24 +541,34 @@ def _plot_break_forecast(
 def render_forecast_tab() -> None:
     st.header("Forecasts")
     st.caption(
-        "Buoy components from `buoy_scaled_components.csv`. Optional CDIP sig height and/or MOP overlay from "
-        "`cdip_data_p.csv`; **Auto** aligns CDIP time to buoy by correlating primary heights (±2 h). "
-        "If date ranges do not overlap, no CDIP lines appear until you refresh the CSVs."
+        "Buoy rows drive the time axis. CDIP values are attached with **nearest** timestamps per break "
+        f"(≤ **match window** hours apart) and written to `{JOINED_CSV.name}`. "
+        "Staggered grids (e.g. buoy 1/4/7 vs CDIP 2/5/8) still match; if buoy and CDIP date ranges "
+        "never overlap, CDIP columns stay empty."
     )
 
     if not BUOY_CSV.exists():
         st.error(f"Missing buoy forecast CSV: `{BUOY_CSV}`")
         return
     if not CDIP_CSV.exists():
-        st.warning(f"CDIP file not found: `{CDIP_CSV}` — plots will show buoy data only (no sig height / overlay).")
+        st.warning(f"CDIP file not found: `{CDIP_CSV}` — joined table will have empty `cdip_*` columns.")
 
     labels = _load_break_labels(str(BREAKS_CSV))
 
-    with st.spinner("Loading forecast CSVs..."):
-        df_buoy = _load_buoy_forecast(str(BUOY_CSV))
-        df_cdip = _load_cdip_forecast(str(CDIP_CSV)) if CDIP_CSV.exists() else None
+    tol_h = st.number_input(
+        "Nearest CDIP match window (hours)",
+        min_value=1.0,
+        max_value=6.0,
+        value=float(DEFAULT_NEAREST_TOLERANCE_HOURS),
+        step=0.5,
+        help="Each buoy timestep gets the closest CDIP row within this many hours (same break_id). "
+        "Increase slightly if your pipelines use a larger clock/grid offset.",
+    )
 
-    break_ids = sorted(df_buoy["break_id"].unique().astype(int).tolist())
+    bm, cm = _buoy_cdip_mtime_pair()
+    df_joined = _joined_forecast_dataframe(bm, cm, float(tol_h))
+
+    break_ids = sorted(df_joined["break_id"].unique().astype(int).tolist())
     if not break_ids:
         st.warning("No rows in buoy forecast file.")
         return
@@ -568,34 +576,19 @@ def render_forecast_tab() -> None:
     with st.expander("Data sources", expanded=False):
         st.write(f"Buoy scaled components: `{BUOY_CSV}`")
         st.write(f"CDIP MOP processed: `{CDIP_CSV}`")
+        st.write(f"Nearest join (saved on load): `{JOINED_CSV}`")
         st.write(f"Break labels: `{BREAKS_CSV}`")
 
     show_cdip_sig = st.checkbox(
         "Show CDIP significant wave height (`cdip_data_p.csv`)",
         value=True,
-        help="Bold line on the height panel. Uses the same time alignment as MOP (below).",
+        help="Bold line on the height panel (values from nearest-join columns).",
     )
     overlay_cdip_mop = st.checkbox(
         "Overlay CDIP MOP (pri/sec/ter on all three panels)",
         value=False,
-        help="Semi-transparent CDIP component lines for comparison with buoy components. Off by default.",
+        help="Semi-transparent CDIP component lines. Off by default.",
     )
-    align_labels = {
-        "Auto (match primary height)": "auto",
-        "0 h (no shift)": "0",
-        "-1 h": "-1",
-        "+1 h": "1",
-        "-2 h": "-2",
-        "+2 h": "2",
-    }
-    choice = st.selectbox(
-        "CDIP time vs buoy clock",
-        options=list(align_labels.keys()),
-        index=0,
-        help="Auto picks the shift in ±2 h that best matches buoy vs CDIP primary height. "
-        "Choose a fixed offset if Auto is wrong or your files share no overlap (Auto → 0 h).",
-    )
-    cdip_align_mode = align_labels[choice]
 
     options = break_ids
     labels_opt = [labels.get(bid, f"Break {bid}") for bid in options]
@@ -613,17 +606,13 @@ def render_forecast_tab() -> None:
 
     for bid in selected:
         st.subheader(id_to_label.get(bid, f"Break {bid}"))
-        bsub = df_buoy[df_buoy["break_id"] == bid]
-        csub = df_cdip[df_cdip["break_id"] == bid] if df_cdip is not None else None
+        jsub = df_joined[df_joined["break_id"] == bid]
 
         try:
             fig = _plot_break_forecast(
-                int(bid),
-                bsub,
-                csub,
+                jsub,
                 show_cdip_sig=show_cdip_sig,
                 overlay_cdip_mop=overlay_cdip_mop,
-                cdip_align_mode=cdip_align_mode,
                 label=id_to_label.get(bid, f"Break {bid}"),
             )
             buf = io.BytesIO()
