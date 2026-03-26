@@ -85,48 +85,53 @@ def render_gfs_wave_components_tab() -> None:
         .sort_values(["point_id"])
         .assign(label=lambda x: x["point_id"] + " - " + x["point_name"].astype(str))
     )
-    point_labels = points["label"].tolist()
-    selected_label = st.selectbox("Offshore point", point_labels, index=0, key="gfs_components_point")
-    selected_id = selected_label.split(" - ", 1)[0]
 
-    sub = df[df["point_id"] == selected_id].copy()
-    if sub.empty:
-        st.warning("No rows for selected point.")
-        return
+    for _, row in points.iterrows():
+        point_id = str(row["point_id"])
+        point_name = str(row["point_name"])
+        st.subheader(f"{point_id} - {point_name}")
+        sub = df[df["point_id"] == point_id].copy()
+        if sub.empty:
+            st.caption(f"No data for `{point_id}`.")
+            continue
 
-    sub["component_wave_height_ft"] = pd.to_numeric(sub["component_wave_height_m"], errors="coerce") * M_TO_FT
-    # Surface data issues explicitly instead of showing blank traces.
-    if sub["component_wave_height_ft"].notna().sum() == 0:
-        st.warning("No numeric wave-height rows for this offshore point in the selected GFS components source.")
-    if pd.to_numeric(sub["component_period_sec"], errors="coerce").notna().sum() == 0:
-        st.warning("No numeric period rows for this offshore point in the selected GFS components source.")
-    if pd.to_numeric(sub["component_direction_deg"], errors="coerce").notna().sum() == 0:
-        st.warning("No numeric direction rows for this offshore point in the selected GFS components source.")
+        sub["component_wave_height_ft"] = pd.to_numeric(sub["component_wave_height_m"], errors="coerce") * M_TO_FT
+        n_h = sub["component_wave_height_ft"].notna().sum()
+        n_p = pd.to_numeric(sub["component_period_sec"], errors="coerce").notna().sum()
+        n_d = pd.to_numeric(sub["component_direction_deg"], errors="coerce").notna().sum()
+        if (n_h + n_p + n_d) == 0:
+            st.caption(f"No data for `{point_id}`.")
+            st.divider()
+            continue
 
-    st.plotly_chart(
-        _component_multiline(
-            sub,
-            "component_wave_height_ft",
-            "Wave height by component",
-            "Wave height (ft)",
-        ),
-        use_container_width=True,
-    )
-    st.plotly_chart(
-        _component_multiline(
-            sub,
-            "component_period_sec",
-            "Period by component",
-            "Period (s)",
-        ),
-        use_container_width=True,
-    )
-    st.plotly_chart(
-        _component_multiline(
-            sub,
-            "component_direction_deg",
-            "Direction by component",
-            "Direction (deg)",
-        ),
-        use_container_width=True,
-    )
+        st.plotly_chart(
+            _component_multiline(
+                sub,
+                "component_wave_height_ft",
+                "Wave height by component",
+                "Wave height (ft)",
+            ),
+            width="stretch",
+            key=f"gfs_components_height_{point_id}",
+        )
+        st.plotly_chart(
+            _component_multiline(
+                sub,
+                "component_period_sec",
+                "Period by component",
+                "Period (s)",
+            ),
+            width="stretch",
+            key=f"gfs_components_period_{point_id}",
+        )
+        st.plotly_chart(
+            _component_multiline(
+                sub,
+                "component_direction_deg",
+                "Direction by component",
+                "Direction (deg)",
+            ),
+            width="stretch",
+            key=f"gfs_components_direction_{point_id}",
+        )
+        st.divider()

@@ -8,7 +8,6 @@ import streamlit as st
 from streamlit_dashboard.cdip_buoy_spectra_tab import render_cdip_buoy_spectra_tab
 from streamlit_dashboard.forecast_tab import render_forecast_tab
 from streamlit_dashboard.gfs_wave_components_tab import render_gfs_wave_components_tab
-from streamlit_dashboard.gfs_wave_radar_tab import render_gfs_wave_radar_tab
 from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
 
 
@@ -23,7 +22,6 @@ tabs = st.tabs(
         "Forecasts",
         "CDIP buoy spectra",
         "GFS wave components",
-        "GFS wave radar",
     ]
 )
 
@@ -38,7 +36,4 @@ with tabs[2]:
 
 with tabs[3]:
     render_gfs_wave_components_tab()
-
-with tabs[4]:
-    render_gfs_wave_radar_tab()
 
