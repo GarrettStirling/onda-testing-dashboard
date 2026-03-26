@@ -687,14 +687,6 @@ def _plot_break_forecast(
 
 def render_forecast_tab() -> None:
     st.header("Forecasts")
-    st.caption(
-        "Buoy rows drive the time axis. CDIP values are attached with **nearest** timestamps per break "
-        f"(≤ **match window** hours apart) and written to `{JOINED_CSV.name}`. "
-        "Staggered grids (e.g. buoy 1/4/7 vs CDIP 2/5/8) still match; if buoy and CDIP date ranges "
-        "never overlap, CDIP columns stay empty. "
-        "**Tertiary** period/direction gaps usually mean no third swell in the CSV (NaN there). "
-        "Direction may show a **steep diagonal** when bearing wraps past north (0°/360°) — that is not missing data."
-    )
 
     if not BUOY_CSV.exists():
         st.error(f"Missing buoy forecast CSV: `{BUOY_CSV}`")
@@ -739,18 +731,8 @@ def render_forecast_tab() -> None:
         # Deduplicate, keep sorted stable.
         return sorted(set(ids))
 
-    tol_h = st.number_input(
-        "Nearest CDIP match window (hours)",
-        min_value=1.0,
-        max_value=6.0,
-        value=float(DEFAULT_NEAREST_TOLERANCE_HOURS),
-        step=0.5,
-        help="Each buoy timestep gets the closest CDIP row within this many hours (same break_id). "
-        "Increase slightly if your pipelines use a larger clock/grid offset.",
-    )
-
     bm, cm = _buoy_cdip_mtime_pair()
-    df_joined = _joined_forecast_dataframe(bm, cm, float(tol_h))
+    df_joined = _joined_forecast_dataframe(bm, cm, float(DEFAULT_NEAREST_TOLERANCE_HOURS))
 
     break_ids = sorted(df_joined["break_id"].unique().astype(int).tolist())
     if not break_ids:

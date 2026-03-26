@@ -319,17 +319,6 @@ def render_k_coefficients_tab() -> None:
 
     cache_dir = _plot_cache_dir(breaks_with_names_csv_path=breaks_csv_path)
 
-    with st.expander("Data sources", expanded=False):
-        st.write(f"Analytic (Buoy) CSV: `{ANALYTIC_CSV}`")
-        st.write(f"Analytic (VOP) CSV: `{ANALYTIC_VOP_CSV}`")
-        st.write(f"Analytical Fan CSV: `{ANALYTIC_FAN_CSV}`")
-        st.write(f"Swan CSV: `{SWAN_CSV}`")
-        st.write(f"Break labels: `{breaks_csv_path}`")
-        if not has_analytic_vop:
-            st.caption("`k_coefficient_matrix_analytic_vop.csv` not found yet; that column will show placeholders.")
-        if not has_analytic_fan:
-            st.caption("`k_coefficient_matrix_analytic_fan.csv` not found yet; that column will show placeholders.")
-
     # Load data (cached by Streamlit)
     with st.spinner("Loading k-coefficient CSVs..."):
         df_analytic = load_k_matrix(str(ANALYTIC_CSV))
@@ -351,16 +340,7 @@ def render_k_coefficients_tab() -> None:
     st.caption(
         "Dark polar heatmaps per break: Analytic (Buoy) | Analytic (VOP) | Analytical Fan | SWAN."
     )
-
-    selected_break_ids = st.multiselect(
-        "Select breaks to display",
-        options=break_ids,
-        default=break_ids,
-    )
-
-    if not selected_break_ids:
-        st.info("Select at least one break.")
-        return
+    selected_break_ids = break_ids
 
     for break_id in selected_break_ids:
         label = labels.get(int(break_id)) or f"Break {break_id}"

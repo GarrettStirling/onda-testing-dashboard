@@ -5,6 +5,7 @@ os.environ.setdefault("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "googleapis.com")
 
 import streamlit as st
 
+from streamlit_dashboard.cdip_buoy_spectra_tab import render_cdip_buoy_spectra_tab
 from streamlit_dashboard.forecast_tab import render_forecast_tab
 from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
 
@@ -14,11 +15,14 @@ st.set_page_config(
     layout="wide",
 )
 
-tabs = st.tabs(["K Coefficients", "Forecasts"])
+tabs = st.tabs(["K Coefficients", "Forecasts", "CDIP buoy spectra"])
 
 with tabs[0]:
     render_k_coefficients_tab()
 
 with tabs[1]:
     render_forecast_tab()
+
+with tabs[2]:
+    render_cdip_buoy_spectra_tab()
 
