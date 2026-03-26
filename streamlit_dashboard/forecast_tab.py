@@ -704,6 +704,41 @@ def render_forecast_tab() -> None:
 
     labels = _load_break_labels(str(BREAKS_CSV))
 
+    def _resolve_default_break_ids() -> list[int]:
+        # Resolve user-friendly spot names to `break_id`s as defined in
+        # `data/reference/breaks_with_names.csv`.
+        breaks_df = pd.read_csv(BREAKS_CSV)
+        spot_col = "spot_name" if "spot_name" in breaks_df.columns else "spot"
+        break_col = "break_name" if "break_name" in breaks_df.columns else "break"
+
+        # Each entry is (spot_name_substring, break_name_substring_or_None).
+        # (Matches are case-insensitive via `str.contains`.)
+        targets: list[tuple[str, str | None]] = [
+            ("Ocean Beach", "North"),
+            ("Ocean Beach", "Central"),
+            ("Waddell Creek", "Reef"),
+            ("Davenport", "Landing"),
+            ("Four Mile", None),
+            ("Swift Street", None),
+            ("Steamer Lane", "Point"),
+            ("Steamer Lane", "Middle Peak"),
+            ("Cowells", None),
+            ("Pleasure Point", "Sewers"),
+            ("Pleasure Point", "First Peak"),
+            ("Capitola", None),
+        ]
+
+        ids: list[int] = []
+        for spot_sub, break_sub in targets:
+            m = breaks_df[spot_col].astype(str).str.contains(spot_sub, case=False, na=False)
+            if break_sub:
+                m = m & breaks_df[break_col].astype(str).str.contains(break_sub, case=False, na=False)
+            found = sorted(breaks_df.loc[m, "break_id"].dropna().astype(int).unique().tolist())
+            ids.extend(found)
+
+        # Deduplicate, keep sorted stable.
+        return sorted(set(ids))
+
     tol_h = st.number_input(
         "Nearest CDIP match window (hours)",
         min_value=1.0,
@@ -746,7 +781,7 @@ def render_forecast_tab() -> None:
         "Surf spots (breaks)",
         options=options,
         format_func=lambda bid: id_to_label.get(bid, f"Break {bid}"),
-        default=options[: min(6, len(options))],
+        default=[bid for bid in _resolve_default_break_ids() if bid in set(options)],
     )
 
     if not selected:
