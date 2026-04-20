@@ -8,6 +8,9 @@ Forecasts render with **Plotly** (hover, vertical spike across panels, unified t
 Sources:
   - data/forecasts/buoy_scaled_components.csv
   - data/forecasts/cdip_data_p.csv
+  - optional: data/forecasts/offshore_buoy_data_p.csv
+
+Or BigQuery tables in ``onda-maverick.surf_forecast_data`` (today onward, US/Pacific).
 """
 
 from __future__ import annotations
@@ -24,6 +27,7 @@ from plotly.subplots import make_subplots
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUOY_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_scaled_components.csv"
 CDIP_CSV = REPO_ROOT / "data" / "forecasts" / "cdip_data_p.csv"
+OFFSHORE_CSV = REPO_ROOT / "data" / "forecasts" / "offshore_buoy_data_p.csv"
 JOINED_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_cdip_nearest_join.csv"
 BREAKS_CSV = REPO_ROOT / "data" / "reference" / "breaks_with_names.csv"
 
@@ -130,26 +134,112 @@ def _normalize_buoy_component_columns(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def _coerce_datetime_to_ns(s: pd.Series) -> pd.Series:
+    """Normalize resolution to nanoseconds. BigQuery/pyarrow often yields ``datetime64[us]``; CSV is
+    typically ``datetime64[ns]`` — ``merge_asof`` requires matching dtypes.
+    """
+    idx = pd.DatetimeIndex(pd.to_datetime(s, errors="coerce"))
+    if hasattr(idx, "as_unit"):
+        idx = idx.as_unit("ns")
+    return pd.Series(idx, index=s.index)
+
+
+def _prepare_buoy_forecast_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize buoy forecast columns (CSV or BigQuery)."""
+    if df.empty:
+        return df
+    df = df.copy()
+    if "wave_time_pst" in df.columns:
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_pst"])
+        if df["wave_time_pst"].dt.tz is None:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_localize(
+                PST, ambiguous="infer", nonexistent="shift_forward"
+            )
+        else:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
+    elif "wave_time_utc" in df.columns:
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_utc"], utc=True).dt.tz_convert(PST)
+    else:
+        raise ValueError("Buoy forecast data needs `wave_time_pst` or `wave_time_utc`.")
+
+    df["wave_time_pst"] = _coerce_datetime_to_ns(df["wave_time_pst"])
+
+    df = _normalize_buoy_component_columns(df)
+    if "break_id" in df.columns:
+        df["break_id"] = pd.to_numeric(df["break_id"], errors="coerce")
+        df = df.loc[df["break_id"].notna()].copy()
+        df["break_id"] = df["break_id"].astype(int)
+    return df.sort_values(["break_id", "wave_time_pst"])
+
+
+def _prepare_cdip_forecast_df(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return df
+    df = df.copy()
+    if "wave_time_pst" not in df.columns:
+        if "wave_time_utc" not in df.columns:
+            raise ValueError("CDIP data needs `wave_time_utc` or `wave_time_pst`.")
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_utc"], utc=True).dt.tz_convert(PST)
+    else:
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_pst"])
+        if df["wave_time_pst"].dt.tz is None:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_localize(
+                PST, ambiguous="infer", nonexistent="shift_forward"
+            )
+        else:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
+
+    df["wave_time_pst"] = _coerce_datetime_to_ns(df["wave_time_pst"])
+
+    if "break_id" in df.columns:
+        df["break_id"] = pd.to_numeric(df["break_id"], errors="coerce")
+        df = df.loc[df["break_id"].notna()].copy()
+        df["break_id"] = df["break_id"].astype(int)
+    return df.sort_values(["break_id", "wave_time_pst"])
+
+
+def _prepare_offshore_buoy_df(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        return df
+    df = df.copy()
+    if "wave_time_pst" not in df.columns:
+        if "wave_time_utc" not in df.columns:
+            raise ValueError("Offshore buoy data needs `wave_time_utc` or `wave_time_pst`.")
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_utc"], utc=True).dt.tz_convert(PST)
+    else:
+        df["wave_time_pst"] = pd.to_datetime(df["wave_time_pst"])
+        if df["wave_time_pst"].dt.tz is None:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_localize(
+                PST, ambiguous="infer", nonexistent="shift_forward"
+            )
+        else:
+            df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
+
+    df["wave_time_pst"] = _coerce_datetime_to_ns(df["wave_time_pst"])
+
+    if "buoy_id" in df.columns:
+        df["buoy_id"] = pd.to_numeric(df["buoy_id"], errors="coerce")
+        df = df.loc[df["buoy_id"].notna()].copy()
+        df["buoy_id"] = df["buoy_id"].astype(int)
+    return df.sort_values(["buoy_id", "wave_time_pst"])
+
+
 @st.cache_data(show_spinner=False)
 def _load_buoy_forecast(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
-    df["wave_time_pst"] = pd.to_datetime(df["wave_time_pst"])
-    if df["wave_time_pst"].dt.tz is None:
-        # infer handles DST fall-back ambiguous local times better than NaT
-        df["wave_time_pst"] = df["wave_time_pst"].dt.tz_localize(
-            PST, ambiguous="infer", nonexistent="shift_forward"
-        )
-    else:
-        df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
-    df = _normalize_buoy_component_columns(df)
-    return df.sort_values(["break_id", "wave_time_pst"])
+    return _prepare_buoy_forecast_df(df)
 
 
 @st.cache_data(show_spinner=False)
 def _load_cdip_forecast(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)
-    df["wave_time_pst"] = pd.to_datetime(df["wave_time_utc"], utc=True).dt.tz_convert(PST)
-    return df.sort_values(["break_id", "wave_time_pst"])
+    return _prepare_cdip_forecast_df(df)
+
+
+@st.cache_data(show_spinner=False)
+def _load_offshore_forecast_csv(path: str) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    return _prepare_offshore_buoy_df(df)
 
 
 def _empty_cdip_join_columns(df_buoy: pd.DataFrame) -> pd.DataFrame:
@@ -167,6 +257,8 @@ def build_buoy_cdip_nearest_join(
     tolerance_hours: float,
 ) -> pd.DataFrame:
     """Left = every buoy row; attach nearest CDIP row per ``break_id`` (``merge_asof``, ``direction=nearest``)."""
+    if df_buoy.empty:
+        return df_buoy.copy()
     if df_cdip is None or df_cdip.empty:
         return _empty_cdip_join_columns(df_buoy).sort_values(["break_id", "wave_time_pst"])
 
@@ -207,6 +299,10 @@ def _buoy_cdip_mtime_pair() -> tuple[float, float]:
     return (b, c)
 
 
+def _offshore_csv_mtime() -> float:
+    return OFFSHORE_CSV.stat().st_mtime if OFFSHORE_CSV.exists() else 0.0
+
+
 @st.cache_data(show_spinner="Building buoy↔CDIP nearest join…")
 def _joined_forecast_dataframe(
     buoy_mtime: float,
@@ -219,6 +315,32 @@ def _joined_forecast_dataframe(
     JOINED_CSV.parent.mkdir(parents=True, exist_ok=True)
     joined.to_csv(JOINED_CSV, index=False)
     return joined
+
+
+@st.cache_data(ttl=120, show_spinner="Building buoy↔CDIP nearest join…")
+def _bq_forecast_bundle(tolerance_hours: float) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """BigQuery: joined break forecasts + offshore buoy rows (same ingest; cached together)."""
+    from streamlit_dashboard.bq_forecast_loader import load_forecast_tables_bigquery
+
+    raw_b, raw_c, raw_o = load_forecast_tables_bigquery()
+    df_b = _prepare_buoy_forecast_df(raw_b)
+    df_c: pd.DataFrame | None
+    if raw_c.empty:
+        df_c = None
+    else:
+        df_c = _prepare_cdip_forecast_df(raw_c)
+        if df_c.empty:
+            df_c = None
+    joined = build_buoy_cdip_nearest_join(df_b, df_c, tolerance_hours)
+    offshore = _prepare_offshore_buoy_df(raw_o) if not raw_o.empty else pd.DataFrame()
+    return joined, offshore
+
+
+@st.cache_data(show_spinner=False)
+def _local_offshore_dataframe(offshore_mtime: float) -> pd.DataFrame:
+    if offshore_mtime <= 0:
+        return pd.DataFrame()
+    return _load_offshore_forecast_csv(str(OFFSHORE_CSV))
 
 
 def _legend_show_once(seen: set[str], name: str) -> bool:
@@ -685,14 +807,189 @@ def _plot_break_forecast(
     return fig
 
 
+def _plot_offshore_buoy_forecast(df_sub: pd.DataFrame, *, title: str) -> go.Figure:
+    """Offshore buoy time series (``buoy_id`` keyed; heights in meters → ft)."""
+    df_sub = df_sub.sort_values("wave_time_pst")
+    t_x = df_sub["wave_time_pst"]
+    span_days = max(
+        (df_sub["wave_time_pst"].max() - df_sub["wave_time_pst"].min()).total_seconds() / 86400.0,
+        0.25,
+    )
+
+    fig = make_subplots(
+        rows=3,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.07,
+        row_heights=[0.38, 0.31, 0.31],
+        subplot_titles=("Height (ft)", "Direction (° from north)", "Period (s)"),
+    )
+
+    leg: set[str] = set()
+
+    def _ln(row: int, series: pd.Series | None, name: str, color: str, dash: str, lw: float, *, unit: str) -> None:
+        if series is None:
+            return
+        s = pd.to_numeric(series, errors="coerce")
+        if s.notna().sum() == 0:
+            return
+        show = _legend_show_once(leg, name)
+        line_color = color
+        fig.add_trace(
+            go.Scatter(
+                x=t_x,
+                y=s if unit != " ft" else _heights_to_ft(s),
+                mode="lines",
+                name=name,
+                showlegend=show,
+                line=dict(color=line_color, width=lw, dash=dash),
+                hovertemplate=f"<b>{name}</b><br>%{{y:.3f}}{unit}<extra></extra>",
+            ),
+            row=row,
+            col=1,
+        )
+
+    sig = df_sub["significant_wave_height"] if "significant_wave_height" in df_sub.columns else None
+    _ln(1, sig, "Sig. height (offshore buoy)", C_SIG, "solid", LW_SIG, unit=" ft")
+
+    _ln(
+        1,
+        df_sub["primary_wave_height"] if "primary_wave_height" in df_sub.columns else None,
+        "Primary (offshore buoy)",
+        C_PRIMARY,
+        "solid",
+        LW_MAIN,
+        unit=" ft",
+    )
+    _ln(
+        1,
+        df_sub["secondary_wave_height"] if "secondary_wave_height" in df_sub.columns else None,
+        "Secondary (offshore buoy)",
+        C_SECONDARY,
+        "dash",
+        LW_SEC,
+        unit=" ft",
+    )
+    _ln(
+        1,
+        df_sub["tertiary_wave_height"] if "tertiary_wave_height" in df_sub.columns else None,
+        "Tertiary (offshore buoy)",
+        C_TERTIARY,
+        "dot",
+        LW_TER,
+        unit=" ft",
+    )
+
+    _ln(
+        2,
+        df_sub["primary_direction"] if "primary_direction" in df_sub.columns else None,
+        "Primary dir (offshore buoy)",
+        C_PRIMARY,
+        "solid",
+        LW_MAIN,
+        unit="°",
+    )
+    _ln(
+        2,
+        df_sub["secondary_direction"] if "secondary_direction" in df_sub.columns else None,
+        "Secondary dir (offshore buoy)",
+        C_SECONDARY,
+        "dash",
+        LW_SEC,
+        unit="°",
+    )
+    _ln(
+        2,
+        df_sub["tertiary_direction"] if "tertiary_direction" in df_sub.columns else None,
+        "Tertiary dir (offshore buoy)",
+        C_TERTIARY,
+        "dot",
+        LW_TER,
+        unit="°",
+    )
+
+    _ln(
+        3,
+        df_sub["primary_period"] if "primary_period" in df_sub.columns else None,
+        "Primary period (offshore buoy)",
+        C_PRIMARY,
+        "solid",
+        LW_MAIN,
+        unit=" s",
+    )
+    _ln(
+        3,
+        df_sub["secondary_period"] if "secondary_period" in df_sub.columns else None,
+        "Secondary period (offshore buoy)",
+        C_SECONDARY,
+        "dash",
+        LW_SEC,
+        unit=" s",
+    )
+    _ln(
+        3,
+        df_sub["tertiary_period"] if "tertiary_period" in df_sub.columns else None,
+        "Tertiary period (offshore buoy)",
+        C_TERTIARY,
+        "dot",
+        LW_TER,
+        unit=" s",
+    )
+
+    tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
+    fig.update_layout(
+        title=dict(text=title, font=dict(color=TEXT_COLOR, size=15), x=0.5, xanchor="center"),
+        paper_bgcolor=BG_DARK,
+        plot_bgcolor=BG_PANEL,
+        font=dict(color=TEXT_COLOR, size=11),
+        hovermode="x unified",
+        hoverlabel=dict(bgcolor=BG_PANEL, bordercolor=SPINE_COLOR, font_size=12),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            bgcolor="rgba(22,27,34,0.92)",
+            bordercolor=SPINE_COLOR,
+            borderwidth=1,
+            font=dict(size=10),
+        ),
+        margin=dict(l=56, r=20, t=96, b=48),
+        height=820,
+    )
+    fig.update_xaxes(
+        showspikes=True,
+        spikecolor="#8b949e",
+        spikesnap="cursor",
+        spikemode="across",
+        spikethickness=1,
+        gridcolor=GRID_COLOR,
+        showgrid=True,
+        zeroline=False,
+        tickformat=tick_fmt,
+    )
+    fig.update_xaxes(showticklabels=False, row=1, col=1)
+    fig.update_xaxes(showticklabels=False, row=2, col=1)
+    fig.update_xaxes(title_text="Date (US/Pacific)", row=3, col=1)
+    fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
+    fig.update_annotations(font=dict(color=TEXT_COLOR, size=12))
+    return fig
+
+
 def render_forecast_tab() -> None:
     st.header("Forecasts")
 
-    if not BUOY_CSV.exists():
-        st.error(f"Missing buoy forecast CSV: `{BUOY_CSV}`")
-        return
-    if not CDIP_CSV.exists():
-        st.warning(f"CDIP file not found: `{CDIP_CSV}` — joined table will have empty `cdip_*` columns.")
+    use_bigquery = st.toggle(
+        "Load forecasts from BigQuery (vs local CSV under `data/forecasts/`)",
+        value=False,
+        help=(
+            "BigQuery uses `onda-maverick.surf_forecast_data` "
+            "(buoy_scaled_components_p, cdip_data_p, offshore_buoy_data_p). "
+            "Only rows from the current calendar day (US/Pacific) onward are loaded. "
+            "Requires Application Default Credentials or `GOOGLE_APPLICATION_CREDENTIALS`."
+        ),
+    )
 
     labels = _load_break_labels(str(BREAKS_CSV))
 
@@ -731,8 +1028,29 @@ def render_forecast_tab() -> None:
         # Deduplicate, keep sorted stable.
         return sorted(set(ids))
 
-    bm, cm = _buoy_cdip_mtime_pair()
-    df_joined = _joined_forecast_dataframe(bm, cm, float(DEFAULT_NEAREST_TOLERANCE_HOURS))
+    tol_h = float(DEFAULT_NEAREST_TOLERANCE_HOURS)
+
+    if use_bigquery:
+        try:
+            df_joined, df_offshore = _bq_forecast_bundle(tol_h)
+        except Exception as exc:
+            st.error(f"BigQuery load failed: {exc}")
+            st.caption(
+                "Try `gcloud auth application-default login` or set "
+                "`GOOGLE_APPLICATION_CREDENTIALS` to a service-account JSON path."
+            )
+            return
+    else:
+        if not BUOY_CSV.exists():
+            st.error(f"Missing buoy forecast CSV: `{BUOY_CSV}`")
+            return
+        if not CDIP_CSV.exists():
+            st.warning(
+                f"CDIP file not found: `{CDIP_CSV}` — joined table will have empty `cdip_*` columns."
+            )
+        bm, cm = _buoy_cdip_mtime_pair()
+        df_joined = _joined_forecast_dataframe(bm, cm, tol_h)
+        df_offshore = _local_offshore_dataframe(_offshore_csv_mtime())
 
     break_ids = sorted(df_joined["break_id"].unique().astype(int).tolist())
     if not break_ids:
@@ -740,13 +1058,23 @@ def render_forecast_tab() -> None:
         return
 
     with st.expander("Data sources", expanded=False):
-        st.write(f"Buoy scaled components: `{BUOY_CSV}`")
-        st.write(f"CDIP MOP processed: `{CDIP_CSV}`")
-        st.write(f"Nearest join (saved on load): `{JOINED_CSV}`")
+        if use_bigquery:
+            st.write(
+                "**BigQuery** (`onda-maverick.surf_forecast_data`): rows from the current "
+                "calendar day onward (**US/Pacific**)."
+            )
+            st.write("- `buoy_scaled_components_p` — break-scaled buoy components")
+            st.write("- `cdip_data_p` — CDIP / WW3 mop + significant height")
+            st.write("- `offshore_buoy_data_p` — offshore buoy hourly series (`buoy_id`)")
+        else:
+            st.write(f"Buoy scaled components: `{BUOY_CSV}`")
+            st.write(f"CDIP MOP processed: `{CDIP_CSV}`")
+            st.write(f"Offshore buoy (optional): `{OFFSHORE_CSV}`")
+            st.write(f"Nearest join (saved on load): `{JOINED_CSV}`")
         st.write(f"Break labels: `{BREAKS_CSV}`")
 
     show_cdip_sig = st.checkbox(
-        "Show CDIP significant wave height (`cdip_data_p.csv`)",
+        "Show CDIP significant wave height",
         value=True,
         help="Bold line on the height panel (values from nearest-join columns).",
     )
@@ -784,3 +1112,29 @@ def render_forecast_tab() -> None:
             st.plotly_chart(fig, width="stretch")
         except Exception as exc:
             st.error(f"Plot failed for break {bid}: {exc}")
+
+    if not df_offshore.empty and "buoy_id" in df_offshore.columns:
+        st.divider()
+        st.subheader("Offshore buoys")
+        if use_bigquery:
+            st.caption("Source: BigQuery `offshore_buoy_data_p` (same date window as above).")
+        else:
+            st.caption(f"Source: `{OFFSHORE_CSV}`")
+        buoy_ids_off = sorted(df_offshore["buoy_id"].dropna().unique().astype(int).tolist())
+        if buoy_ids_off:
+            default_n = min(3, len(buoy_ids_off))
+            pick_off = st.multiselect(
+                "Offshore buoy ID",
+                options=buoy_ids_off,
+                default=buoy_ids_off[:default_n],
+            )
+            for oid in pick_off:
+                osub = df_offshore[df_offshore["buoy_id"] == oid]
+                try:
+                    ofig = _plot_offshore_buoy_forecast(
+                        osub,
+                        title=f"Offshore buoy {oid}",
+                    )
+                    st.plotly_chart(ofig, width="stretch")
+                except Exception as exc:
+                    st.error(f"Offshore plot failed for buoy {oid}: {exc}")
