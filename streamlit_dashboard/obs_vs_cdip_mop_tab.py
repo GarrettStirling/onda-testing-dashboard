@@ -112,7 +112,7 @@ def _plot_combined_diff_scalar(
     fig = make_subplots(
         rows=n_rows,
         cols=2,
-        vertical_spacing=0.055,
+        vertical_spacing=0.034,
         horizontal_spacing=0.09,
     )
 
@@ -416,11 +416,15 @@ def render_obs_vs_cdip_mop_tab() -> None:
         st.warning("No spot+break rows with observations found in the CSV.")
         return
 
-    default_n = min(8, len(options))
+    # Default to spots with meaningful sample size.
+    default_sel = [combo for combo, cnt in combo_counts.items() if int(cnt) >= 30]
+    if not default_sel:
+        default_n = min(8, len(options))
+        default_sel = options[:default_n]
     selected = st.multiselect(
         "Spot + break",
         options=options,
-        default=options[:default_n],
+        default=default_sel,
         help="Each selection renders one wide figure: diff (left column), scalar (right).",
     )
 
