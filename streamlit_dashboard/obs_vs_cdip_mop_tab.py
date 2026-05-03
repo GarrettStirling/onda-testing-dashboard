@@ -20,8 +20,9 @@ TEXT_COLOR = "#c9d1d9"
 SPINE_COLOR = "#30363d"
 ACCENT_DIFF = "#38bdf8"
 ACCENT_SCALAR = "#fb923c"
+ACCENT_OBS_DIFF = "#a78bfa"
 
-# Taller rows: total figure height scales with this (two columns side by side).
+# Taller rows: total figure height scales with this (columns side by side).
 ROW_HEIGHT_PX = 450
 
 
@@ -103,23 +104,30 @@ def _plot_combined_diff_scalar(
     *,
     combo_title: str,
     has_tide: bool,
+    show_mop_obs_diff_column: bool = False,
 ) -> go.Figure:
-    """Two columns: left = mop_surfline_scalar, right = mop_obs_scalar. Histograms unchanged; scatters
-    use diff/scalar on x-axis and MOP, CDIP buoy fields, or tide on y-axis."""
+    """Columns: mop_surfline_scalar, mop_obs_scalar, and optionally mop_obs_diff. Histograms unchanged;
+    scatters use those metrics on x-axis and MOP, CDIP buoy fields, or tide on y-axis."""
     # Rows: dist, Hs, MOP period, buoy primary period, buoy primary direction,
     # weighted period (MOP), weighted direction (buoy), [tide].
     n_rows = 8 if has_tide else 7
+    n_cols = 3 if show_mop_obs_diff_column else 2
     fig = make_subplots(
         rows=n_rows,
-        cols=2,
+        cols=n_cols,
         vertical_spacing=0.034,
-        horizontal_spacing=0.09,
+        horizontal_spacing=0.07 if n_cols == 3 else 0.09,
     )
 
     left = pd.to_numeric(df_sub["mop_surfline_scalar"], errors="coerce")
     scal = pd.to_numeric(df_sub["mop_obs_scalar"], errors="coerce")
+    obs_diff = (
+        pd.to_numeric(df_sub["mop_obs_diff"], errors="coerce")
+        if show_mop_obs_diff_column and "mop_obs_diff" in df_sub.columns
+        else pd.Series(np.nan, index=df_sub.index, dtype=float)
+    )
 
-    def _empty_both(message: str) -> go.Figure:
+    def _empty_figure(message: str) -> go.Figure:
         fig.add_annotation(
             text=message,
             xref="paper",
@@ -132,14 +140,20 @@ def _plot_combined_diff_scalar(
         _apply_dark_layout(fig, title=combo_title, height=400)
         return fig
 
+    hist_specs: list[tuple[pd.Series, str, str]] = [
+        (left, ACCENT_DIFF, "mop_surfline_scalar"),
+        (scal, ACCENT_SCALAR, "mop_obs_scalar"),
+    ]
+    x_hist_titles = [
+        "Distribution<br>scalar (surfline Hs / MOP Hs)",
+        "Distribution<br>scalar (obs Hs / MOP Hs)",
+    ]
+    if show_mop_obs_diff_column:
+        hist_specs.append((obs_diff, ACCENT_OBS_DIFF, "mop_obs_diff"))
+        x_hist_titles.append("Distribution<br>mop_obs_diff (obs Hs − MOP Hs, ft)")
+
     # Row 1: distributions (value on x, count on y — not flipped)
-    for col, (series, color, label) in enumerate(
-        (
-            (left, ACCENT_DIFF, "mop_surfline_scalar"),
-            (scal, ACCENT_SCALAR, "mop_obs_scalar"),
-        ),
-        start=1,
-    ):
+    for col, (series, color, _label) in enumerate(hist_specs, start=1):
         sv = series.dropna()
         if len(sv) == 0:
             fig.add_trace(go.Histogram(x=[], nbinsx=10, showlegend=False), row=1, col=col)
@@ -157,20 +171,12 @@ def _plot_combined_diff_scalar(
                 col=col,
             )
         fig.update_yaxes(title_text="Row count", row=1, col=col)
+        fig.update_xaxes(title_text=x_hist_titles[col - 1], row=1, col=col)
 
-    fig.update_xaxes(
-        title_text="Distribution<br>scalar (surfline Hs / MOP Hs)",
-        row=1,
-        col=1,
-    )
-    fig.update_xaxes(
-        title_text="Distribution<br>scalar (obs Hs / MOP Hs)",
-        row=1,
-        col=2,
-    )
-
-    if left.notna().sum() == 0 and scal.notna().sum() == 0:
-        return _empty_both("No finite `mop_surfline_scalar` or `mop_obs_scalar` values")
+    finite_counts = [s.notna().sum() for s, _, _ in hist_specs]
+    if sum(finite_counts) == 0:
+        keys = "`, `".join(h for _, _, h in hist_specs)
+        return _empty_figure(f"No finite values for `{keys}`")
 
     def _scatter_flipped(
         v: pd.Series,
@@ -204,6 +210,28 @@ def _plot_combined_diff_scalar(
 
     x_left = "mop_surfline_scalar (surfline / MOP)"
     x_scal = "mop_obs_scalar (obs / MOP)"
+    x_obs_diff = "mop_obs_diff (obs − MOP Hs, ft)"
+
+    x_col_specs: list[tuple[pd.Series, str, str, str]] = [
+        (left, ACCENT_DIFF, x_left, "mop_surfline_scalar"),
+        (scal, ACCENT_SCALAR, x_scal, "mop_obs_scalar"),
+    ]
+    if show_mop_obs_diff_column:
+        x_col_specs.append((obs_diff, ACCENT_OBS_DIFF, x_obs_diff, "mop_obs_diff"))
+
+    def _scatter_row(y_series: pd.Series, y_title: str, y_key: str, row: int) -> None:
+        for col, (v, color, x_title, x_key) in enumerate(x_col_specs, start=1):
+            _scatter_flipped(
+                v,
+                y_series,
+                row=row,
+                col=col,
+                x_title=x_title,
+                y_title=y_title,
+                color=color,
+                x_key=x_key,
+                y_key=y_key,
+            )
 
     mop_hs = pd.to_numeric(df_sub["mop_hs_ft"], errors="coerce")
     mop_per = pd.to_numeric(df_sub["mop_period_s"], errors="coerce")
@@ -212,115 +240,16 @@ def _plot_combined_diff_scalar(
     period_weighted_mop = pd.to_numeric(df_sub["period_weighted_s_mop"], errors="coerce")
     direction_weighted_buoy = pd.to_numeric(df_sub["direction_weighted_deg_buoy"], errors="coerce")
 
-    r_hs = 2
-    _scatter_flipped(left, mop_hs, row=r_hs, col=1, x_title=x_left, y_title="Sig. Wave Height (CDIP MOP, ft)", color=ACCENT_DIFF, x_key="mop_surfline_scalar", y_key="mop_hs_ft")
-    _scatter_flipped(scal, mop_hs, row=r_hs, col=2, x_title=x_scal, y_title="Sig. Wave Height (CDIP MOP, ft)", color=ACCENT_SCALAR, x_key="mop_obs_scalar", y_key="mop_hs_ft")
-
-    r_per = 3
-    _scatter_flipped(left, mop_per, row=r_per, col=1, x_title=x_left, y_title="Primary Period (CDIP MOP, s)", color=ACCENT_DIFF, x_key="mop_surfline_scalar", y_key="mop_period_s")
-    _scatter_flipped(scal, mop_per, row=r_per, col=2, x_title=x_scal, y_title="Primary Period (CDIP MOP, s)", color=ACCENT_SCALAR, x_key="mop_obs_scalar", y_key="mop_period_s")
-
-    r_per_pri = 4
-    _scatter_flipped(
-        left,
-        per_pri_buoy,
-        row=r_per_pri,
-        col=1,
-        x_title=x_left,
-        y_title="Primary Period (CDIP Buoy, s)",
-        color=ACCENT_DIFF,
-        x_key="mop_surfline_scalar",
-        y_key="per_pri_s_buoy",
-    )
-    _scatter_flipped(
-        scal,
-        per_pri_buoy,
-        row=r_per_pri,
-        col=2,
-        x_title=x_scal,
-        y_title="Primary Period (CDIP Buoy, s)",
-        color=ACCENT_SCALAR,
-        x_key="mop_obs_scalar",
-        y_key="per_pri_s_buoy",
-    )
-
-    r_dir_buoy = 5
-    _scatter_flipped(
-        left,
-        dir_buoy,
-        row=r_dir_buoy,
-        col=1,
-        x_title=x_left,
-        y_title="Primary Direction (CDIP Buoy, deg)",
-        color=ACCENT_DIFF,
-        x_key="mop_surfline_scalar",
-        y_key="dir_pri_deg_buoy",
-    )
-    _scatter_flipped(
-        scal,
-        dir_buoy,
-        row=r_dir_buoy,
-        col=2,
-        x_title=x_scal,
-        y_title="Primary Direction (CDIP Buoy, deg)",
-        color=ACCENT_SCALAR,
-        x_key="mop_obs_scalar",
-        y_key="dir_pri_deg_buoy",
-    )
-
-    r_period_weighted = 6
-    _scatter_flipped(
-        left,
-        period_weighted_mop,
-        row=r_period_weighted,
-        col=1,
-        x_title=x_left,
-        y_title="Weighted Period (CDIP MOP, s)",
-        color=ACCENT_DIFF,
-        x_key="mop_surfline_scalar",
-        y_key="period_weighted_s_mop",
-    )
-    _scatter_flipped(
-        scal,
-        period_weighted_mop,
-        row=r_period_weighted,
-        col=2,
-        x_title=x_scal,
-        y_title="Weighted Period (CDIP MOP, s)",
-        color=ACCENT_SCALAR,
-        x_key="mop_obs_scalar",
-        y_key="period_weighted_s_mop",
-    )
-
-    r_direction_weighted = 7
-    _scatter_flipped(
-        left,
-        direction_weighted_buoy,
-        row=r_direction_weighted,
-        col=1,
-        x_title=x_left,
-        y_title="Weighted Direction (CDIP Buoy, deg)",
-        color=ACCENT_DIFF,
-        x_key="mop_surfline_scalar",
-        y_key="direction_weighted_deg_buoy",
-    )
-    _scatter_flipped(
-        scal,
-        direction_weighted_buoy,
-        row=r_direction_weighted,
-        col=2,
-        x_title=x_scal,
-        y_title="Weighted Direction (CDIP Buoy, deg)",
-        color=ACCENT_SCALAR,
-        x_key="mop_obs_scalar",
-        y_key="direction_weighted_deg_buoy",
-    )
+    _scatter_row(mop_hs, "Sig. Wave Height (CDIP MOP, ft)", "mop_hs_ft", 2)
+    _scatter_row(mop_per, "Primary Period (CDIP MOP, s)", "mop_period_s", 3)
+    _scatter_row(per_pri_buoy, "Primary Period (CDIP Buoy, s)", "per_pri_s_buoy", 4)
+    _scatter_row(dir_buoy, "Primary Direction (CDIP Buoy, deg)", "dir_pri_deg_buoy", 5)
+    _scatter_row(period_weighted_mop, "Weighted Period (CDIP MOP, s)", "period_weighted_s_mop", 6)
+    _scatter_row(direction_weighted_buoy, "Weighted Direction (CDIP Buoy, deg)", "direction_weighted_deg_buoy", 7)
 
     if has_tide:
         tide = pd.to_numeric(df_sub["tide_ft"], errors="coerce")
-        r_tide = 8
-        _scatter_flipped(left, tide, row=r_tide, col=1, x_title=x_left, y_title="Tide (ft)", color=ACCENT_DIFF, x_key="mop_surfline_scalar", y_key="tide_ft")
-        _scatter_flipped(scal, tide, row=r_tide, col=2, x_title=x_scal, y_title="Tide (ft)", color=ACCENT_SCALAR, x_key="mop_obs_scalar", y_key="tide_ft")
+        _scatter_row(tide, "Tide (ft)", "tide_ft", 8)
 
     height = ROW_HEIGHT_PX * n_rows
     _apply_dark_layout(fig, title=combo_title, height=height)
@@ -364,10 +293,10 @@ def _load_obs_vs_cdip(path_str: str, csv_mtime: float) -> pd.DataFrame:
 def render_obs_vs_cdip_mop_tab() -> None:
     st.header("CDIP MOP Comparison")
     st.caption(
-        "Per spot+break: **mop_surfline_scalar** (left) and **mop_obs_scalar** (right). Histograms show "
-        "each metric on the x-axis; scatter panels put diff/scalar on **x** and MOP, **CDIP buoy** "
-        "direction / primary period, or tide on **y**. Source: "
-        "`data/obs_enriched/observations_vs_cdip_diff_and_scale.csv`."
+        "Per spot+break: **mop_surfline_scalar** (left) and **mop_obs_scalar** (right); optionally "
+        "**mop_obs_diff** (obs Hs − MOP Hs, ft) as a third column. Histograms show each metric on the "
+        "x-axis; scatter panels put that metric on **x** and MOP, **CDIP buoy** direction / primary period, "
+        "or tide on **y**. Source: `data/obs_enriched/observations_vs_cdip_diff_and_scale.csv`."
     )
 
     if not OBS_VS_CDIP_CSV.exists():
@@ -390,6 +319,15 @@ def render_obs_vs_cdip_mop_tab() -> None:
     if miss:
         st.error(f"CSV missing required columns: {sorted(miss)}")
         return
+
+    has_mop_obs_diff = "mop_obs_diff" in df.columns
+    show_diff_col = False
+    if has_mop_obs_diff:
+        show_diff_col = st.toggle(
+            "Show **mop_obs_diff** column (same panels as scalars; x = obs Hs − MOP Hs, ft)",
+            value=True,
+            help="Adds a third column of histograms and scatters using mop_obs_diff on the x-axis.",
+        )
 
     spot_c, break_c = _spot_break_columns(df)
     df["_spot_k"] = df[spot_c].astype(str).str.strip()
@@ -421,11 +359,14 @@ def render_obs_vs_cdip_mop_tab() -> None:
     if not default_sel:
         default_n = min(8, len(options))
         default_sel = options[:default_n]
+    help_cols = "surfline scalar (left), obs scalar (right)"
+    if show_diff_col:
+        help_cols += ", mop_obs_diff (third)"
     selected = st.multiselect(
         "Spot + break",
         options=options,
         default=default_sel,
-        help="Each selection renders one wide figure: diff (left column), scalar (right).",
+        help=f"Each selection renders one wide figure: {help_cols}.",
     )
 
     if not selected:
@@ -444,6 +385,7 @@ def render_obs_vs_cdip_mop_tab() -> None:
                 sub,
                 combo_title=f"{combo} ({n} rows)",
                 has_tide=has_tide,
+                show_mop_obs_diff_column=show_diff_col,
             )
             st.plotly_chart(fig, width="stretch", key=f"obs_cdip_combo_{combo}")
         except Exception as exc:
