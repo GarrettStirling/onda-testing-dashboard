@@ -36,6 +36,7 @@ DEFAULT_NEAREST_TOLERANCE_HOURS = 2.5
 
 CDIP_MERGE_COLUMNS = [
     "significant_wave_height",
+    "significant_wave_height_raw",
     "primary_wave_height",
     "primary_period",
     "primary_direction",
@@ -56,6 +57,7 @@ M_TO_FT = 3.28084
 BG_DARK = "#0e1117"
 BG_PANEL = "#161b22"
 GRID_COLOR = "#2a2d35"
+XAXIS_DAY_GRID_COLOR = "#4f5866"  # lighter gray for daily vertical gridlines
 TEXT_COLOR = "#c9d1d9"
 SPINE_COLOR = "#30363d"
 
@@ -68,6 +70,8 @@ LW_MAIN = 1.8
 LW_SEC = 1.4
 LW_TER = 1.2
 LW_SIG = 2.8
+LW_SIG_RAW = 1.15
+ALPHA_SIG_RAW = 0.5
 LW_OVERLAY = 1.2
 ALPHA_OVERLAY = 0.55
 
@@ -190,6 +194,10 @@ def _prepare_cdip_forecast_df(df: pd.DataFrame) -> pd.DataFrame:
             df["wave_time_pst"] = df["wave_time_pst"].dt.tz_convert(PST)
 
     df["wave_time_pst"] = _coerce_datetime_to_ns(df["wave_time_pst"])
+
+    # Merge prefixes `significant_wave_height_raw` → `cdip_significant_wave_height_raw`; align BQ name if needed.
+    if "significant_wave_height_raw" not in df.columns and "cdip_significant_wave_height_raw" in df.columns:
+        df = df.rename(columns={"cdip_significant_wave_height_raw": "significant_wave_height_raw"})
 
     if "break_id" in df.columns:
         df["break_id"] = pd.to_numeric(df["break_id"], errors="coerce")
@@ -361,6 +369,26 @@ def _forecast_hover_xaxis_tickformat(span_days: float) -> str:
     return "%b %d %H:%M" if span_days <= 3.5 else "%b %d"
 
 
+def _pacific_daily_midnight_ticks(t_min: pd.Timestamp, t_max: pd.Timestamp) -> list[pd.Timestamp]:
+    """US/Pacific local midnights for each calendar day overlapping ``[t_min, t_max]``."""
+    t_min = pd.Timestamp(t_min)
+    t_max = pd.Timestamp(t_max)
+    if pd.isna(t_min) or pd.isna(t_max):
+        return []
+    if t_min.tzinfo is None:
+        t_min = t_min.tz_localize(PST, ambiguous="infer", nonexistent="shift_forward")
+    else:
+        t_min = t_min.tz_convert(PST)
+    if t_max.tzinfo is None:
+        t_max = t_max.tz_localize(PST, ambiguous="infer", nonexistent="shift_forward")
+    else:
+        t_max = t_max.tz_convert(PST)
+    if t_min > t_max:
+        t_min, t_max = t_max, t_min
+    dr = pd.date_range(start=t_min.normalize(), end=t_max.normalize(), freq="D", tz=PST)
+    return list(dr)
+
+
 def _y_range_padded(
     *series: pd.Series,
     frac: float = 0.08,
@@ -462,6 +490,10 @@ def _plot_break_forecast(
 
     show_any_cdip = show_cdip_sig or overlay_cdip_mop
     has_sig = "cdip_significant_wave_height" in joined_g.columns and joined_g["cdip_significant_wave_height"].notna().any()
+    has_sig_raw = (
+        "cdip_significant_wave_height_raw" in joined_g.columns
+        and joined_g["cdip_significant_wave_height_raw"].notna().any()
+    )
     has_mop = "cdip_primary_wave_height" in joined_g.columns and joined_g["cdip_primary_wave_height"].notna().any()
 
     title = label if label else f"Break {int(joined_g['break_id'].iloc[0])}"
@@ -574,6 +606,20 @@ def _plot_break_forecast(
                 showlegend=_legend_show_once(leg, "Tertiary (CDIP MOP)"),
             )
 
+    if show_cdip_sig and has_sig_raw:
+        _add_ts_line(
+            fig,
+            1,
+            t_b,
+            _heights_to_ft(joined_g["cdip_significant_wave_height_raw"]),
+            name="Sig. height raw (CDIP)",
+            color=C_SIG,
+            dash="solid",
+            width=LW_SIG_RAW,
+            unit=" ft",
+            opacity=ALPHA_SIG_RAW,
+            showlegend=_legend_show_once(leg, "Sig. height raw (CDIP)"),
+        )
     if show_cdip_sig and has_sig:
         _add_ts_line(
             fig,
@@ -729,6 +775,8 @@ def _plot_break_forecast(
             h_for_range.append(_heights_to_ft(joined_g["cdip_tertiary_wave_height"]))
     if show_cdip_sig and has_sig:
         h_for_range.append(_heights_to_ft(joined_g["cdip_significant_wave_height"]))
+    if show_cdip_sig and has_sig_raw:
+        h_for_range.append(_heights_to_ft(joined_g["cdip_significant_wave_height_raw"]))
     y_r_h = _y_range_padded(*h_for_range, frac=0.08, floor_zero=True, min_span=0.35)
 
     d_for_range: list[pd.Series] = [
@@ -756,6 +804,10 @@ def _plot_break_forecast(
     y_r_p = _y_range_padded(*p_for_range, frac=0.08, floor_zero=False, min_span=0.75)
 
     tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
+    x_tickvals = _pacific_daily_midnight_ticks(
+        joined_g["wave_time_pst"].min(),
+        joined_g["wave_time_pst"].max(),
+    )
     fig.update_layout(
         title=dict(
             text=f"Forecast — {title}{cdip_note}",
@@ -788,7 +840,9 @@ def _plot_break_forecast(
         spikesnap="cursor",
         spikemode="across",
         spikethickness=1,
-        gridcolor=GRID_COLOR,
+        tickmode="array",
+        tickvals=x_tickvals,
+        gridcolor=XAXIS_DAY_GRID_COLOR,
         showgrid=True,
         zeroline=False,
         tickformat=tick_fmt,
@@ -937,6 +991,7 @@ def _plot_offshore_buoy_forecast(df_sub: pd.DataFrame, *, title: str) -> go.Figu
     )
 
     tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
+    x_tickvals = _pacific_daily_midnight_ticks(df_sub["wave_time_pst"].min(), df_sub["wave_time_pst"].max())
     fig.update_layout(
         title=dict(text=title, font=dict(color=TEXT_COLOR, size=15), x=0.5, xanchor="center"),
         paper_bgcolor=BG_DARK,
@@ -964,7 +1019,9 @@ def _plot_offshore_buoy_forecast(df_sub: pd.DataFrame, *, title: str) -> go.Figu
         spikesnap="cursor",
         spikemode="across",
         spikethickness=1,
-        gridcolor=GRID_COLOR,
+        tickmode="array",
+        tickvals=x_tickvals,
+        gridcolor=XAXIS_DAY_GRID_COLOR,
         showgrid=True,
         zeroline=False,
         tickformat=tick_fmt,
@@ -1076,7 +1133,10 @@ def render_forecast_tab() -> None:
     show_cdip_sig = st.checkbox(
         "Show CDIP significant wave height",
         value=True,
-        help="Bold line on the height panel (values from nearest-join columns).",
+        help=(
+            "Height panel: bold CDIP sig height + thinner/semi-transparent raw sig height when "
+            "`significant_wave_height_raw` / `cdip_significant_wave_height_raw` is present in CDIP data."
+        ),
     )
     overlay_cdip_mop = st.checkbox(
         "Overlay CDIP MOP (pri/sec/ter on all three panels)",
