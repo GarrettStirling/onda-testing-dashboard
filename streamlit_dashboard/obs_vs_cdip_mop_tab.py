@@ -109,8 +109,8 @@ def _plot_combined_diff_scalar(
     """Columns: mop_surfline_scalar, mop_obs_scalar, and optionally mop_obs_diff. Histograms unchanged;
     scatters use those metrics on x-axis and MOP, CDIP buoy fields, or tide on y-axis."""
     # Rows: dist, Hs, MOP period, buoy primary period, buoy primary direction,
-    # weighted period (MOP), weighted direction (buoy), [tide].
-    n_rows = 8 if has_tide else 7
+    # weighted period (MOP), weighted period (buoy), weighted direction (buoy), [tide].
+    n_rows = 9 if has_tide else 8
     n_cols = 3 if show_mop_obs_diff_column else 2
     fig = make_subplots(
         rows=n_rows,
@@ -238,6 +238,7 @@ def _plot_combined_diff_scalar(
     dir_buoy = pd.to_numeric(df_sub["dir_pri_deg_buoy"], errors="coerce")
     per_pri_buoy = pd.to_numeric(df_sub["per_pri_s_buoy"], errors="coerce")
     period_weighted_mop = pd.to_numeric(df_sub["period_weighted_s_mop"], errors="coerce")
+    period_weighted_buoy = pd.to_numeric(df_sub["period_weighted_s_buoy"], errors="coerce")
     direction_weighted_buoy = pd.to_numeric(df_sub["direction_weighted_deg_buoy"], errors="coerce")
 
     _scatter_row(mop_hs, "Sig. Wave Height (CDIP MOP, ft)", "mop_hs_ft", 2)
@@ -245,11 +246,12 @@ def _plot_combined_diff_scalar(
     _scatter_row(per_pri_buoy, "Primary Period (CDIP Buoy, s)", "per_pri_s_buoy", 4)
     _scatter_row(dir_buoy, "Primary Direction (CDIP Buoy, deg)", "dir_pri_deg_buoy", 5)
     _scatter_row(period_weighted_mop, "Weighted Period (CDIP MOP, s)", "period_weighted_s_mop", 6)
-    _scatter_row(direction_weighted_buoy, "Weighted Direction (CDIP Buoy, deg)", "direction_weighted_deg_buoy", 7)
+    _scatter_row(period_weighted_buoy, "Weighted Period (CDIP Buoy, s)", "period_weighted_s_buoy", 7)
+    _scatter_row(direction_weighted_buoy, "Weighted Direction (CDIP Buoy, deg)", "direction_weighted_deg_buoy", 8)
 
     if has_tide:
         tide = pd.to_numeric(df_sub["tide_ft"], errors="coerce")
-        _scatter_row(tide, "Tide (ft)", "tide_ft", 8)
+        _scatter_row(tide, "Tide (ft)", "tide_ft", 9)
 
     height = ROW_HEIGHT_PX * n_rows
     _apply_dark_layout(fig, title=combo_title, height=height)
@@ -282,6 +284,7 @@ def _load_obs_vs_cdip(path_str: str, csv_mtime: float) -> pd.DataFrame:
         "dir_pri_deg_buoy",
         "per_pri_s_buoy",
         "period_weighted_s_mop",
+        "period_weighted_s_buoy",
         "direction_weighted_deg_buoy",
         "tide_ft",
     ):
@@ -295,8 +298,9 @@ def render_obs_vs_cdip_mop_tab() -> None:
     st.caption(
         "Per spot+break: **mop_surfline_scalar** (left) and **mop_obs_scalar** (right); optionally "
         "**mop_obs_diff** (obs Hs − MOP Hs, ft) as a third column. Histograms show each metric on the "
-        "x-axis; scatter panels put that metric on **x** and MOP, **CDIP buoy** direction / primary period, "
-        "or tide on **y**. Source: `data/obs_enriched/observations_vs_cdip_diff_and_scale.csv`."
+        "x-axis; scatter panels put that metric on **x** and MOP Hs/periods, **CDIP buoy** periods/direction "
+        "(primary, MOP- and buoy-weighted period, weighted direction), or tide on **y**. Source: "
+        "`data/obs_enriched/observations_vs_cdip_diff_and_scale.csv`."
     )
 
     if not OBS_VS_CDIP_CSV.exists():
@@ -313,6 +317,7 @@ def render_obs_vs_cdip_mop_tab() -> None:
         "dir_pri_deg_buoy",
         "per_pri_s_buoy",
         "period_weighted_s_mop",
+        "period_weighted_s_buoy",
         "direction_weighted_deg_buoy",
     }
     miss = need - set(df.columns)
