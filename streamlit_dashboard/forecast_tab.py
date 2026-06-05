@@ -626,13 +626,13 @@ def _plot_break_forecast(
             1,
             t_b,
             _heights_to_ft(joined_g["cdip_significant_wave_height"]),
-            name="Sig. height (CDIP)",
+            name="Sig. height (Calibrated CDIP)",
             color=C_SIG,
             dash="solid",
             width=LW_SIG,
             unit=" ft",
             opacity=0.95,
-            showlegend=_legend_show_once(leg, "Sig. height (CDIP)"),
+            showlegend=_legend_show_once(leg, "Sig. height (Calibrated CDIP)"),
         )
 
     # --- Row 2: direction (raw 0–360°; no artificial NaNs — steep segments = wrap past north) ---

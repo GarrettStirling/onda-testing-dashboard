@@ -11,6 +11,7 @@ from streamlit_dashboard.gfs_wave_components_tab import render_gfs_wave_componen
 from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
 from streamlit_dashboard.qc_calibration_tab import render_qc_calibration_tab
 from streamlit_dashboard.obs_vs_cdip_mop_tab import render_obs_vs_cdip_mop_tab
+from streamlit_dashboard.obs_qc_tab import render_obs_qc_tab
 
 
 st.set_page_config(
@@ -26,6 +27,7 @@ tabs = st.tabs(
         "CDIP buoy spectra",
         "GFS wave components",
         "CDIP MOP Comparison",
+        "Observation QC",
     ]
 )
 
@@ -46,4 +48,7 @@ with tabs[4]:
 
 with tabs[5]:
     render_obs_vs_cdip_mop_tab()
+
+with tabs[6]:
+    render_obs_qc_tab()
 
