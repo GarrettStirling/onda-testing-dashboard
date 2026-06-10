@@ -42,9 +42,13 @@ CDIP_DIR = DATA_ROOT / "cdip_based_scalar"
 PROJECT_ID = "onda-maverick"
 OBS_TABLE = f"`{PROJECT_ID}.surf_calibration_data.observations_with_cdip`"
 
+# Bump when series keys or source CSV paths change (invalidates Streamlit cache).
+BUNDLE_CACHE_VERSION = 3
+
 # (series key, legend label, color, dash, line width)
 SERIES: list[tuple[str, str, str, str, float]] = [
-    ("uncalibrated", "Uncalibrated", C_SIG, "solid", LW_SIG),
+    ("uncalibrated_buoy", "Uncalibrated (buoy)", C_PRIMARY, "dot", LW_SEC),
+    ("uncalibrated_cdip", "Uncalibrated (CDIP)", C_SIG, "solid", LW_SIG),
     ("complex_buoy_scalar", "Complex (buoy scalar)", C_PRIMARY, "solid", LW_MAIN),
     ("minimal_buoy_scalar", "Minimal (buoy scalar)", C_PRIMARY, "dash", LW_SEC),
     ("complex_cdip_scalar", "Complex (CDIP scalar)", C_SECONDARY, "solid", LW_MAIN),
@@ -77,7 +81,8 @@ def _prepare_validation_df(df: pd.DataFrame) -> pd.DataFrame:
 
 def _validation_csv_paths() -> dict[str, Path]:
     return {
-        "uncalibrated": BUOY_DIR / "20260610_forecast_uncalibrated.csv",
+        "uncalibrated_buoy": BUOY_DIR / "20260610_forecast_uncalibrated_buoy.csv",
+        "uncalibrated_cdip": CDIP_DIR / "20260610_forecast_uncalibrated_cdip.csv",
         "complex_buoy_scalar": BUOY_DIR / "20260610_forecast_complex_model.csv",
         "minimal_buoy_scalar": BUOY_DIR / "20260610_forecast_minimal_model.csv",
         "complex_cdip_scalar": CDIP_DIR / "20260610_forecast_complex_model.csv",
@@ -85,18 +90,34 @@ def _validation_csv_paths() -> dict[str, Path]:
     }
 
 
-def _validation_mtime_key() -> tuple[float, ...]:
-    return tuple(p.stat().st_mtime if p.exists() else 0.0 for p in _validation_csv_paths().values())
+def _validation_mtime_key() -> tuple[int | float, ...]:
+    mtimes = tuple(p.stat().st_mtime if p.exists() else 0.0 for p in _validation_csv_paths().values())
+    return (BUNDLE_CACHE_VERSION, *mtimes)
 
 
 @st.cache_data(show_spinner="Loading South Swell validation CSVs…")
-def _load_validation_bundle(_mtime_key: tuple[float, ...]) -> dict[str, pd.DataFrame]:
+def _load_validation_bundle(_mtime_key: tuple[int | float, ...]) -> dict[str, pd.DataFrame]:
     out: dict[str, pd.DataFrame] = {}
     for key, path in _validation_csv_paths().items():
         if not path.exists():
             raise FileNotFoundError(f"Missing validation CSV: `{path}`")
         out[key] = _prepare_validation_df(pd.read_csv(path))
     return out
+
+
+def _get_validation_bundle() -> dict[str, pd.DataFrame]:
+    """Load bundle; clear stale Streamlit cache if series keys changed."""
+    expected = frozenset(_validation_csv_paths().keys())
+    mtime_key = _validation_mtime_key()
+    bundle = _load_validation_bundle(mtime_key)
+    if expected.issubset(bundle.keys()):
+        return bundle
+    _load_validation_bundle.clear()
+    bundle = _load_validation_bundle(mtime_key)
+    if not expected.issubset(bundle.keys()):
+        missing = sorted(expected - set(bundle.keys()))
+        raise KeyError(f"Validation bundle missing series: {missing}")
+    return bundle
 
 
 @st.cache_data(ttl=600, show_spinner="Loading observation counts from BigQuery…")
@@ -155,12 +176,21 @@ def _add_height_line(
     )
 
 
+def _bundle_ref_df(bundle: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Reference frame for break list / labels (any non-empty series)."""
+    for key in ("uncalibrated_buoy", "uncalibrated_cdip", "complex_buoy_scalar"):
+        df = bundle.get(key)
+        if df is not None and not df.empty:
+            return df
+    return next(iter(bundle.values()))
+
+
 def _sorted_break_ids(
     bundle: dict[str, pd.DataFrame],
     obs_counts: pd.Series | None,
 ) -> tuple[list[int], dict[int, str], dict[int, int]]:
     """Return break_ids (most → least obs), labels, and obs count per break."""
-    ref = bundle["uncalibrated"]
+    ref = _bundle_ref_df(bundle)
     break_ids = sorted(ref["break_id"].unique().astype(int).tolist())
     labels_map = _load_break_labels(str(BREAKS_CSV))
 
@@ -193,7 +223,9 @@ def _plot_break_validation(
     t_min, t_max = None, None
 
     for key, name, color, dash, width in SERIES:
-        df = bundle[key]
+        df = bundle.get(key)
+        if df is None:
+            continue
         sub = df.loc[df["break_id"] == break_id].sort_values("wave_time_pst")
         if sub.empty:
             continue
@@ -298,8 +330,8 @@ def render_south_swell_validation_tab() -> None:
     st.header("20260610 South Swell validation")
     st.caption(
         "Significant wave height (ft) vs time (US/Pacific) per break. "
-        "Five forecast variants: uncalibrated baseline plus buoy- and CDIP-based "
-        "complex/minimal scalar models. Breaks ranked **most → least** observations "
+        "Six forecast variants: uncalibrated (buoy/CDIP) baselines plus buoy- and "
+        "CDIP-based complex/minimal scalar models. Breaks ranked **most → least** observations "
         f"from `{OBS_TABLE}`."
     )
 
@@ -310,7 +342,7 @@ def render_south_swell_validation_tab() -> None:
         return
 
     try:
-        bundle = _load_validation_bundle(_validation_mtime_key())
+        bundle = _get_validation_bundle()
     except Exception as exc:
         st.error(f"Failed to load validation CSVs: {exc}")
         return
@@ -347,8 +379,8 @@ def render_south_swell_validation_tab() -> None:
         for key, path in paths.items():
             st.write(f"- **{key}**: `{path.name}`")
         st.write(
-            "Uncalibrated file is shared between buoy and CDIP folders "
-            "(identical baseline forecast)."
+            "Uncalibrated baselines: `20260610_forecast_uncalibrated_buoy.csv` (buoy folder) "
+            "and `20260610_forecast_uncalibrated_cdip.csv` (CDIP folder)."
         )
         if obs_counts is not None:
             st.write(f"Observation ranking: `{OBS_TABLE}`")
