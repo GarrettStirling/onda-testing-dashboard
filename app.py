@@ -12,6 +12,7 @@ from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
 from streamlit_dashboard.qc_calibration_tab import render_qc_calibration_tab
 from streamlit_dashboard.obs_vs_cdip_mop_tab import render_obs_vs_cdip_mop_tab
 from streamlit_dashboard.obs_qc_tab import render_obs_qc_tab
+from streamlit_dashboard.south_swell_validation_tab import render_south_swell_validation_tab
 
 
 st.set_page_config(
@@ -28,6 +29,7 @@ tabs = st.tabs(
         "GFS wave components",
         "CDIP MOP Comparison",
         "Observation QC",
+        "20260610 South Swell validation",
     ]
 )
 
@@ -51,4 +53,7 @@ with tabs[5]:
 
 with tabs[6]:
     render_obs_qc_tab()
+
+with tabs[7]:
+    render_south_swell_validation_tab()
 
