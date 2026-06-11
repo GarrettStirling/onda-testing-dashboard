@@ -2,13 +2,15 @@
 
 Compares uncalibrated vs buoy/CDIP scalar (complex + minimal) forecasts from
 ``data/20261006 Wave Height Validation/``. Breaks are ranked most → least by
-observation count from ``surf_calibration_data.observations_with_cdip`` (BigQuery).
+observation count from the local calibration CSV.
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -38,16 +40,27 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = REPO_ROOT / "data" / "20261006 Wave Height Validation"
 BUOY_DIR = DATA_ROOT / "buoy_based_scalar"
 CDIP_DIR = DATA_ROOT / "cdip_based_scalar"
+FIELD_OBS_CSV = REPO_ROOT / "data" / "observations" / "20260610_Onda_Calibration_Wave_Height.csv"
+FIELD_OBS_DATE = pd.Timestamp("2026-06-10", tz=PST).date()
 
-PROJECT_ID = "onda-maverick"
-OBS_TABLE = f"`{PROJECT_ID}.surf_calibration_data.observations_with_cdip`"
+C_OBS = "#34d399"  # field observations (distinct from forecast lines)
 
 # Bump when series keys or source CSV paths change (invalidates Streamlit cache).
-BUNDLE_CACHE_VERSION = 3
+BUNDLE_CACHE_VERSION = 4
+
+# Manual fixes when observation ``Spot`` text does not match reference labels.
+SPOT_ALIASES: dict[str, int] = {
+    "4 mile": 15,
+    "four mile": 15,
+    "mitchell s": 19,
+    "mitchells": 19,
+    "waddell reef": 12,
+    "waddell beach": 11,
+}
 
 # (series key, legend label, color, dash, line width)
 SERIES: list[tuple[str, str, str, str, float]] = [
-    ("uncalibrated_buoy", "Uncalibrated (buoy)", C_PRIMARY, "dot", LW_SEC),
+    ("uncalibrated_buoy", "Uncalibrated (buoy)", C_SIG, "dash", LW_SIG),
     ("uncalibrated_cdip", "Uncalibrated (CDIP)", C_SIG, "solid", LW_SIG),
     ("complex_buoy_scalar", "Complex (buoy scalar)", C_PRIMARY, "solid", LW_MAIN),
     ("minimal_buoy_scalar", "Minimal (buoy scalar)", C_PRIMARY, "dash", LW_SEC),
@@ -105,6 +118,179 @@ def _load_validation_bundle(_mtime_key: tuple[int | float, ...]) -> dict[str, pd
     return out
 
 
+def _norm_spot_text(s: str) -> str:
+    t = (s or "").lower().strip()
+    t = t.replace("'", "").replace("’", "")
+    t = re.sub(r"[^a-z0-9]+", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+@st.cache_data(show_spinner=False)
+def _build_spot_to_break_id(path: str) -> dict[str, int]:
+    """Map normalized observation ``Spot`` strings → ``break_id``."""
+    df = pd.read_csv(path, usecols=["break_id", "spot_name", "break_name"])
+    lookup: dict[str, int] = {}
+
+    def _add(key: str, bid: int) -> None:
+        k = _norm_spot_text(key)
+        if k:
+            lookup.setdefault(k, int(bid))
+
+    for _, row in df.iterrows():
+        bid = int(row["break_id"])
+        spot = str(row.get("spot_name") or "").strip()
+        brk = str(row.get("break_name") or "").strip()
+        _add(spot, bid)
+        _add(brk, bid)
+        if spot and brk:
+            _add(f"{spot} {brk}", bid)
+            _add(f"{spot} — {brk}", bid)
+            if spot.lower() != brk.lower():
+                _add(f"{spot}{brk}", bid)
+
+    for alias, bid in SPOT_ALIASES.items():
+        lookup[_norm_spot_text(alias)] = bid
+    return lookup
+
+
+def _parse_field_wave_height_ft(raw: object) -> float | None:
+    if raw is None or (isinstance(raw, float) and np.isnan(raw)):
+        return None
+    s = str(raw).strip()
+    if not s:
+        return None
+    if "-" in s:
+        parts = [p.strip() for p in s.split("-", 1)]
+        try:
+            lo, hi = float(parts[0]), float(parts[1])
+            return (lo + hi) / 2.0
+        except ValueError:
+            return None
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def _parse_field_obs_datetime(date_s: object, time_s: object) -> pd.Timestamp | pd.NaT:
+    d = pd.to_datetime(date_s, errors="coerce")
+    if pd.isna(d):
+        return pd.NaT
+    t = pd.to_datetime(str(time_s).strip(), errors="coerce")
+    if pd.isna(t):
+        return pd.NaT
+    combined = pd.Timestamp(
+        year=d.year,
+        month=d.month,
+        day=d.day,
+        hour=t.hour,
+        minute=t.minute,
+        second=getattr(t, "second", 0),
+    )
+    return combined.tz_localize(PST, ambiguous=True, nonexistent="shift_forward")
+
+
+@st.cache_data(show_spinner=False)
+def _load_calibration_observations(
+    csv_path: str,
+    csv_mtime: float,
+    breaks_path: str,
+) -> tuple[pd.DataFrame, list[str]]:
+    """
+    All calibration CSV rows with a resolved ``break_id``.
+
+    Returns (dataframe, unmatched_spot_names from Jun 10 rows only).
+    """
+    p = Path(csv_path)
+    if not p.exists() or csv_mtime <= 0:
+        return pd.DataFrame(), []
+
+    raw = pd.read_csv(p)
+    if raw.empty or "Spot" not in raw.columns:
+        return pd.DataFrame(), []
+
+    spot_lookup = _build_spot_to_break_id(breaks_path)
+    rows: list[dict] = []
+    unmatched_june10: set[str] = set()
+
+    for _, r in raw.iterrows():
+        obs_dt = _parse_field_obs_datetime(r.get("Date"), r.get("Time"))
+        if pd.isna(obs_dt):
+            continue
+        hs = _parse_field_wave_height_ft(r.get("Wave_Height_ft"))
+        if hs is None:
+            continue
+        spot_raw = str(r.get("Spot") or "").strip()
+        bid = spot_lookup.get(_norm_spot_text(spot_raw))
+        if bid is None:
+            if obs_dt.date() == FIELD_OBS_DATE:
+                unmatched_june10.add(spot_raw)
+            continue
+        rows.append(
+            {
+                "break_id": bid,
+                "spot_raw": spot_raw,
+                "obs_time_pst": obs_dt,
+                "wave_height_ft": hs,
+                "observation_type": str(r.get("Observation_Type") or "").strip(),
+            }
+        )
+
+    if not rows:
+        return pd.DataFrame(), sorted(unmatched_june10)
+
+    out = pd.DataFrame(rows)
+    return out.sort_values(["break_id", "obs_time_pst"]), sorted(unmatched_june10)
+
+
+def _obs_counts_from_calibration(df: pd.DataFrame) -> pd.Series:
+    if df.empty:
+        return pd.Series(dtype=int)
+    return df.groupby("break_id").size().astype(int)
+
+
+def _snap_obs_to_forecast_times(
+    field_obs: pd.DataFrame,
+    forecast_times: pd.Series,
+) -> pd.DataFrame:
+    """Attach nearest forecast ``wave_time_pst`` per observation (``merge_asof``)."""
+    if field_obs.empty or forecast_times.empty:
+        return field_obs.copy()
+
+    fc = (
+        pd.DataFrame({"wave_time_pst": pd.to_datetime(forecast_times).sort_values()})
+        .drop_duplicates(subset=["wave_time_pst"])
+        .sort_values("wave_time_pst")
+    )
+    parts: list[pd.DataFrame] = []
+    for bid, grp in field_obs.groupby("break_id", sort=True):
+        left = grp.sort_values("obs_time_pst").copy()
+        merged = pd.merge_asof(
+            left,
+            fc,
+            left_on="obs_time_pst",
+            right_on="wave_time_pst",
+            direction="nearest",
+        )
+        merged["match_delta_min"] = (
+            (merged["obs_time_pst"] - merged["wave_time_pst"]).dt.total_seconds().abs() / 60.0
+        )
+        parts.append(merged)
+    return pd.concat(parts, ignore_index=True)
+
+
+def _field_obs_for_break(
+    field_obs: pd.DataFrame,
+    *,
+    break_id: int,
+    forecast_times: pd.Series,
+) -> pd.DataFrame:
+    sub = field_obs.loc[field_obs["break_id"] == break_id]
+    if sub.empty:
+        return sub
+    return _snap_obs_to_forecast_times(sub, forecast_times)
+
+
 def _get_validation_bundle() -> dict[str, pd.DataFrame]:
     """Load bundle; clear stale Streamlit cache if series keys changed."""
     expected = frozenset(_validation_csv_paths().keys())
@@ -118,23 +304,6 @@ def _get_validation_bundle() -> dict[str, pd.DataFrame]:
         missing = sorted(expected - set(bundle.keys()))
         raise KeyError(f"Validation bundle missing series: {missing}")
     return bundle
-
-
-@st.cache_data(ttl=600, show_spinner="Loading observation counts from BigQuery…")
-def _load_obs_counts_bigquery(_cache_buster: int = 0) -> pd.Series:
-    from streamlit_dashboard.bq_forecast_loader import forecast_bigquery_client
-
-    client = forecast_bigquery_client()
-    sql = f"""
-    SELECT CAST(break_id AS INT64) AS break_id, COUNT(*) AS n_obs
-    FROM {OBS_TABLE}
-    WHERE break_id IS NOT NULL
-    GROUP BY break_id
-    """
-    df = client.query(sql).to_dataframe(create_bqstorage_client=False)
-    if df.empty:
-        return pd.Series(dtype=int)
-    return df.set_index("break_id")["n_obs"].astype(int)
 
 
 def _break_label_from_row(row: pd.Series, labels: dict[int, str]) -> str:
@@ -216,6 +385,7 @@ def _plot_break_validation(
     break_id: int,
     label: str,
     n_obs: int,
+    field_obs: pd.DataFrame | None = None,
 ) -> go.Figure:
     fig = go.Figure()
     leg: set[str] = set()
@@ -252,6 +422,49 @@ def _plot_break_validation(
             showlegend=show,
         )
 
+    obs_label = "Field obs (Jun 10)"
+    if field_obs is not None and not field_obs.empty:
+        ref_fc = bundle.get("uncalibrated_buoy")
+        fc_times = (
+            ref_fc.loc[ref_fc["break_id"] == break_id, "wave_time_pst"]
+            if ref_fc is not None
+            else pd.Series(dtype="datetime64[ns, US/Pacific]")
+        )
+        obs_sub = _field_obs_for_break(field_obs, break_id=break_id, forecast_times=fc_times)
+        if not obs_sub.empty:
+            height_series.append(obs_sub["wave_height_ft"])
+            fig.add_trace(
+                go.Scatter(
+                    x=obs_sub["wave_time_pst"],
+                    y=obs_sub["wave_height_ft"],
+                    mode="markers",
+                    name=obs_label,
+                    marker=dict(
+                        color=C_OBS,
+                        size=10,
+                        symbol="circle",
+                        line=dict(width=1.2, color=BG_DARK),
+                    ),
+                    customdata=np.stack(
+                        [
+                            obs_sub["obs_time_pst"].dt.strftime("%b %d %I:%M %p"),
+                            obs_sub["match_delta_min"].round(0).astype(int),
+                            obs_sub["spot_raw"].astype(str),
+                            obs_sub.get("observation_type", pd.Series([""] * len(obs_sub))).astype(str),
+                        ],
+                        axis=-1,
+                    ),
+                    hovertemplate=(
+                        f"<b>{obs_label}</b><br>"
+                        "%{y:.2f} ft<br>"
+                        "Obs: %{customdata[0]}<br>"
+                        "Spot: %{customdata[2]}<br>"
+                        "Δ forecast: %{customdata[1]} min"
+                        "<extra></extra>"
+                    ),
+                )
+            )
+
     if not height_series:
         fig.add_annotation(
             text="No forecast rows for this break",
@@ -275,7 +488,7 @@ def _plot_break_validation(
     x_tickvals = _pacific_daily_midnight_ticks(t_min, t_max)
     y_r = _y_range_padded(*height_series, frac=0.08, floor_zero=True, min_span=0.35)
 
-    obs_note = f"  ·  {n_obs:,} observations" if n_obs else "  ·  no BQ observations"
+    obs_note = f"  ·  {n_obs:,} observations" if n_obs else "  ·  no calibration observations"
     fig.update_layout(
         title=dict(
             text=f"{label}{obs_note}",
@@ -330,9 +543,9 @@ def render_south_swell_validation_tab() -> None:
     st.header("20260610 South Swell validation")
     st.caption(
         "Significant wave height (ft) vs time (US/Pacific) per break. "
-        "Six forecast variants: uncalibrated (buoy/CDIP) baselines plus buoy- and "
-        "CDIP-based complex/minimal scalar models. Breaks ranked **most → least** observations "
-        f"from `{OBS_TABLE}`."
+        "Six forecast variants plus **Jun 10 field observations** (green dots; x snapped to "
+        "nearest forecast time). Breaks ranked **most → least** by observation count "
+        f"from `{FIELD_OBS_CSV.name}`."
     )
 
     paths = _validation_csv_paths()
@@ -347,30 +560,16 @@ def render_south_swell_validation_tab() -> None:
         st.error(f"Failed to load validation CSVs: {exc}")
         return
 
-    use_bq = st.toggle(
-        "Rank breaks by BigQuery observation count",
-        value=True,
-        key="south_swell_use_bq",
-        help=(
-            f"Uses `{OBS_TABLE}` for per-break observation counts. "
-            "Disable to sort by break_id only (no credentials needed)."
-        ),
+    obs_mtime = FIELD_OBS_CSV.stat().st_mtime if FIELD_OBS_CSV.exists() else 0.0
+    all_cal_obs, unmatched_spots = _load_calibration_observations(
+        str(FIELD_OBS_CSV),
+        obs_mtime,
+        str(BREAKS_CSV),
     )
-
-    obs_counts: pd.Series | None = None
-    if use_bq:
-        refresh = st.button("↺ Refresh observation counts", key="south_swell_bq_refresh")
-        if refresh:
-            st.session_state["south_swell_bq_buster"] = (
-                st.session_state.get("south_swell_bq_buster", 0) + 1
-            )
-        try:
-            obs_counts = _load_obs_counts_bigquery(
-                st.session_state.get("south_swell_bq_buster", 0)
-            )
-        except Exception as exc:
-            st.warning(f"BigQuery observation counts unavailable: {exc}")
-            st.caption("Falling back to break_id order.")
+    obs_counts = _obs_counts_from_calibration(all_cal_obs)
+    field_obs = all_cal_obs.loc[
+        all_cal_obs["obs_time_pst"].dt.date == FIELD_OBS_DATE
+    ].copy()
 
     sorted_ids, label_by_bid, count_by_bid = _sorted_break_ids(bundle, obs_counts)
 
@@ -382,8 +581,17 @@ def render_south_swell_validation_tab() -> None:
             "Uncalibrated baselines: `20260610_forecast_uncalibrated_buoy.csv` (buoy folder) "
             "and `20260610_forecast_uncalibrated_cdip.csv` (CDIP folder)."
         )
-        if obs_counts is not None:
-            st.write(f"Observation ranking: `{OBS_TABLE}`")
+        st.write(f"Calibration observations: `{FIELD_OBS_CSV.name}`")
+        if not all_cal_obs.empty:
+            st.write(f"- {len(all_cal_obs):,} total rows matched to breaks (all dates)")
+        if not field_obs.empty:
+            st.write(f"- {len(field_obs):,} on Jun 10 (plotted as green dots)")
+        if unmatched_spots:
+            st.warning(
+                "Could not match these Jun 10 spot names to a break — "
+                "let Garrett know if any should be mapped:\n"
+                + "\n".join(f"- `{s}`" for s in unmatched_spots)
+            )
 
     selected: list[int] = st.multiselect(
         "Surf breaks (ranked most → least observations)",
@@ -408,6 +616,7 @@ def render_south_swell_validation_tab() -> None:
                 break_id=bid,
                 label=label_by_bid[bid],
                 n_obs=count_by_bid[bid],
+                field_obs=field_obs,
             )
             st.plotly_chart(fig, use_container_width=True)
         except Exception as exc:

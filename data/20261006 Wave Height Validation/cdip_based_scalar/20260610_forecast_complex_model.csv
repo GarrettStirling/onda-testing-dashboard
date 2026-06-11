@@ -52,49 +52,49 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 1,Fort Point,Fort Point,2026-06-16 08:00:00 PDT,0.41792423
 1,Fort Point,Fort Point,2026-06-16 11:00:00 PDT,0.3332773
 1,Fort Point,Fort Point,2026-06-16 14:00:00 PDT,0.4222529
-2,Ocean Beach,North,2026-06-10 02:00:00 PDT,3.4300432
-2,Ocean Beach,North,2026-06-10 05:00:00 PDT,3.5562053
-2,Ocean Beach,North,2026-06-10 08:00:00 PDT,3.486259
-2,Ocean Beach,North,2026-06-10 11:00:00 PDT,3.5511806
-2,Ocean Beach,North,2026-06-10 14:00:00 PDT,3.5226288
-2,Ocean Beach,North,2026-06-10 17:00:00 PDT,3.8848248
-2,Ocean Beach,North,2026-06-10 20:00:00 PDT,4.099689
-2,Ocean Beach,North,2026-06-10 23:00:00 PDT,4.2215085
-2,Ocean Beach,North,2026-06-11 02:00:00 PDT,3.8957057
-2,Ocean Beach,North,2026-06-11 05:00:00 PDT,3.7197304
-2,Ocean Beach,North,2026-06-11 08:00:00 PDT,3.4766295
-2,Ocean Beach,North,2026-06-11 11:00:00 PDT,3.3451102
-2,Ocean Beach,North,2026-06-11 14:00:00 PDT,3.2447588
-2,Ocean Beach,North,2026-06-11 17:00:00 PDT,3.1531541
-2,Ocean Beach,North,2026-06-11 20:00:00 PDT,3.0736241
-2,Ocean Beach,North,2026-06-11 23:00:00 PDT,3.039774
-2,Ocean Beach,North,2026-06-12 02:00:00 PDT,3.0334253
-2,Ocean Beach,North,2026-06-12 05:00:00 PDT,2.9001038
-2,Ocean Beach,North,2026-06-12 08:00:00 PDT,2.8275886
-2,Ocean Beach,North,2026-06-12 11:00:00 PDT,2.5244622
-2,Ocean Beach,North,2026-06-12 14:00:00 PDT,2.500053
-2,Ocean Beach,North,2026-06-12 17:00:00 PDT,2.331128
-2,Ocean Beach,North,2026-06-12 20:00:00 PDT,2.4845805
-2,Ocean Beach,North,2026-06-12 23:00:00 PDT,2.5878847
-2,Ocean Beach,North,2026-06-13 02:00:00 PDT,2.8671067
-2,Ocean Beach,North,2026-06-13 05:00:00 PDT,2.996141
-2,Ocean Beach,North,2026-06-13 08:00:00 PDT,2.9919784
-2,Ocean Beach,North,2026-06-13 11:00:00 PDT,2.8576603
-2,Ocean Beach,North,2026-06-13 14:00:00 PDT,2.7883463
-2,Ocean Beach,North,2026-06-13 17:00:00 PDT,2.7852247
-2,Ocean Beach,North,2026-06-13 20:00:00 PDT,2.7630622
-2,Ocean Beach,North,2026-06-13 23:00:00 PDT,2.6598504
-2,Ocean Beach,North,2026-06-14 02:00:00 PDT,2.572226
-2,Ocean Beach,North,2026-06-14 05:00:00 PDT,2.652007
-2,Ocean Beach,North,2026-06-14 08:00:00 PDT,2.5465808
-2,Ocean Beach,North,2026-06-14 11:00:00 PDT,2.4452786
-2,Ocean Beach,North,2026-06-14 14:00:00 PDT,2.4075878
-2,Ocean Beach,North,2026-06-14 17:00:00 PDT,2.4742136
-2,Ocean Beach,North,2026-06-14 20:00:00 PDT,2.4512079
-2,Ocean Beach,North,2026-06-14 23:00:00 PDT,2.2771502
-2,Ocean Beach,North,2026-06-15 02:00:00 PDT,2.3597329
-2,Ocean Beach,North,2026-06-15 05:00:00 PDT,2.7177813
-2,Ocean Beach,North,2026-06-15 08:00:00 PDT,3.0593932
+2,Ocean Beach,North,2026-06-10 02:00:00 PDT,5.09714
+2,Ocean Beach,North,2026-06-10 05:00:00 PDT,5.0247793
+2,Ocean Beach,North,2026-06-10 08:00:00 PDT,4.9027023
+2,Ocean Beach,North,2026-06-10 11:00:00 PDT,5.0011272
+2,Ocean Beach,North,2026-06-10 14:00:00 PDT,4.931875
+2,Ocean Beach,North,2026-06-10 17:00:00 PDT,4.9081264
+2,Ocean Beach,North,2026-06-10 20:00:00 PDT,4.8415627
+2,Ocean Beach,North,2026-06-10 23:00:00 PDT,5.0614777
+2,Ocean Beach,North,2026-06-11 02:00:00 PDT,5.0062737
+2,Ocean Beach,North,2026-06-11 05:00:00 PDT,4.7089295
+2,Ocean Beach,North,2026-06-11 08:00:00 PDT,4.2420883
+2,Ocean Beach,North,2026-06-11 11:00:00 PDT,4.0496693
+2,Ocean Beach,North,2026-06-11 14:00:00 PDT,3.906964
+2,Ocean Beach,North,2026-06-11 17:00:00 PDT,3.6349611
+2,Ocean Beach,North,2026-06-11 20:00:00 PDT,3.3213887
+2,Ocean Beach,North,2026-06-11 23:00:00 PDT,3.4285874
+2,Ocean Beach,North,2026-06-12 02:00:00 PDT,3.7687113
+2,Ocean Beach,North,2026-06-12 05:00:00 PDT,3.8632584
+2,Ocean Beach,North,2026-06-12 08:00:00 PDT,3.6026049
+2,Ocean Beach,North,2026-06-12 11:00:00 PDT,3.1798837
+2,Ocean Beach,North,2026-06-12 14:00:00 PDT,3.0328891
+2,Ocean Beach,North,2026-06-12 17:00:00 PDT,2.8039565
+2,Ocean Beach,North,2026-06-12 20:00:00 PDT,2.7564902
+2,Ocean Beach,North,2026-06-12 23:00:00 PDT,2.8939488
+2,Ocean Beach,North,2026-06-13 02:00:00 PDT,3.3149867
+2,Ocean Beach,North,2026-06-13 05:00:00 PDT,3.635992
+2,Ocean Beach,North,2026-06-13 08:00:00 PDT,3.473612
+2,Ocean Beach,North,2026-06-13 11:00:00 PDT,3.214252
+2,Ocean Beach,North,2026-06-13 14:00:00 PDT,3.0111117
+2,Ocean Beach,North,2026-06-13 17:00:00 PDT,2.968886
+2,Ocean Beach,North,2026-06-13 20:00:00 PDT,2.862965
+2,Ocean Beach,North,2026-06-13 23:00:00 PDT,2.8649971
+2,Ocean Beach,North,2026-06-14 02:00:00 PDT,2.9651175
+2,Ocean Beach,North,2026-06-14 05:00:00 PDT,3.2583957
+2,Ocean Beach,North,2026-06-14 08:00:00 PDT,3.1379263
+2,Ocean Beach,North,2026-06-14 11:00:00 PDT,2.9758103
+2,Ocean Beach,North,2026-06-14 14:00:00 PDT,2.87942
+2,Ocean Beach,North,2026-06-14 17:00:00 PDT,2.839511
+2,Ocean Beach,North,2026-06-14 20:00:00 PDT,2.707137
+2,Ocean Beach,North,2026-06-14 23:00:00 PDT,2.4770105
+2,Ocean Beach,North,2026-06-15 02:00:00 PDT,2.6447835
+2,Ocean Beach,North,2026-06-15 05:00:00 PDT,2.96963
+2,Ocean Beach,North,2026-06-15 08:00:00 PDT,3.214244
 2,Ocean Beach,North,2026-06-15 11:00:00 PDT,3.0561805
 2,Ocean Beach,North,2026-06-15 14:00:00 PDT,2.9174998
 2,Ocean Beach,North,2026-06-15 17:00:00 PDT,2.7436147
@@ -105,49 +105,49 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 2,Ocean Beach,North,2026-06-16 08:00:00 PDT,3.6642199
 2,Ocean Beach,North,2026-06-16 11:00:00 PDT,3.4438114
 2,Ocean Beach,North,2026-06-16 14:00:00 PDT,3.4108562
-3,Ocean Beach,Central,2026-06-10 02:00:00 PDT,5.0439453
-3,Ocean Beach,Central,2026-06-10 05:00:00 PDT,5.0643787
-3,Ocean Beach,Central,2026-06-10 08:00:00 PDT,5.0852904
-3,Ocean Beach,Central,2026-06-10 11:00:00 PDT,5.190378
-3,Ocean Beach,Central,2026-06-10 14:00:00 PDT,5.1043324
-3,Ocean Beach,Central,2026-06-10 17:00:00 PDT,5.4197516
-3,Ocean Beach,Central,2026-06-10 20:00:00 PDT,5.5015664
-3,Ocean Beach,Central,2026-06-10 23:00:00 PDT,5.6332264
-3,Ocean Beach,Central,2026-06-11 02:00:00 PDT,5.216918
-3,Ocean Beach,Central,2026-06-11 05:00:00 PDT,5.070899
-3,Ocean Beach,Central,2026-06-11 08:00:00 PDT,4.9593034
-3,Ocean Beach,Central,2026-06-11 11:00:00 PDT,4.887763
-3,Ocean Beach,Central,2026-06-11 14:00:00 PDT,4.9860554
-3,Ocean Beach,Central,2026-06-11 17:00:00 PDT,5.084602
-3,Ocean Beach,Central,2026-06-11 20:00:00 PDT,5.218256
-3,Ocean Beach,Central,2026-06-11 23:00:00 PDT,5.240182
-3,Ocean Beach,Central,2026-06-12 02:00:00 PDT,4.9827914
-3,Ocean Beach,Central,2026-06-12 05:00:00 PDT,4.726087
-3,Ocean Beach,Central,2026-06-12 08:00:00 PDT,4.6130376
-3,Ocean Beach,Central,2026-06-12 11:00:00 PDT,4.4747233
-3,Ocean Beach,Central,2026-06-12 14:00:00 PDT,4.357568
-3,Ocean Beach,Central,2026-06-12 17:00:00 PDT,4.285216
-3,Ocean Beach,Central,2026-06-12 20:00:00 PDT,4.5078835
-3,Ocean Beach,Central,2026-06-12 23:00:00 PDT,4.7347426
-3,Ocean Beach,Central,2026-06-13 02:00:00 PDT,4.919715
-3,Ocean Beach,Central,2026-06-13 05:00:00 PDT,4.925623
-3,Ocean Beach,Central,2026-06-13 08:00:00 PDT,4.9642344
-3,Ocean Beach,Central,2026-06-13 11:00:00 PDT,4.9618692
-3,Ocean Beach,Central,2026-06-13 14:00:00 PDT,4.983337
-3,Ocean Beach,Central,2026-06-13 17:00:00 PDT,4.9976907
-3,Ocean Beach,Central,2026-06-13 20:00:00 PDT,4.9240623
-3,Ocean Beach,Central,2026-06-13 23:00:00 PDT,4.8615212
-3,Ocean Beach,Central,2026-06-14 02:00:00 PDT,4.7869205
-3,Ocean Beach,Central,2026-06-14 05:00:00 PDT,4.9924836
-3,Ocean Beach,Central,2026-06-14 08:00:00 PDT,5.022674
-3,Ocean Beach,Central,2026-06-14 11:00:00 PDT,5.0977855
-3,Ocean Beach,Central,2026-06-14 14:00:00 PDT,5.1950836
-3,Ocean Beach,Central,2026-06-14 17:00:00 PDT,5.3408203
-3,Ocean Beach,Central,2026-06-14 20:00:00 PDT,5.3921566
-3,Ocean Beach,Central,2026-06-14 23:00:00 PDT,5.265036
-3,Ocean Beach,Central,2026-06-15 02:00:00 PDT,5.3539634
-3,Ocean Beach,Central,2026-06-15 05:00:00 PDT,4.880924
-3,Ocean Beach,Central,2026-06-15 08:00:00 PDT,4.385359
+3,Ocean Beach,Central,2026-06-10 02:00:00 PDT,3.9085367
+3,Ocean Beach,Central,2026-06-10 05:00:00 PDT,3.8092327
+3,Ocean Beach,Central,2026-06-10 08:00:00 PDT,3.7623894
+3,Ocean Beach,Central,2026-06-10 11:00:00 PDT,3.882694
+3,Ocean Beach,Central,2026-06-10 14:00:00 PDT,3.814848
+3,Ocean Beach,Central,2026-06-10 17:00:00 PDT,4.4110727
+3,Ocean Beach,Central,2026-06-10 20:00:00 PDT,4.755792
+3,Ocean Beach,Central,2026-06-10 23:00:00 PDT,5.4243336
+3,Ocean Beach,Central,2026-06-11 02:00:00 PDT,5.109342
+3,Ocean Beach,Central,2026-06-11 05:00:00 PDT,4.9911833
+3,Ocean Beach,Central,2026-06-11 08:00:00 PDT,4.2442694
+3,Ocean Beach,Central,2026-06-11 11:00:00 PDT,3.811494
+3,Ocean Beach,Central,2026-06-11 14:00:00 PDT,3.368673
+3,Ocean Beach,Central,2026-06-11 17:00:00 PDT,3.2891035
+3,Ocean Beach,Central,2026-06-11 20:00:00 PDT,3.1950426
+3,Ocean Beach,Central,2026-06-11 23:00:00 PDT,3.311033
+3,Ocean Beach,Central,2026-06-12 02:00:00 PDT,3.3209376
+3,Ocean Beach,Central,2026-06-12 05:00:00 PDT,3.204373
+3,Ocean Beach,Central,2026-06-12 08:00:00 PDT,2.9268827
+3,Ocean Beach,Central,2026-06-12 11:00:00 PDT,2.8075762
+3,Ocean Beach,Central,2026-06-12 14:00:00 PDT,2.6922903
+3,Ocean Beach,Central,2026-06-12 17:00:00 PDT,2.6562486
+3,Ocean Beach,Central,2026-06-12 20:00:00 PDT,2.7797863
+3,Ocean Beach,Central,2026-06-12 23:00:00 PDT,3.0866594
+3,Ocean Beach,Central,2026-06-13 02:00:00 PDT,3.3936398
+3,Ocean Beach,Central,2026-06-13 05:00:00 PDT,3.4681048
+3,Ocean Beach,Central,2026-06-13 08:00:00 PDT,3.3308887
+3,Ocean Beach,Central,2026-06-13 11:00:00 PDT,3.232054
+3,Ocean Beach,Central,2026-06-13 14:00:00 PDT,3.2132864
+3,Ocean Beach,Central,2026-06-13 17:00:00 PDT,3.214776
+3,Ocean Beach,Central,2026-06-13 20:00:00 PDT,3.0915496
+3,Ocean Beach,Central,2026-06-13 23:00:00 PDT,3.1009917
+3,Ocean Beach,Central,2026-06-14 02:00:00 PDT,3.1187594
+3,Ocean Beach,Central,2026-06-14 05:00:00 PDT,3.4171598
+3,Ocean Beach,Central,2026-06-14 08:00:00 PDT,3.4138482
+3,Ocean Beach,Central,2026-06-14 11:00:00 PDT,3.4518466
+3,Ocean Beach,Central,2026-06-14 14:00:00 PDT,3.491172
+3,Ocean Beach,Central,2026-06-14 17:00:00 PDT,3.5280092
+3,Ocean Beach,Central,2026-06-14 20:00:00 PDT,3.4639814
+3,Ocean Beach,Central,2026-06-14 23:00:00 PDT,3.2700047
+3,Ocean Beach,Central,2026-06-15 02:00:00 PDT,3.3778539
+3,Ocean Beach,Central,2026-06-15 05:00:00 PDT,3.5896971
+3,Ocean Beach,Central,2026-06-15 08:00:00 PDT,3.7447288
 3,Ocean Beach,Central,2026-06-15 11:00:00 PDT,3.6320677
 3,Ocean Beach,Central,2026-06-15 14:00:00 PDT,3.535384
 3,Ocean Beach,Central,2026-06-15 17:00:00 PDT,3.4428937
@@ -158,49 +158,49 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 3,Ocean Beach,Central,2026-06-16 08:00:00 PDT,4.3878107
 3,Ocean Beach,Central,2026-06-16 11:00:00 PDT,4.2999816
 3,Ocean Beach,Central,2026-06-16 14:00:00 PDT,4.4750915
-4,Ocean Beach,South,2026-06-10 02:00:00 PDT,3.922482
-4,Ocean Beach,South,2026-06-10 05:00:00 PDT,3.8519084
-4,Ocean Beach,South,2026-06-10 08:00:00 PDT,3.8276868
-4,Ocean Beach,South,2026-06-10 11:00:00 PDT,3.8817878
-4,Ocean Beach,South,2026-06-10 14:00:00 PDT,3.8385794
-4,Ocean Beach,South,2026-06-10 17:00:00 PDT,4.06838
-4,Ocean Beach,South,2026-06-10 20:00:00 PDT,3.9913096
-4,Ocean Beach,South,2026-06-10 23:00:00 PDT,4.2813835
-4,Ocean Beach,South,2026-06-11 02:00:00 PDT,3.9850547
-4,Ocean Beach,South,2026-06-11 05:00:00 PDT,3.813675
-4,Ocean Beach,South,2026-06-11 08:00:00 PDT,3.5009851
-4,Ocean Beach,South,2026-06-11 11:00:00 PDT,3.3071308
-4,Ocean Beach,South,2026-06-11 14:00:00 PDT,3.2712235
-4,Ocean Beach,South,2026-06-11 17:00:00 PDT,3.3530123
-4,Ocean Beach,South,2026-06-11 20:00:00 PDT,3.4715002
-4,Ocean Beach,South,2026-06-11 23:00:00 PDT,3.498107
-4,Ocean Beach,South,2026-06-12 02:00:00 PDT,3.2247977
-4,Ocean Beach,South,2026-06-12 05:00:00 PDT,2.9840147
-4,Ocean Beach,South,2026-06-12 08:00:00 PDT,2.9058247
-4,Ocean Beach,South,2026-06-12 11:00:00 PDT,2.7492566
-4,Ocean Beach,South,2026-06-12 14:00:00 PDT,2.7018964
-4,Ocean Beach,South,2026-06-12 17:00:00 PDT,2.475532
-4,Ocean Beach,South,2026-06-12 20:00:00 PDT,2.4962916
-4,Ocean Beach,South,2026-06-12 23:00:00 PDT,2.4209123
-4,Ocean Beach,South,2026-06-13 02:00:00 PDT,2.584805
-4,Ocean Beach,South,2026-06-13 05:00:00 PDT,2.6850066
-4,Ocean Beach,South,2026-06-13 08:00:00 PDT,2.751862
-4,Ocean Beach,South,2026-06-13 11:00:00 PDT,2.6119843
-4,Ocean Beach,South,2026-06-13 14:00:00 PDT,2.6478484
-4,Ocean Beach,South,2026-06-13 17:00:00 PDT,2.7049406
-4,Ocean Beach,South,2026-06-13 20:00:00 PDT,2.8067896
-4,Ocean Beach,South,2026-06-13 23:00:00 PDT,2.8520443
-4,Ocean Beach,South,2026-06-14 02:00:00 PDT,2.8608909
-4,Ocean Beach,South,2026-06-14 05:00:00 PDT,2.9635556
-4,Ocean Beach,South,2026-06-14 08:00:00 PDT,2.8462818
-4,Ocean Beach,South,2026-06-14 11:00:00 PDT,2.792887
-4,Ocean Beach,South,2026-06-14 14:00:00 PDT,2.7436862
-4,Ocean Beach,South,2026-06-14 17:00:00 PDT,2.7172046
-4,Ocean Beach,South,2026-06-14 20:00:00 PDT,2.5895517
-4,Ocean Beach,South,2026-06-14 23:00:00 PDT,2.4478712
-4,Ocean Beach,South,2026-06-15 02:00:00 PDT,2.4813404
-4,Ocean Beach,South,2026-06-15 05:00:00 PDT,2.331346
-4,Ocean Beach,South,2026-06-15 08:00:00 PDT,2.2982502
+4,Ocean Beach,South,2026-06-10 02:00:00 PDT,4.1139154
+4,Ocean Beach,South,2026-06-10 05:00:00 PDT,3.7423942
+4,Ocean Beach,South,2026-06-10 08:00:00 PDT,3.5393255
+4,Ocean Beach,South,2026-06-10 11:00:00 PDT,3.510123
+4,Ocean Beach,South,2026-06-10 14:00:00 PDT,3.508837
+4,Ocean Beach,South,2026-06-10 17:00:00 PDT,3.8926616
+4,Ocean Beach,South,2026-06-10 20:00:00 PDT,3.8086646
+4,Ocean Beach,South,2026-06-10 23:00:00 PDT,4.5128684
+4,Ocean Beach,South,2026-06-11 02:00:00 PDT,4.3068147
+4,Ocean Beach,South,2026-06-11 05:00:00 PDT,4.2280087
+4,Ocean Beach,South,2026-06-11 08:00:00 PDT,3.4383512
+4,Ocean Beach,South,2026-06-11 11:00:00 PDT,2.999757
+4,Ocean Beach,South,2026-06-11 14:00:00 PDT,2.5843186
+4,Ocean Beach,South,2026-06-11 17:00:00 PDT,2.4248989
+4,Ocean Beach,South,2026-06-11 20:00:00 PDT,2.2682326
+4,Ocean Beach,South,2026-06-11 23:00:00 PDT,2.37773
+4,Ocean Beach,South,2026-06-12 02:00:00 PDT,2.3463826
+4,Ocean Beach,South,2026-06-12 05:00:00 PDT,2.269265
+4,Ocean Beach,South,2026-06-12 08:00:00 PDT,2.0063207
+4,Ocean Beach,South,2026-06-12 11:00:00 PDT,1.87186
+4,Ocean Beach,South,2026-06-12 14:00:00 PDT,1.9025415
+4,Ocean Beach,South,2026-06-12 17:00:00 PDT,1.7457987
+4,Ocean Beach,South,2026-06-12 20:00:00 PDT,1.7030416
+4,Ocean Beach,South,2026-06-12 23:00:00 PDT,1.71428
+4,Ocean Beach,South,2026-06-13 02:00:00 PDT,2.032098
+4,Ocean Beach,South,2026-06-13 05:00:00 PDT,2.3126967
+4,Ocean Beach,South,2026-06-13 08:00:00 PDT,2.171157
+4,Ocean Beach,South,2026-06-13 11:00:00 PDT,1.8990604
+4,Ocean Beach,South,2026-06-13 14:00:00 PDT,1.7895538
+4,Ocean Beach,South,2026-06-13 17:00:00 PDT,1.8107216
+4,Ocean Beach,South,2026-06-13 20:00:00 PDT,1.8020246
+4,Ocean Beach,South,2026-06-13 23:00:00 PDT,1.8643758
+4,Ocean Beach,South,2026-06-14 02:00:00 PDT,1.9200027
+4,Ocean Beach,South,2026-06-14 05:00:00 PDT,2.1117144
+4,Ocean Beach,South,2026-06-14 08:00:00 PDT,1.9277953
+4,Ocean Beach,South,2026-06-14 11:00:00 PDT,1.8449006
+4,Ocean Beach,South,2026-06-14 14:00:00 PDT,1.8836482
+4,Ocean Beach,South,2026-06-14 17:00:00 PDT,1.9044425
+4,Ocean Beach,South,2026-06-14 20:00:00 PDT,1.803122
+4,Ocean Beach,South,2026-06-14 23:00:00 PDT,1.632949
+4,Ocean Beach,South,2026-06-15 02:00:00 PDT,1.7335861
+4,Ocean Beach,South,2026-06-15 05:00:00 PDT,1.8890779
+4,Ocean Beach,South,2026-06-15 08:00:00 PDT,2.0891812
 4,Ocean Beach,South,2026-06-15 11:00:00 PDT,2.13096
 4,Ocean Beach,South,2026-06-15 14:00:00 PDT,2.2160861
 4,Ocean Beach,South,2026-06-15 17:00:00 PDT,2.0806763
@@ -264,49 +264,49 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 5,Rockaway,Rockaway,2026-06-16 08:00:00 PDT,2.9942393
 5,Rockaway,Rockaway,2026-06-16 11:00:00 PDT,3.0514746
 5,Rockaway,Rockaway,2026-06-16 14:00:00 PDT,3.0689888
-6,Pacifica,Linda Mar North,2026-06-10 02:00:00 PDT,3.8223367
-6,Pacifica,Linda Mar North,2026-06-10 05:00:00 PDT,3.8204005
-6,Pacifica,Linda Mar North,2026-06-10 08:00:00 PDT,3.838071
-6,Pacifica,Linda Mar North,2026-06-10 11:00:00 PDT,3.851351
-6,Pacifica,Linda Mar North,2026-06-10 14:00:00 PDT,3.7617078
-6,Pacifica,Linda Mar North,2026-06-10 17:00:00 PDT,3.7200174
-6,Pacifica,Linda Mar North,2026-06-10 20:00:00 PDT,3.8718486
-6,Pacifica,Linda Mar North,2026-06-10 23:00:00 PDT,4.05594
-6,Pacifica,Linda Mar North,2026-06-11 02:00:00 PDT,3.9903183
-6,Pacifica,Linda Mar North,2026-06-11 05:00:00 PDT,3.6855724
-6,Pacifica,Linda Mar North,2026-06-11 08:00:00 PDT,3.3114936
-6,Pacifica,Linda Mar North,2026-06-11 11:00:00 PDT,3.0812285
-6,Pacifica,Linda Mar North,2026-06-11 14:00:00 PDT,2.9617908
-6,Pacifica,Linda Mar North,2026-06-11 17:00:00 PDT,2.8212945
-6,Pacifica,Linda Mar North,2026-06-11 20:00:00 PDT,2.6067498
-6,Pacifica,Linda Mar North,2026-06-11 23:00:00 PDT,2.6368716
-6,Pacifica,Linda Mar North,2026-06-12 02:00:00 PDT,2.7160912
-6,Pacifica,Linda Mar North,2026-06-12 05:00:00 PDT,2.736519
-6,Pacifica,Linda Mar North,2026-06-12 08:00:00 PDT,2.5115
-6,Pacifica,Linda Mar North,2026-06-12 11:00:00 PDT,2.2860022
-6,Pacifica,Linda Mar North,2026-06-12 14:00:00 PDT,2.136065
-6,Pacifica,Linda Mar North,2026-06-12 17:00:00 PDT,2.0040839
-6,Pacifica,Linda Mar North,2026-06-12 20:00:00 PDT,1.8466966
-6,Pacifica,Linda Mar North,2026-06-12 23:00:00 PDT,1.8501685
-6,Pacifica,Linda Mar North,2026-06-13 02:00:00 PDT,2.0042455
-6,Pacifica,Linda Mar North,2026-06-13 05:00:00 PDT,2.1701322
-6,Pacifica,Linda Mar North,2026-06-13 08:00:00 PDT,2.1102018
-6,Pacifica,Linda Mar North,2026-06-13 11:00:00 PDT,1.9631091
-6,Pacifica,Linda Mar North,2026-06-13 14:00:00 PDT,1.7761451
-6,Pacifica,Linda Mar North,2026-06-13 17:00:00 PDT,1.6268857
-6,Pacifica,Linda Mar North,2026-06-13 20:00:00 PDT,1.5160865
-6,Pacifica,Linda Mar North,2026-06-13 23:00:00 PDT,1.4857816
-6,Pacifica,Linda Mar North,2026-06-14 02:00:00 PDT,1.5437225
-6,Pacifica,Linda Mar North,2026-06-14 05:00:00 PDT,1.5887334
-6,Pacifica,Linda Mar North,2026-06-14 08:00:00 PDT,1.519687
-6,Pacifica,Linda Mar North,2026-06-14 11:00:00 PDT,1.3940684
-6,Pacifica,Linda Mar North,2026-06-14 14:00:00 PDT,1.3093698
-6,Pacifica,Linda Mar North,2026-06-14 17:00:00 PDT,1.2638184
-6,Pacifica,Linda Mar North,2026-06-14 20:00:00 PDT,1.2553127
-6,Pacifica,Linda Mar North,2026-06-14 23:00:00 PDT,1.2402366
-6,Pacifica,Linda Mar North,2026-06-15 02:00:00 PDT,1.3173783
-6,Pacifica,Linda Mar North,2026-06-15 05:00:00 PDT,1.4427438
-6,Pacifica,Linda Mar North,2026-06-15 08:00:00 PDT,1.5151627
+6,Pacifica,Linda Mar North,2026-06-10 02:00:00 PDT,4.256805
+6,Pacifica,Linda Mar North,2026-06-10 05:00:00 PDT,4.2546487
+6,Pacifica,Linda Mar North,2026-06-10 08:00:00 PDT,4.2743278
+6,Pacifica,Linda Mar North,2026-06-10 11:00:00 PDT,4.2891173
+6,Pacifica,Linda Mar North,2026-06-10 14:00:00 PDT,4.189285
+6,Pacifica,Linda Mar North,2026-06-10 17:00:00 PDT,4.0343313
+6,Pacifica,Linda Mar North,2026-06-10 20:00:00 PDT,4.101106
+6,Pacifica,Linda Mar North,2026-06-10 23:00:00 PDT,4.1986957
+6,Pacifica,Linda Mar North,2026-06-11 02:00:00 PDT,4.1559076
+6,Pacifica,Linda Mar North,2026-06-11 05:00:00 PDT,3.8402214
+6,Pacifica,Linda Mar North,2026-06-11 08:00:00 PDT,3.5278523
+6,Pacifica,Linda Mar North,2026-06-11 11:00:00 PDT,3.3590715
+6,Pacifica,Linda Mar North,2026-06-11 14:00:00 PDT,3.2984445
+6,Pacifica,Linda Mar North,2026-06-11 17:00:00 PDT,3.1419787
+6,Pacifica,Linda Mar North,2026-06-11 20:00:00 PDT,2.9030476
+6,Pacifica,Linda Mar North,2026-06-11 23:00:00 PDT,2.936593
+6,Pacifica,Linda Mar North,2026-06-12 02:00:00 PDT,3.0248175
+6,Pacifica,Linda Mar North,2026-06-12 05:00:00 PDT,3.0475671
+6,Pacifica,Linda Mar North,2026-06-12 08:00:00 PDT,2.7969708
+6,Pacifica,Linda Mar North,2026-06-12 11:00:00 PDT,2.5458422
+6,Pacifica,Linda Mar North,2026-06-12 14:00:00 PDT,2.3788621
+6,Pacifica,Linda Mar North,2026-06-12 17:00:00 PDT,2.2318795
+6,Pacifica,Linda Mar North,2026-06-12 20:00:00 PDT,2.0566025
+6,Pacifica,Linda Mar North,2026-06-12 23:00:00 PDT,2.060469
+6,Pacifica,Linda Mar North,2026-06-13 02:00:00 PDT,2.2320592
+6,Pacifica,Linda Mar North,2026-06-13 05:00:00 PDT,2.4168017
+6,Pacifica,Linda Mar North,2026-06-13 08:00:00 PDT,2.3500595
+6,Pacifica,Linda Mar North,2026-06-13 11:00:00 PDT,2.186247
+6,Pacifica,Linda Mar North,2026-06-13 14:00:00 PDT,1.9780316
+6,Pacifica,Linda Mar North,2026-06-13 17:00:00 PDT,1.8118066
+6,Pacifica,Linda Mar North,2026-06-13 20:00:00 PDT,1.6884134
+6,Pacifica,Linda Mar North,2026-06-13 23:00:00 PDT,1.6546639
+6,Pacifica,Linda Mar North,2026-06-14 02:00:00 PDT,1.7191906
+6,Pacifica,Linda Mar North,2026-06-14 05:00:00 PDT,1.769318
+6,Pacifica,Linda Mar North,2026-06-14 08:00:00 PDT,1.6924232
+6,Pacifica,Linda Mar North,2026-06-14 11:00:00 PDT,1.552526
+6,Pacifica,Linda Mar North,2026-06-14 14:00:00 PDT,1.4582002
+6,Pacifica,Linda Mar North,2026-06-14 17:00:00 PDT,1.4074711
+6,Pacifica,Linda Mar North,2026-06-14 20:00:00 PDT,1.3979985
+6,Pacifica,Linda Mar North,2026-06-14 23:00:00 PDT,1.3812089
+6,Pacifica,Linda Mar North,2026-06-15 02:00:00 PDT,1.467119
+6,Pacifica,Linda Mar North,2026-06-15 05:00:00 PDT,1.5451083
+6,Pacifica,Linda Mar North,2026-06-15 08:00:00 PDT,1.5695314
 6,Pacifica,Linda Mar North,2026-06-15 11:00:00 PDT,1.5006949
 6,Pacifica,Linda Mar North,2026-06-15 14:00:00 PDT,1.478221
 6,Pacifica,Linda Mar North,2026-06-15 17:00:00 PDT,1.4938517
@@ -317,49 +317,49 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 6,Pacifica,Linda Mar North,2026-06-16 08:00:00 PDT,1.8223708
 6,Pacifica,Linda Mar North,2026-06-16 11:00:00 PDT,1.7759922
 6,Pacifica,Linda Mar North,2026-06-16 14:00:00 PDT,1.7225602
-7,Pacifica,Linda Mar,2026-06-10 02:00:00 PDT,2.480011
-7,Pacifica,Linda Mar,2026-06-10 05:00:00 PDT,2.5016437
-7,Pacifica,Linda Mar,2026-06-10 08:00:00 PDT,2.4228897
-7,Pacifica,Linda Mar,2026-06-10 11:00:00 PDT,2.4767466
-7,Pacifica,Linda Mar,2026-06-10 14:00:00 PDT,2.4210837
-7,Pacifica,Linda Mar,2026-06-10 17:00:00 PDT,2.6897967
-7,Pacifica,Linda Mar,2026-06-10 20:00:00 PDT,2.7875292
-7,Pacifica,Linda Mar,2026-06-10 23:00:00 PDT,2.9997263
-7,Pacifica,Linda Mar,2026-06-11 02:00:00 PDT,2.7565563
-7,Pacifica,Linda Mar,2026-06-11 05:00:00 PDT,2.4722054
-7,Pacifica,Linda Mar,2026-06-11 08:00:00 PDT,2.2196026
-7,Pacifica,Linda Mar,2026-06-11 11:00:00 PDT,2.112372
-7,Pacifica,Linda Mar,2026-06-11 14:00:00 PDT,2.1260805
-7,Pacifica,Linda Mar,2026-06-11 17:00:00 PDT,2.1314645
-7,Pacifica,Linda Mar,2026-06-11 20:00:00 PDT,2.1561368
-7,Pacifica,Linda Mar,2026-06-11 23:00:00 PDT,2.2081885
-7,Pacifica,Linda Mar,2026-06-12 02:00:00 PDT,2.1307275
-7,Pacifica,Linda Mar,2026-06-12 05:00:00 PDT,1.9427829
-7,Pacifica,Linda Mar,2026-06-12 08:00:00 PDT,1.831494
-7,Pacifica,Linda Mar,2026-06-12 11:00:00 PDT,1.607983
-7,Pacifica,Linda Mar,2026-06-12 14:00:00 PDT,1.569929
-7,Pacifica,Linda Mar,2026-06-12 17:00:00 PDT,1.4696649
-7,Pacifica,Linda Mar,2026-06-12 20:00:00 PDT,1.4707656
-7,Pacifica,Linda Mar,2026-06-12 23:00:00 PDT,1.4557531
-7,Pacifica,Linda Mar,2026-06-13 02:00:00 PDT,1.540235
-7,Pacifica,Linda Mar,2026-06-13 05:00:00 PDT,1.6311089
-7,Pacifica,Linda Mar,2026-06-13 08:00:00 PDT,1.6752576
-7,Pacifica,Linda Mar,2026-06-13 11:00:00 PDT,1.5124269
-7,Pacifica,Linda Mar,2026-06-13 14:00:00 PDT,1.3870729
-7,Pacifica,Linda Mar,2026-06-13 17:00:00 PDT,1.3667688
-7,Pacifica,Linda Mar,2026-06-13 20:00:00 PDT,1.4000956
-7,Pacifica,Linda Mar,2026-06-13 23:00:00 PDT,1.3871815
-7,Pacifica,Linda Mar,2026-06-14 02:00:00 PDT,1.2633646
-7,Pacifica,Linda Mar,2026-06-14 05:00:00 PDT,1.3061222
-7,Pacifica,Linda Mar,2026-06-14 08:00:00 PDT,1.1983339
-7,Pacifica,Linda Mar,2026-06-14 11:00:00 PDT,1.207867
-7,Pacifica,Linda Mar,2026-06-14 14:00:00 PDT,1.2534997
-7,Pacifica,Linda Mar,2026-06-14 17:00:00 PDT,1.4394169
-7,Pacifica,Linda Mar,2026-06-14 20:00:00 PDT,1.4319538
-7,Pacifica,Linda Mar,2026-06-14 23:00:00 PDT,1.2379943
-7,Pacifica,Linda Mar,2026-06-15 02:00:00 PDT,1.1663837
-7,Pacifica,Linda Mar,2026-06-15 05:00:00 PDT,1.0506839
-7,Pacifica,Linda Mar,2026-06-15 08:00:00 PDT,1.0080794
+7,Pacifica,Linda Mar,2026-06-10 02:00:00 PDT,2.265587
+7,Pacifica,Linda Mar,2026-06-10 05:00:00 PDT,2.1470666
+7,Pacifica,Linda Mar,2026-06-10 08:00:00 PDT,2.0787184
+7,Pacifica,Linda Mar,2026-06-10 11:00:00 PDT,2.152745
+7,Pacifica,Linda Mar,2026-06-10 14:00:00 PDT,2.100333
+7,Pacifica,Linda Mar,2026-06-10 17:00:00 PDT,2.4030945
+7,Pacifica,Linda Mar,2026-06-10 20:00:00 PDT,2.579535
+7,Pacifica,Linda Mar,2026-06-10 23:00:00 PDT,3.139193
+7,Pacifica,Linda Mar,2026-06-11 02:00:00 PDT,3.0357049
+7,Pacifica,Linda Mar,2026-06-11 05:00:00 PDT,2.7979305
+7,Pacifica,Linda Mar,2026-06-11 08:00:00 PDT,2.1142616
+7,Pacifica,Linda Mar,2026-06-11 11:00:00 PDT,1.7204721
+7,Pacifica,Linda Mar,2026-06-11 14:00:00 PDT,1.3427196
+7,Pacifica,Linda Mar,2026-06-11 17:00:00 PDT,1.2507766
+7,Pacifica,Linda Mar,2026-06-11 20:00:00 PDT,1.1410882
+7,Pacifica,Linda Mar,2026-06-11 23:00:00 PDT,1.3411362
+7,Pacifica,Linda Mar,2026-06-12 02:00:00 PDT,1.4805965
+7,Pacifica,Linda Mar,2026-06-12 05:00:00 PDT,1.4286296
+7,Pacifica,Linda Mar,2026-06-12 08:00:00 PDT,1.1349766
+7,Pacifica,Linda Mar,2026-06-12 11:00:00 PDT,0.9229396
+7,Pacifica,Linda Mar,2026-06-12 14:00:00 PDT,0.9618406
+7,Pacifica,Linda Mar,2026-06-12 17:00:00 PDT,0.91883045
+7,Pacifica,Linda Mar,2026-06-12 20:00:00 PDT,0.8966974
+7,Pacifica,Linda Mar,2026-06-12 23:00:00 PDT,0.96541536
+7,Pacifica,Linda Mar,2026-06-13 02:00:00 PDT,1.2378893
+7,Pacifica,Linda Mar,2026-06-13 05:00:00 PDT,1.5012969
+7,Pacifica,Linda Mar,2026-06-13 08:00:00 PDT,1.3573369
+7,Pacifica,Linda Mar,2026-06-13 11:00:00 PDT,1.0641073
+7,Pacifica,Linda Mar,2026-06-13 14:00:00 PDT,0.8810684
+7,Pacifica,Linda Mar,2026-06-13 17:00:00 PDT,0.8598599
+7,Pacifica,Linda Mar,2026-06-13 20:00:00 PDT,0.8265711
+7,Pacifica,Linda Mar,2026-06-13 23:00:00 PDT,0.8506969
+7,Pacifica,Linda Mar,2026-06-14 02:00:00 PDT,0.8665141
+7,Pacifica,Linda Mar,2026-06-14 05:00:00 PDT,1.0914788
+7,Pacifica,Linda Mar,2026-06-14 08:00:00 PDT,0.88816375
+7,Pacifica,Linda Mar,2026-06-14 11:00:00 PDT,0.8324133
+7,Pacifica,Linda Mar,2026-06-14 14:00:00 PDT,0.8041638
+7,Pacifica,Linda Mar,2026-06-14 17:00:00 PDT,0.9554656
+7,Pacifica,Linda Mar,2026-06-14 20:00:00 PDT,0.85736185
+7,Pacifica,Linda Mar,2026-06-14 23:00:00 PDT,0.6436746
+7,Pacifica,Linda Mar,2026-06-15 02:00:00 PDT,0.6384913
+7,Pacifica,Linda Mar,2026-06-15 05:00:00 PDT,0.7576002
+7,Pacifica,Linda Mar,2026-06-15 08:00:00 PDT,0.8757901
 7,Pacifica,Linda Mar,2026-06-15 11:00:00 PDT,0.8620413
 7,Pacifica,Linda Mar,2026-06-15 14:00:00 PDT,0.84381336
 7,Pacifica,Linda Mar,2026-06-15 17:00:00 PDT,0.76167995
@@ -370,167 +370,167 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 7,Pacifica,Linda Mar,2026-06-16 08:00:00 PDT,1.0140308
 7,Pacifica,Linda Mar,2026-06-16 11:00:00 PDT,0.76307327
 7,Pacifica,Linda Mar,2026-06-16 14:00:00 PDT,0.8825378
-8,Montara,Montara,2026-06-10 02:00:00 PDT,6.0169325
-8,Montara,Montara,2026-06-10 05:00:00 PDT,6.3673873
-8,Montara,Montara,2026-06-10 08:00:00 PDT,6.6612635
-8,Montara,Montara,2026-06-10 11:00:00 PDT,6.702696
-8,Montara,Montara,2026-06-10 14:00:00 PDT,6.4889703
-8,Montara,Montara,2026-06-10 17:00:00 PDT,6.3914967
-8,Montara,Montara,2026-06-10 20:00:00 PDT,6.773717
-8,Montara,Montara,2026-06-10 23:00:00 PDT,6.5652328
-8,Montara,Montara,2026-06-11 02:00:00 PDT,6.3425956
-8,Montara,Montara,2026-06-11 05:00:00 PDT,6.162628
-8,Montara,Montara,2026-06-11 08:00:00 PDT,6.30383
-8,Montara,Montara,2026-06-11 11:00:00 PDT,6.04747
-8,Montara,Montara,2026-06-11 14:00:00 PDT,5.847837
-8,Montara,Montara,2026-06-11 17:00:00 PDT,5.769328
-8,Montara,Montara,2026-06-11 20:00:00 PDT,5.7995443
-8,Montara,Montara,2026-06-11 23:00:00 PDT,5.7152624
-8,Montara,Montara,2026-06-12 02:00:00 PDT,5.649148
-8,Montara,Montara,2026-06-12 05:00:00 PDT,5.353712
-8,Montara,Montara,2026-06-12 08:00:00 PDT,5.3790145
-8,Montara,Montara,2026-06-12 11:00:00 PDT,5.1728277
-8,Montara,Montara,2026-06-12 14:00:00 PDT,5.0776825
-8,Montara,Montara,2026-06-12 17:00:00 PDT,4.961444
-8,Montara,Montara,2026-06-12 20:00:00 PDT,4.835453
-8,Montara,Montara,2026-06-12 23:00:00 PDT,4.937587
-8,Montara,Montara,2026-06-13 02:00:00 PDT,5.0562034
-8,Montara,Montara,2026-06-13 05:00:00 PDT,5.150442
-8,Montara,Montara,2026-06-13 08:00:00 PDT,5.231321
-8,Montara,Montara,2026-06-13 11:00:00 PDT,5.2086854
-8,Montara,Montara,2026-06-13 14:00:00 PDT,4.965945
-8,Montara,Montara,2026-06-13 17:00:00 PDT,4.6929355
-8,Montara,Montara,2026-06-13 20:00:00 PDT,4.5155616
-8,Montara,Montara,2026-06-13 23:00:00 PDT,4.562274
-8,Montara,Montara,2026-06-14 02:00:00 PDT,4.476637
-8,Montara,Montara,2026-06-14 05:00:00 PDT,4.429122
-8,Montara,Montara,2026-06-14 08:00:00 PDT,4.339671
-8,Montara,Montara,2026-06-14 11:00:00 PDT,4.3089986
-8,Montara,Montara,2026-06-14 14:00:00 PDT,4.189411
-8,Montara,Montara,2026-06-14 17:00:00 PDT,4.1415105
-8,Montara,Montara,2026-06-14 20:00:00 PDT,4.136872
-8,Montara,Montara,2026-06-14 23:00:00 PDT,4.230638
-8,Montara,Montara,2026-06-15 02:00:00 PDT,4.218281
-8,Montara,Montara,2026-06-15 05:00:00 PDT,3.8130229
-8,Montara,Montara,2026-06-15 08:00:00 PDT,3.2876213
-8,Montara,Montara,2026-06-15 11:00:00 PDT,3.0449474
-8,Montara,Montara,2026-06-15 14:00:00 PDT,3.1991243
-8,Montara,Montara,2026-06-15 17:00:00 PDT,3.3934097
-8,Montara,Montara,2026-06-15 20:00:00 PDT,3.6534674
-8,Montara,Montara,2026-06-15 23:00:00 PDT,3.6667757
-8,Montara,Montara,2026-06-16 02:00:00 PDT,4.0024424
-8,Montara,Montara,2026-06-16 05:00:00 PDT,3.9770892
-8,Montara,Montara,2026-06-16 08:00:00 PDT,4.202505
-8,Montara,Montara,2026-06-16 11:00:00 PDT,4.2479105
-8,Montara,Montara,2026-06-16 14:00:00 PDT,4.413466
-9,Princeton Jetty,Princeton Jetty,2026-06-10 02:00:00 PDT,4.310063
-9,Princeton Jetty,Princeton Jetty,2026-06-10 05:00:00 PDT,4.4817595
-9,Princeton Jetty,Princeton Jetty,2026-06-10 08:00:00 PDT,4.61592
-9,Princeton Jetty,Princeton Jetty,2026-06-10 11:00:00 PDT,4.62235
-9,Princeton Jetty,Princeton Jetty,2026-06-10 14:00:00 PDT,4.4698243
-9,Princeton Jetty,Princeton Jetty,2026-06-10 17:00:00 PDT,4.3272877
-9,Princeton Jetty,Princeton Jetty,2026-06-10 20:00:00 PDT,4.37828
-9,Princeton Jetty,Princeton Jetty,2026-06-10 23:00:00 PDT,4.11539
-9,Princeton Jetty,Princeton Jetty,2026-06-11 02:00:00 PDT,3.8861947
-9,Princeton Jetty,Princeton Jetty,2026-06-11 05:00:00 PDT,3.7096305
-9,Princeton Jetty,Princeton Jetty,2026-06-11 08:00:00 PDT,3.7269335
-9,Princeton Jetty,Princeton Jetty,2026-06-11 11:00:00 PDT,3.5287807
-9,Princeton Jetty,Princeton Jetty,2026-06-11 14:00:00 PDT,3.354664
-9,Princeton Jetty,Princeton Jetty,2026-06-11 17:00:00 PDT,3.2863088
-9,Princeton Jetty,Princeton Jetty,2026-06-11 20:00:00 PDT,3.311383
-9,Princeton Jetty,Princeton Jetty,2026-06-11 23:00:00 PDT,3.252034
-9,Princeton Jetty,Princeton Jetty,2026-06-12 02:00:00 PDT,3.2079215
-9,Princeton Jetty,Princeton Jetty,2026-06-12 05:00:00 PDT,3.030828
-9,Princeton Jetty,Princeton Jetty,2026-06-12 08:00:00 PDT,3.0953927
-9,Princeton Jetty,Princeton Jetty,2026-06-12 11:00:00 PDT,3.030482
-9,Princeton Jetty,Princeton Jetty,2026-06-12 14:00:00 PDT,3.0589845
-9,Princeton Jetty,Princeton Jetty,2026-06-12 17:00:00 PDT,3.1031842
-9,Princeton Jetty,Princeton Jetty,2026-06-12 20:00:00 PDT,3.133133
-9,Princeton Jetty,Princeton Jetty,2026-06-12 23:00:00 PDT,3.2574606
-9,Princeton Jetty,Princeton Jetty,2026-06-13 02:00:00 PDT,3.3145216
-9,Princeton Jetty,Princeton Jetty,2026-06-13 05:00:00 PDT,3.3306074
-9,Princeton Jetty,Princeton Jetty,2026-06-13 08:00:00 PDT,3.3978171
-9,Princeton Jetty,Princeton Jetty,2026-06-13 11:00:00 PDT,3.4514163
-9,Princeton Jetty,Princeton Jetty,2026-06-13 14:00:00 PDT,3.4137938
-9,Princeton Jetty,Princeton Jetty,2026-06-13 17:00:00 PDT,3.3750727
-9,Princeton Jetty,Princeton Jetty,2026-06-13 20:00:00 PDT,3.3722432
-9,Princeton Jetty,Princeton Jetty,2026-06-13 23:00:00 PDT,3.471557
-9,Princeton Jetty,Princeton Jetty,2026-06-14 02:00:00 PDT,3.4804447
-9,Princeton Jetty,Princeton Jetty,2026-06-14 05:00:00 PDT,3.5295599
-9,Princeton Jetty,Princeton Jetty,2026-06-14 08:00:00 PDT,3.5283444
-9,Princeton Jetty,Princeton Jetty,2026-06-14 11:00:00 PDT,3.5574093
-9,Princeton Jetty,Princeton Jetty,2026-06-14 14:00:00 PDT,3.4830847
-9,Princeton Jetty,Princeton Jetty,2026-06-14 17:00:00 PDT,3.4579556
-9,Princeton Jetty,Princeton Jetty,2026-06-14 20:00:00 PDT,3.450047
-9,Princeton Jetty,Princeton Jetty,2026-06-14 23:00:00 PDT,3.5102096
-9,Princeton Jetty,Princeton Jetty,2026-06-15 02:00:00 PDT,3.455272
-9,Princeton Jetty,Princeton Jetty,2026-06-15 05:00:00 PDT,3.0800881
-9,Princeton Jetty,Princeton Jetty,2026-06-15 08:00:00 PDT,2.6015253
-9,Princeton Jetty,Princeton Jetty,2026-06-15 11:00:00 PDT,2.3276956
-9,Princeton Jetty,Princeton Jetty,2026-06-15 14:00:00 PDT,2.3665857
-9,Princeton Jetty,Princeton Jetty,2026-06-15 17:00:00 PDT,2.424754
-9,Princeton Jetty,Princeton Jetty,2026-06-15 20:00:00 PDT,2.4715133
-9,Princeton Jetty,Princeton Jetty,2026-06-15 23:00:00 PDT,2.4332492
-9,Princeton Jetty,Princeton Jetty,2026-06-16 02:00:00 PDT,2.752741
-9,Princeton Jetty,Princeton Jetty,2026-06-16 05:00:00 PDT,2.8246539
-9,Princeton Jetty,Princeton Jetty,2026-06-16 08:00:00 PDT,3.1067863
-9,Princeton Jetty,Princeton Jetty,2026-06-16 11:00:00 PDT,3.1512852
-9,Princeton Jetty,Princeton Jetty,2026-06-16 14:00:00 PDT,3.307295
-10,Ano Nuevo,Ano Nuevo,2026-06-10 02:00:00 PDT,7.256682
-10,Ano Nuevo,Ano Nuevo,2026-06-10 05:00:00 PDT,7.636211
-10,Ano Nuevo,Ano Nuevo,2026-06-10 08:00:00 PDT,7.902159
-10,Ano Nuevo,Ano Nuevo,2026-06-10 11:00:00 PDT,7.9925013
-10,Ano Nuevo,Ano Nuevo,2026-06-10 14:00:00 PDT,7.7844505
-10,Ano Nuevo,Ano Nuevo,2026-06-10 17:00:00 PDT,7.652137
-10,Ano Nuevo,Ano Nuevo,2026-06-10 20:00:00 PDT,7.856748
-10,Ano Nuevo,Ano Nuevo,2026-06-10 23:00:00 PDT,7.577518
-10,Ano Nuevo,Ano Nuevo,2026-06-11 02:00:00 PDT,7.22876
-10,Ano Nuevo,Ano Nuevo,2026-06-11 05:00:00 PDT,6.8497033
-10,Ano Nuevo,Ano Nuevo,2026-06-11 08:00:00 PDT,6.784825
-10,Ano Nuevo,Ano Nuevo,2026-06-11 11:00:00 PDT,6.3978815
-10,Ano Nuevo,Ano Nuevo,2026-06-11 14:00:00 PDT,6.0101547
-10,Ano Nuevo,Ano Nuevo,2026-06-11 17:00:00 PDT,5.7922287
-10,Ano Nuevo,Ano Nuevo,2026-06-11 20:00:00 PDT,5.743229
-10,Ano Nuevo,Ano Nuevo,2026-06-11 23:00:00 PDT,5.5212383
-10,Ano Nuevo,Ano Nuevo,2026-06-12 02:00:00 PDT,5.381933
-10,Ano Nuevo,Ano Nuevo,2026-06-12 05:00:00 PDT,5.065379
-10,Ano Nuevo,Ano Nuevo,2026-06-12 08:00:00 PDT,5.158646
-10,Ano Nuevo,Ano Nuevo,2026-06-12 11:00:00 PDT,5.014429
-10,Ano Nuevo,Ano Nuevo,2026-06-12 14:00:00 PDT,4.96485
-10,Ano Nuevo,Ano Nuevo,2026-06-12 17:00:00 PDT,4.9807615
-10,Ano Nuevo,Ano Nuevo,2026-06-12 20:00:00 PDT,5.053165
-10,Ano Nuevo,Ano Nuevo,2026-06-12 23:00:00 PDT,5.309468
-10,Ano Nuevo,Ano Nuevo,2026-06-13 02:00:00 PDT,5.4786143
-10,Ano Nuevo,Ano Nuevo,2026-06-13 05:00:00 PDT,5.6385856
-10,Ano Nuevo,Ano Nuevo,2026-06-13 08:00:00 PDT,5.8897257
-10,Ano Nuevo,Ano Nuevo,2026-06-13 11:00:00 PDT,5.901258
-10,Ano Nuevo,Ano Nuevo,2026-06-13 14:00:00 PDT,5.604165
-10,Ano Nuevo,Ano Nuevo,2026-06-13 17:00:00 PDT,5.3814816
-10,Ano Nuevo,Ano Nuevo,2026-06-13 20:00:00 PDT,5.2608967
-10,Ano Nuevo,Ano Nuevo,2026-06-13 23:00:00 PDT,5.4941072
-10,Ano Nuevo,Ano Nuevo,2026-06-14 02:00:00 PDT,5.7699676
-10,Ano Nuevo,Ano Nuevo,2026-06-14 05:00:00 PDT,6.0224824
-10,Ano Nuevo,Ano Nuevo,2026-06-14 08:00:00 PDT,6.0177307
-10,Ano Nuevo,Ano Nuevo,2026-06-14 11:00:00 PDT,5.9540315
-10,Ano Nuevo,Ano Nuevo,2026-06-14 14:00:00 PDT,5.718101
-10,Ano Nuevo,Ano Nuevo,2026-06-14 17:00:00 PDT,5.5098114
-10,Ano Nuevo,Ano Nuevo,2026-06-14 20:00:00 PDT,5.369551
-10,Ano Nuevo,Ano Nuevo,2026-06-14 23:00:00 PDT,5.4012
-10,Ano Nuevo,Ano Nuevo,2026-06-15 02:00:00 PDT,5.3573203
-10,Ano Nuevo,Ano Nuevo,2026-06-15 05:00:00 PDT,4.8060746
-10,Ano Nuevo,Ano Nuevo,2026-06-15 08:00:00 PDT,4.0372024
-10,Ano Nuevo,Ano Nuevo,2026-06-15 11:00:00 PDT,3.554752
-10,Ano Nuevo,Ano Nuevo,2026-06-15 14:00:00 PDT,3.5565426
-10,Ano Nuevo,Ano Nuevo,2026-06-15 17:00:00 PDT,3.6076035
-10,Ano Nuevo,Ano Nuevo,2026-06-15 20:00:00 PDT,3.6111078
-10,Ano Nuevo,Ano Nuevo,2026-06-15 23:00:00 PDT,3.665241
-10,Ano Nuevo,Ano Nuevo,2026-06-16 02:00:00 PDT,3.676072
-10,Ano Nuevo,Ano Nuevo,2026-06-16 05:00:00 PDT,3.6949284
-10,Ano Nuevo,Ano Nuevo,2026-06-16 08:00:00 PDT,3.6083288
-10,Ano Nuevo,Ano Nuevo,2026-06-16 11:00:00 PDT,3.7251675
-10,Ano Nuevo,Ano Nuevo,2026-06-16 14:00:00 PDT,3.6608233
-11,Waddell Creek,Beach,2026-06-10 02:00:00 PDT,8.214858
-11,Waddell Creek,Beach,2026-06-10 05:00:00 PDT,8.17291
+8,Montara,Montara,2026-06-10 02:00:00 PDT,4.005648
+8,Montara,Montara,2026-06-10 05:00:00 PDT,4.239897
+8,Montara,Montara,2026-06-10 08:00:00 PDT,4.4361877
+8,Montara,Montara,2026-06-10 11:00:00 PDT,4.4636016
+8,Montara,Montara,2026-06-10 14:00:00 PDT,4.320612
+8,Montara,Montara,2026-06-10 17:00:00 PDT,4.6017337
+8,Montara,Montara,2026-06-10 20:00:00 PDT,5.145272
+8,Montara,Montara,2026-06-10 23:00:00 PDT,5.2617855
+8,Montara,Montara,2026-06-11 02:00:00 PDT,4.9929767
+8,Montara,Montara,2026-06-11 05:00:00 PDT,4.843705
+8,Montara,Montara,2026-06-11 08:00:00 PDT,4.6810102
+8,Montara,Montara,2026-06-11 11:00:00 PDT,4.260103
+8,Montara,Montara,2026-06-11 14:00:00 PDT,3.8919523
+8,Montara,Montara,2026-06-11 17:00:00 PDT,3.8397098
+8,Montara,Montara,2026-06-11 20:00:00 PDT,3.8603559
+8,Montara,Montara,2026-06-11 23:00:00 PDT,3.8041914
+8,Montara,Montara,2026-06-12 02:00:00 PDT,3.7608051
+8,Montara,Montara,2026-06-12 05:00:00 PDT,3.5634081
+8,Montara,Montara,2026-06-12 08:00:00 PDT,3.5808377
+8,Montara,Montara,2026-06-12 11:00:00 PDT,3.443144
+8,Montara,Montara,2026-06-12 14:00:00 PDT,3.3801
+8,Montara,Montara,2026-06-12 17:00:00 PDT,3.3030477
+8,Montara,Montara,2026-06-12 20:00:00 PDT,3.219504
+8,Montara,Montara,2026-06-12 23:00:00 PDT,3.2882216
+8,Montara,Montara,2026-06-13 02:00:00 PDT,3.3677802
+8,Montara,Montara,2026-06-13 05:00:00 PDT,3.4305086
+8,Montara,Montara,2026-06-13 08:00:00 PDT,3.4843721
+8,Montara,Montara,2026-06-13 11:00:00 PDT,3.468953
+8,Montara,Montara,2026-06-13 14:00:00 PDT,3.307297
+8,Montara,Montara,2026-06-13 17:00:00 PDT,3.1260903
+8,Montara,Montara,2026-06-13 20:00:00 PDT,3.0084364
+8,Montara,Montara,2026-06-13 23:00:00 PDT,3.0402117
+8,Montara,Montara,2026-06-14 02:00:00 PDT,2.9836586
+8,Montara,Montara,2026-06-14 05:00:00 PDT,2.9528236
+8,Montara,Montara,2026-06-14 08:00:00 PDT,2.8936327
+8,Montara,Montara,2026-06-14 11:00:00 PDT,2.873651
+8,Montara,Montara,2026-06-14 14:00:00 PDT,2.7941253
+8,Montara,Montara,2026-06-14 17:00:00 PDT,2.762727
+8,Montara,Montara,2026-06-14 20:00:00 PDT,2.7598436
+8,Montara,Montara,2026-06-14 23:00:00 PDT,2.82251
+8,Montara,Montara,2026-06-15 02:00:00 PDT,2.8142142
+8,Montara,Montara,2026-06-15 05:00:00 PDT,2.8856251
+8,Montara,Montara,2026-06-15 08:00:00 PDT,2.8441608
+8,Montara,Montara,2026-06-15 11:00:00 PDT,3.0498044
+8,Montara,Montara,2026-06-15 14:00:00 PDT,3.2045646
+8,Montara,Montara,2026-06-15 17:00:00 PDT,3.3996327
+8,Montara,Montara,2026-06-15 20:00:00 PDT,3.66088
+8,Montara,Montara,2026-06-15 23:00:00 PDT,3.6740432
+8,Montara,Montara,2026-06-16 02:00:00 PDT,4.010655
+8,Montara,Montara,2026-06-16 05:00:00 PDT,3.9855402
+8,Montara,Montara,2026-06-16 08:00:00 PDT,4.211063
+8,Montara,Montara,2026-06-16 11:00:00 PDT,4.256073
+8,Montara,Montara,2026-06-16 14:00:00 PDT,4.42031
+9,Princeton Jetty,Princeton Jetty,2026-06-10 02:00:00 PDT,2.8697088
+9,Princeton Jetty,Princeton Jetty,2026-06-10 05:00:00 PDT,2.984735
+9,Princeton Jetty,Princeton Jetty,2026-06-10 08:00:00 PDT,3.0746381
+9,Princeton Jetty,Princeton Jetty,2026-06-10 11:00:00 PDT,3.0790155
+9,Princeton Jetty,Princeton Jetty,2026-06-10 14:00:00 PDT,2.9772122
+9,Princeton Jetty,Princeton Jetty,2026-06-10 17:00:00 PDT,3.1195033
+9,Princeton Jetty,Princeton Jetty,2026-06-10 20:00:00 PDT,3.3284047
+9,Princeton Jetty,Princeton Jetty,2026-06-10 23:00:00 PDT,3.3004935
+9,Princeton Jetty,Princeton Jetty,2026-06-11 02:00:00 PDT,3.061131
+9,Princeton Jetty,Princeton Jetty,2026-06-11 05:00:00 PDT,2.9182997
+9,Princeton Jetty,Princeton Jetty,2026-06-11 08:00:00 PDT,2.7726803
+9,Princeton Jetty,Princeton Jetty,2026-06-11 11:00:00 PDT,2.4905539
+9,Princeton Jetty,Princeton Jetty,2026-06-11 14:00:00 PDT,2.2358308
+9,Princeton Jetty,Princeton Jetty,2026-06-11 17:00:00 PDT,2.1904821
+9,Princeton Jetty,Princeton Jetty,2026-06-11 20:00:00 PDT,2.2076516
+9,Princeton Jetty,Princeton Jetty,2026-06-11 23:00:00 PDT,2.1681538
+9,Princeton Jetty,Princeton Jetty,2026-06-12 02:00:00 PDT,2.1391652
+9,Princeton Jetty,Princeton Jetty,2026-06-12 05:00:00 PDT,2.0207503
+9,Princeton Jetty,Princeton Jetty,2026-06-12 08:00:00 PDT,2.0643945
+9,Princeton Jetty,Princeton Jetty,2026-06-12 11:00:00 PDT,2.0212238
+9,Princeton Jetty,Princeton Jetty,2026-06-12 14:00:00 PDT,2.0407238
+9,Princeton Jetty,Princeton Jetty,2026-06-12 17:00:00 PDT,2.0707016
+9,Princeton Jetty,Princeton Jetty,2026-06-12 20:00:00 PDT,2.0910764
+9,Princeton Jetty,Princeton Jetty,2026-06-12 23:00:00 PDT,2.1745727
+9,Princeton Jetty,Princeton Jetty,2026-06-13 02:00:00 PDT,2.2129552
+9,Princeton Jetty,Princeton Jetty,2026-06-13 05:00:00 PDT,2.2235532
+9,Princeton Jetty,Princeton Jetty,2026-06-13 08:00:00 PDT,2.268379
+9,Princeton Jetty,Princeton Jetty,2026-06-13 11:00:00 PDT,2.3040543
+9,Princeton Jetty,Princeton Jetty,2026-06-13 14:00:00 PDT,2.2790956
+9,Princeton Jetty,Princeton Jetty,2026-06-13 17:00:00 PDT,2.2537508
+9,Princeton Jetty,Princeton Jetty,2026-06-13 20:00:00 PDT,2.252324
+9,Princeton Jetty,Princeton Jetty,2026-06-13 23:00:00 PDT,2.3193479
+9,Princeton Jetty,Princeton Jetty,2026-06-14 02:00:00 PDT,2.3259966
+9,Princeton Jetty,Princeton Jetty,2026-06-14 05:00:00 PDT,2.359723
+9,Princeton Jetty,Princeton Jetty,2026-06-14 08:00:00 PDT,2.3592114
+9,Princeton Jetty,Princeton Jetty,2026-06-14 11:00:00 PDT,2.3786316
+9,Princeton Jetty,Princeton Jetty,2026-06-14 14:00:00 PDT,2.3285728
+9,Princeton Jetty,Princeton Jetty,2026-06-14 17:00:00 PDT,2.3118804
+9,Princeton Jetty,Princeton Jetty,2026-06-14 20:00:00 PDT,2.306699
+9,Princeton Jetty,Princeton Jetty,2026-06-14 23:00:00 PDT,2.346982
+9,Princeton Jetty,Princeton Jetty,2026-06-15 02:00:00 PDT,2.309847
+9,Princeton Jetty,Princeton Jetty,2026-06-15 05:00:00 PDT,2.325355
+9,Princeton Jetty,Princeton Jetty,2026-06-15 08:00:00 PDT,2.2417526
+9,Princeton Jetty,Princeton Jetty,2026-06-15 11:00:00 PDT,2.332526
+9,Princeton Jetty,Princeton Jetty,2026-06-15 14:00:00 PDT,2.370649
+9,Princeton Jetty,Princeton Jetty,2026-06-15 17:00:00 PDT,2.4286602
+9,Princeton Jetty,Princeton Jetty,2026-06-15 20:00:00 PDT,2.4749928
+9,Princeton Jetty,Princeton Jetty,2026-06-15 23:00:00 PDT,2.4360893
+9,Princeton Jetty,Princeton Jetty,2026-06-16 02:00:00 PDT,2.7575192
+9,Princeton Jetty,Princeton Jetty,2026-06-16 05:00:00 PDT,2.8303688
+9,Princeton Jetty,Princeton Jetty,2026-06-16 08:00:00 PDT,3.1146653
+9,Princeton Jetty,Princeton Jetty,2026-06-16 11:00:00 PDT,3.159306
+9,Princeton Jetty,Princeton Jetty,2026-06-16 14:00:00 PDT,3.316304
+10,Ano Nuevo,Ano Nuevo,2026-06-10 02:00:00 PDT,7.248528
+10,Ano Nuevo,Ano Nuevo,2026-06-10 05:00:00 PDT,7.6289377
+10,Ano Nuevo,Ano Nuevo,2026-06-10 08:00:00 PDT,7.895296
+10,Ano Nuevo,Ano Nuevo,2026-06-10 11:00:00 PDT,7.9857054
+10,Ano Nuevo,Ano Nuevo,2026-06-10 14:00:00 PDT,7.7774396
+10,Ano Nuevo,Ano Nuevo,2026-06-10 17:00:00 PDT,7.645461
+10,Ano Nuevo,Ano Nuevo,2026-06-10 20:00:00 PDT,7.851115
+10,Ano Nuevo,Ano Nuevo,2026-06-10 23:00:00 PDT,7.5710053
+10,Ano Nuevo,Ano Nuevo,2026-06-11 02:00:00 PDT,7.2226915
+10,Ano Nuevo,Ano Nuevo,2026-06-11 05:00:00 PDT,6.8447576
+10,Ano Nuevo,Ano Nuevo,2026-06-11 08:00:00 PDT,6.782769
+10,Ano Nuevo,Ano Nuevo,2026-06-11 11:00:00 PDT,6.3968005
+10,Ano Nuevo,Ano Nuevo,2026-06-11 14:00:00 PDT,6.0100694
+10,Ano Nuevo,Ano Nuevo,2026-06-11 17:00:00 PDT,5.7934813
+10,Ano Nuevo,Ano Nuevo,2026-06-11 20:00:00 PDT,5.746287
+10,Ano Nuevo,Ano Nuevo,2026-06-11 23:00:00 PDT,5.5249243
+10,Ano Nuevo,Ano Nuevo,2026-06-12 02:00:00 PDT,5.3872104
+10,Ano Nuevo,Ano Nuevo,2026-06-12 05:00:00 PDT,5.069945
+10,Ano Nuevo,Ano Nuevo,2026-06-12 08:00:00 PDT,5.1649027
+10,Ano Nuevo,Ano Nuevo,2026-06-12 11:00:00 PDT,5.0209093
+10,Ano Nuevo,Ano Nuevo,2026-06-12 14:00:00 PDT,4.9724765
+10,Ano Nuevo,Ano Nuevo,2026-06-12 17:00:00 PDT,4.989208
+10,Ano Nuevo,Ano Nuevo,2026-06-12 20:00:00 PDT,5.0621586
+10,Ano Nuevo,Ano Nuevo,2026-06-12 23:00:00 PDT,5.3203154
+10,Ano Nuevo,Ano Nuevo,2026-06-13 02:00:00 PDT,5.4915037
+10,Ano Nuevo,Ano Nuevo,2026-06-13 05:00:00 PDT,5.652657
+10,Ano Nuevo,Ano Nuevo,2026-06-13 08:00:00 PDT,5.904957
+10,Ano Nuevo,Ano Nuevo,2026-06-13 11:00:00 PDT,5.914946
+10,Ano Nuevo,Ano Nuevo,2026-06-13 14:00:00 PDT,5.613843
+10,Ano Nuevo,Ano Nuevo,2026-06-13 17:00:00 PDT,5.386619
+10,Ano Nuevo,Ano Nuevo,2026-06-13 20:00:00 PDT,5.2636704
+10,Ano Nuevo,Ano Nuevo,2026-06-13 23:00:00 PDT,5.500257
+10,Ano Nuevo,Ano Nuevo,2026-06-14 02:00:00 PDT,5.78193
+10,Ano Nuevo,Ano Nuevo,2026-06-14 05:00:00 PDT,6.0393395
+10,Ano Nuevo,Ano Nuevo,2026-06-14 08:00:00 PDT,6.0359335
+10,Ano Nuevo,Ano Nuevo,2026-06-14 11:00:00 PDT,5.9723496
+10,Ano Nuevo,Ano Nuevo,2026-06-14 14:00:00 PDT,5.734631
+10,Ano Nuevo,Ano Nuevo,2026-06-14 17:00:00 PDT,4.945885
+10,Ano Nuevo,Ano Nuevo,2026-06-14 20:00:00 PDT,4.1948175
+10,Ano Nuevo,Ano Nuevo,2026-06-14 23:00:00 PDT,3.608434
+10,Ano Nuevo,Ano Nuevo,2026-06-15 02:00:00 PDT,3.580103
+10,Ano Nuevo,Ano Nuevo,2026-06-15 05:00:00 PDT,3.6361141
+10,Ano Nuevo,Ano Nuevo,2026-06-15 08:00:00 PDT,3.483058
+10,Ano Nuevo,Ano Nuevo,2026-06-15 11:00:00 PDT,3.5654907
+10,Ano Nuevo,Ano Nuevo,2026-06-15 14:00:00 PDT,3.5667784
+10,Ano Nuevo,Ano Nuevo,2026-06-15 17:00:00 PDT,3.618151
+10,Ano Nuevo,Ano Nuevo,2026-06-15 20:00:00 PDT,3.6212568
+10,Ano Nuevo,Ano Nuevo,2026-06-15 23:00:00 PDT,3.6750233
+10,Ano Nuevo,Ano Nuevo,2026-06-16 02:00:00 PDT,3.6852896
+10,Ano Nuevo,Ano Nuevo,2026-06-16 05:00:00 PDT,3.704547
+10,Ano Nuevo,Ano Nuevo,2026-06-16 08:00:00 PDT,3.617009
+10,Ano Nuevo,Ano Nuevo,2026-06-16 11:00:00 PDT,3.7343993
+10,Ano Nuevo,Ano Nuevo,2026-06-16 14:00:00 PDT,3.6689448
+11,Waddell Creek,Beach,2026-06-10 02:00:00 PDT,8.205445
+11,Waddell Creek,Beach,2026-06-10 05:00:00 PDT,8.166644
 11,Waddell Creek,Beach,2026-06-10 08:00:00 PDT,8.070789
 11,Waddell Creek,Beach,2026-06-10 11:00:00 PDT,8.033091
 11,Waddell Creek,Beach,2026-06-10 14:00:00 PDT,7.8927636
@@ -566,12 +566,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 11,Waddell Creek,Beach,2026-06-14 08:00:00 PDT,4.9484005
 11,Waddell Creek,Beach,2026-06-14 11:00:00 PDT,4.867298
 11,Waddell Creek,Beach,2026-06-14 14:00:00 PDT,4.777255
-11,Waddell Creek,Beach,2026-06-14 17:00:00 PDT,4.7613754
-11,Waddell Creek,Beach,2026-06-14 20:00:00 PDT,4.810012
-11,Waddell Creek,Beach,2026-06-14 23:00:00 PDT,4.829798
-11,Waddell Creek,Beach,2026-06-15 02:00:00 PDT,4.875957
-11,Waddell Creek,Beach,2026-06-15 05:00:00 PDT,4.839697
-11,Waddell Creek,Beach,2026-06-15 08:00:00 PDT,4.744946
+11,Waddell Creek,Beach,2026-06-14 17:00:00 PDT,4.636602
+11,Waddell Creek,Beach,2026-06-14 20:00:00 PDT,4.5569673
+11,Waddell Creek,Beach,2026-06-14 23:00:00 PDT,4.447284
+11,Waddell Creek,Beach,2026-06-15 02:00:00 PDT,4.4897876
+11,Waddell Creek,Beach,2026-06-15 05:00:00 PDT,4.580382
+11,Waddell Creek,Beach,2026-06-15 08:00:00 PDT,4.6135073
 11,Waddell Creek,Beach,2026-06-15 11:00:00 PDT,4.618109
 11,Waddell Creek,Beach,2026-06-15 14:00:00 PDT,4.603255
 11,Waddell Creek,Beach,2026-06-15 17:00:00 PDT,4.6731033
@@ -619,12 +619,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 12,Waddell Creek,Reef,2026-06-14 08:00:00 PDT,4.0035276
 12,Waddell Creek,Reef,2026-06-14 11:00:00 PDT,4.0537524
 12,Waddell Creek,Reef,2026-06-14 14:00:00 PDT,4.1085877
-12,Waddell Creek,Reef,2026-06-14 17:00:00 PDT,4.1563177
-12,Waddell Creek,Reef,2026-06-14 20:00:00 PDT,4.259003
-12,Waddell Creek,Reef,2026-06-14 23:00:00 PDT,4.4145436
-12,Waddell Creek,Reef,2026-06-15 02:00:00 PDT,4.4362526
-12,Waddell Creek,Reef,2026-06-15 05:00:00 PDT,4.4377265
-12,Waddell Creek,Reef,2026-06-15 08:00:00 PDT,4.4940534
+12,Waddell Creek,Reef,2026-06-14 17:00:00 PDT,4.220437
+12,Waddell Creek,Reef,2026-06-14 20:00:00 PDT,4.376207
+12,Waddell Creek,Reef,2026-06-14 23:00:00 PDT,4.555026
+12,Waddell Creek,Reef,2026-06-15 02:00:00 PDT,4.6450057
+12,Waddell Creek,Reef,2026-06-15 05:00:00 PDT,4.594671
+12,Waddell Creek,Reef,2026-06-15 08:00:00 PDT,4.6292315
 12,Waddell Creek,Reef,2026-06-15 11:00:00 PDT,4.572261
 12,Waddell Creek,Reef,2026-06-15 14:00:00 PDT,4.702453
 12,Waddell Creek,Reef,2026-06-15 17:00:00 PDT,4.6075406
@@ -635,9 +635,9 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 12,Waddell Creek,Reef,2026-06-16 08:00:00 PDT,4.7389665
 12,Waddell Creek,Reef,2026-06-16 11:00:00 PDT,4.909525
 12,Waddell Creek,Reef,2026-06-16 14:00:00 PDT,4.906497
-13,Scott Creek,Scott Creek,2026-06-10 02:00:00 PDT,6.795999
-13,Scott Creek,Scott Creek,2026-06-10 05:00:00 PDT,7.0260034
-13,Scott Creek,Scott Creek,2026-06-10 08:00:00 PDT,7.0685463
+13,Scott Creek,Scott Creek,2026-06-10 02:00:00 PDT,6.78491
+13,Scott Creek,Scott Creek,2026-06-10 05:00:00 PDT,7.0184526
+13,Scott Creek,Scott Creek,2026-06-10 08:00:00 PDT,7.067628
 13,Scott Creek,Scott Creek,2026-06-10 11:00:00 PDT,7.0708075
 13,Scott Creek,Scott Creek,2026-06-10 14:00:00 PDT,6.934474
 13,Scott Creek,Scott Creek,2026-06-10 17:00:00 PDT,6.875938
@@ -672,12 +672,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 13,Scott Creek,Scott Creek,2026-06-14 08:00:00 PDT,4.5006895
 13,Scott Creek,Scott Creek,2026-06-14 11:00:00 PDT,4.5331182
 13,Scott Creek,Scott Creek,2026-06-14 14:00:00 PDT,4.553711
-13,Scott Creek,Scott Creek,2026-06-14 17:00:00 PDT,4.5600414
-13,Scott Creek,Scott Creek,2026-06-14 20:00:00 PDT,4.607538
-13,Scott Creek,Scott Creek,2026-06-14 23:00:00 PDT,4.6658373
-13,Scott Creek,Scott Creek,2026-06-15 02:00:00 PDT,4.617838
-13,Scott Creek,Scott Creek,2026-06-15 05:00:00 PDT,4.402777
-13,Scott Creek,Scott Creek,2026-06-15 08:00:00 PDT,4.2156796
+13,Scott Creek,Scott Creek,2026-06-14 17:00:00 PDT,4.454768
+13,Scott Creek,Scott Creek,2026-06-14 20:00:00 PDT,4.3915286
+13,Scott Creek,Scott Creek,2026-06-14 23:00:00 PDT,4.3395615
+13,Scott Creek,Scott Creek,2026-06-15 02:00:00 PDT,4.2949185
+13,Scott Creek,Scott Creek,2026-06-15 05:00:00 PDT,4.189652
+13,Scott Creek,Scott Creek,2026-06-15 08:00:00 PDT,4.1123595
 13,Scott Creek,Scott Creek,2026-06-15 11:00:00 PDT,4.2016993
 13,Scott Creek,Scott Creek,2026-06-15 14:00:00 PDT,4.300781
 13,Scott Creek,Scott Creek,2026-06-15 17:00:00 PDT,4.3798637
@@ -725,12 +725,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 14,Davenport Landing,Davenport Landing,2026-06-14 08:00:00 PDT,4.63184
 14,Davenport Landing,Davenport Landing,2026-06-14 11:00:00 PDT,4.1027203
 14,Davenport Landing,Davenport Landing,2026-06-14 14:00:00 PDT,3.5024526
-14,Davenport Landing,Davenport Landing,2026-06-14 17:00:00 PDT,3.4555836
-14,Davenport Landing,Davenport Landing,2026-06-14 20:00:00 PDT,3.4962595
-14,Davenport Landing,Davenport Landing,2026-06-14 23:00:00 PDT,3.5697565
-14,Davenport Landing,Davenport Landing,2026-06-15 02:00:00 PDT,4.1170683
-14,Davenport Landing,Davenport Landing,2026-06-15 05:00:00 PDT,4.904113
-14,Davenport Landing,Davenport Landing,2026-06-15 08:00:00 PDT,5.497871
+14,Davenport Landing,Davenport Landing,2026-06-14 17:00:00 PDT,3.5505369
+14,Davenport Landing,Davenport Landing,2026-06-14 20:00:00 PDT,3.693298
+14,Davenport Landing,Davenport Landing,2026-06-14 23:00:00 PDT,3.8698993
+14,Davenport Landing,Davenport Landing,2026-06-15 02:00:00 PDT,4.463228
+14,Davenport Landing,Davenport Landing,2026-06-15 05:00:00 PDT,5.1496544
+14,Davenport Landing,Davenport Landing,2026-06-15 08:00:00 PDT,5.640601
 14,Davenport Landing,Davenport Landing,2026-06-15 11:00:00 PDT,5.2572713
 14,Davenport Landing,Davenport Landing,2026-06-15 14:00:00 PDT,4.708479
 14,Davenport Landing,Davenport Landing,2026-06-15 17:00:00 PDT,4.5972905
@@ -778,12 +778,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 15,Four Mile,Four Mile,2026-06-14 08:00:00 PDT,5.38723
 15,Four Mile,Four Mile,2026-06-14 11:00:00 PDT,5.0070233
 15,Four Mile,Four Mile,2026-06-14 14:00:00 PDT,4.6575418
-15,Four Mile,Four Mile,2026-06-14 17:00:00 PDT,4.429449
-15,Four Mile,Four Mile,2026-06-14 20:00:00 PDT,4.172505
-15,Four Mile,Four Mile,2026-06-14 23:00:00 PDT,4.4054437
-15,Four Mile,Four Mile,2026-06-15 02:00:00 PDT,5.1409082
-15,Four Mile,Four Mile,2026-06-15 05:00:00 PDT,6.0614867
-15,Four Mile,Four Mile,2026-06-15 08:00:00 PDT,6.118025
+15,Four Mile,Four Mile,2026-06-14 17:00:00 PDT,4.536468
+15,Four Mile,Four Mile,2026-06-14 20:00:00 PDT,4.391489
+15,Four Mile,Four Mile,2026-06-14 23:00:00 PDT,4.7758503
+15,Four Mile,Four Mile,2026-06-15 02:00:00 PDT,5.573152
+15,Four Mile,Four Mile,2026-06-15 05:00:00 PDT,6.3830647
+15,Four Mile,Four Mile,2026-06-15 08:00:00 PDT,6.287543
 15,Four Mile,Four Mile,2026-06-15 11:00:00 PDT,5.9091144
 15,Four Mile,Four Mile,2026-06-15 14:00:00 PDT,5.7424765
 15,Four Mile,Four Mile,2026-06-15 17:00:00 PDT,5.5160065
@@ -831,12 +831,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 16,Three Mile,Three Mile,2026-06-14 08:00:00 PDT,4.1689777
 16,Three Mile,Three Mile,2026-06-14 11:00:00 PDT,3.8986561
 16,Three Mile,Three Mile,2026-06-14 14:00:00 PDT,3.653929
-16,Three Mile,Three Mile,2026-06-14 17:00:00 PDT,3.5079727
-16,Three Mile,Three Mile,2026-06-14 20:00:00 PDT,3.3358076
-16,Three Mile,Three Mile,2026-06-14 23:00:00 PDT,3.5341265
-16,Three Mile,Three Mile,2026-06-15 02:00:00 PDT,4.113794
-16,Three Mile,Three Mile,2026-06-15 05:00:00 PDT,4.839479
-16,Three Mile,Three Mile,2026-06-15 08:00:00 PDT,4.910448
+16,Three Mile,Three Mile,2026-06-14 17:00:00 PDT,3.5934198
+16,Three Mile,Three Mile,2026-06-14 20:00:00 PDT,3.511991
+16,Three Mile,Three Mile,2026-06-14 23:00:00 PDT,3.8312736
+16,Three Mile,Three Mile,2026-06-15 02:00:00 PDT,4.4596786
+16,Three Mile,Three Mile,2026-06-15 05:00:00 PDT,5.0962114
+16,Three Mile,Three Mile,2026-06-15 08:00:00 PDT,5.0458097
 16,Three Mile,Three Mile,2026-06-15 11:00:00 PDT,4.7826805
 16,Three Mile,Three Mile,2026-06-15 14:00:00 PDT,4.7067876
 16,Three Mile,Three Mile,2026-06-15 17:00:00 PDT,4.566242
@@ -884,12 +884,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 17,Natural Bridges,Natural Bridges,2026-06-14 08:00:00 PDT,3.1447272
 17,Natural Bridges,Natural Bridges,2026-06-14 11:00:00 PDT,2.9197342
 17,Natural Bridges,Natural Bridges,2026-06-14 14:00:00 PDT,2.6921294
-17,Natural Bridges,Natural Bridges,2026-06-14 17:00:00 PDT,2.5439324
-17,Natural Bridges,Natural Bridges,2026-06-14 20:00:00 PDT,2.392839
-17,Natural Bridges,Natural Bridges,2026-06-14 23:00:00 PDT,2.5372238
-17,Natural Bridges,Natural Bridges,2026-06-15 02:00:00 PDT,2.9681735
-17,Natural Bridges,Natural Bridges,2026-06-15 05:00:00 PDT,3.49805
-17,Natural Bridges,Natural Bridges,2026-06-15 08:00:00 PDT,3.5274231
+17,Natural Bridges,Natural Bridges,2026-06-14 17:00:00 PDT,2.6052315
+17,Natural Bridges,Natural Bridges,2026-06-14 20:00:00 PDT,2.5188293
+17,Natural Bridges,Natural Bridges,2026-06-14 23:00:00 PDT,2.7505517
+17,Natural Bridges,Natural Bridges,2026-06-15 02:00:00 PDT,3.2177353
+17,Natural Bridges,Natural Bridges,2026-06-15 05:00:00 PDT,3.6840289
+17,Natural Bridges,Natural Bridges,2026-06-15 08:00:00 PDT,3.6257687
 17,Natural Bridges,Natural Bridges,2026-06-15 11:00:00 PDT,3.3970783
 17,Natural Bridges,Natural Bridges,2026-06-15 14:00:00 PDT,3.2851002
 17,Natural Bridges,Natural Bridges,2026-06-15 17:00:00 PDT,3.1510222
@@ -937,12 +937,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 18,Swift Street,Swift Street,2026-06-14 08:00:00 PDT,3.756319
 18,Swift Street,Swift Street,2026-06-14 11:00:00 PDT,3.5224395
 18,Swift Street,Swift Street,2026-06-14 14:00:00 PDT,3.2785814
-18,Swift Street,Swift Street,2026-06-14 17:00:00 PDT,3.1287606
-18,Swift Street,Swift Street,2026-06-14 20:00:00 PDT,2.9653475
-18,Swift Street,Swift Street,2026-06-14 23:00:00 PDT,3.160065
-18,Swift Street,Swift Street,2026-06-15 02:00:00 PDT,3.694895
-18,Swift Street,Swift Street,2026-06-15 05:00:00 PDT,4.3412595
-18,Swift Street,Swift Street,2026-06-15 08:00:00 PDT,4.366235
+18,Swift Street,Swift Street,2026-06-14 17:00:00 PDT,3.2042603
+18,Swift Street,Swift Street,2026-06-14 20:00:00 PDT,3.1216087
+18,Swift Street,Swift Street,2026-06-14 23:00:00 PDT,3.425761
+18,Swift Street,Swift Street,2026-06-15 02:00:00 PDT,4.0055594
+18,Swift Street,Swift Street,2026-06-15 05:00:00 PDT,4.572507
+18,Swift Street,Swift Street,2026-06-15 08:00:00 PDT,4.488099
 18,Swift Street,Swift Street,2026-06-15 11:00:00 PDT,4.180925
 18,Swift Street,Swift Street,2026-06-15 14:00:00 PDT,4.026878
 18,Swift Street,Swift Street,2026-06-15 17:00:00 PDT,3.8453257
@@ -953,8 +953,8 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 18,Swift Street,Swift Street,2026-06-16 08:00:00 PDT,5.057946
 18,Swift Street,Swift Street,2026-06-16 11:00:00 PDT,4.6235943
 18,Swift Street,Swift Street,2026-06-16 14:00:00 PDT,4.3334856
-19,Mitchell's Cove,Mitchell's Cove,2026-06-10 02:00:00 PDT,1.9601852
-19,Mitchell's Cove,Mitchell's Cove,2026-06-10 05:00:00 PDT,1.7634815
+19,Mitchell's Cove,Mitchell's Cove,2026-06-10 02:00:00 PDT,1.9602574
+19,Mitchell's Cove,Mitchell's Cove,2026-06-10 05:00:00 PDT,1.7635292
 19,Mitchell's Cove,Mitchell's Cove,2026-06-10 08:00:00 PDT,1.5826558
 19,Mitchell's Cove,Mitchell's Cove,2026-06-10 11:00:00 PDT,1.4812717
 19,Mitchell's Cove,Mitchell's Cove,2026-06-10 14:00:00 PDT,1.646436
@@ -990,12 +990,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 19,Mitchell's Cove,Mitchell's Cove,2026-06-14 08:00:00 PDT,1.5582628
 19,Mitchell's Cove,Mitchell's Cove,2026-06-14 11:00:00 PDT,1.3188834
 19,Mitchell's Cove,Mitchell's Cove,2026-06-14 14:00:00 PDT,1.2074198
-19,Mitchell's Cove,Mitchell's Cove,2026-06-14 17:00:00 PDT,1.310679
-19,Mitchell's Cove,Mitchell's Cove,2026-06-14 20:00:00 PDT,1.3833236
-19,Mitchell's Cove,Mitchell's Cove,2026-06-14 23:00:00 PDT,1.3315632
-19,Mitchell's Cove,Mitchell's Cove,2026-06-15 02:00:00 PDT,1.3542502
-19,Mitchell's Cove,Mitchell's Cove,2026-06-15 05:00:00 PDT,2.4149857
-19,Mitchell's Cove,Mitchell's Cove,2026-06-15 08:00:00 PDT,3.1095278
+19,Mitchell's Cove,Mitchell's Cove,2026-06-14 17:00:00 PDT,1.6162069
+19,Mitchell's Cove,Mitchell's Cove,2026-06-14 20:00:00 PDT,1.8878019
+19,Mitchell's Cove,Mitchell's Cove,2026-06-14 23:00:00 PDT,2.5031636
+19,Mitchell's Cove,Mitchell's Cove,2026-06-15 02:00:00 PDT,3.1250505
+19,Mitchell's Cove,Mitchell's Cove,2026-06-15 05:00:00 PDT,3.96513
+19,Mitchell's Cove,Mitchell's Cove,2026-06-15 08:00:00 PDT,3.9901884
 19,Mitchell's Cove,Mitchell's Cove,2026-06-15 11:00:00 PDT,3.3337226
 19,Mitchell's Cove,Mitchell's Cove,2026-06-15 14:00:00 PDT,2.7346203
 19,Mitchell's Cove,Mitchell's Cove,2026-06-15 17:00:00 PDT,2.6628442
@@ -1043,12 +1043,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 20,Steamer Lane,Point,2026-06-14 08:00:00 PDT,6.12108
 20,Steamer Lane,Point,2026-06-14 11:00:00 PDT,6.150859
 20,Steamer Lane,Point,2026-06-14 14:00:00 PDT,5.872709
-20,Steamer Lane,Point,2026-06-14 17:00:00 PDT,5.5742393
-20,Steamer Lane,Point,2026-06-14 20:00:00 PDT,5.5588894
-20,Steamer Lane,Point,2026-06-14 23:00:00 PDT,5.744107
-20,Steamer Lane,Point,2026-06-15 02:00:00 PDT,5.841707
-20,Steamer Lane,Point,2026-06-15 05:00:00 PDT,6.3289733
-20,Steamer Lane,Point,2026-06-15 08:00:00 PDT,6.5844445
+20,Steamer Lane,Point,2026-06-14 17:00:00 PDT,5.2930617
+20,Steamer Lane,Point,2026-06-14 20:00:00 PDT,4.9399695
+20,Steamer Lane,Point,2026-06-14 23:00:00 PDT,5.0833983
+20,Steamer Lane,Point,2026-06-15 02:00:00 PDT,5.665661
+20,Steamer Lane,Point,2026-06-15 05:00:00 PDT,6.488147
+20,Steamer Lane,Point,2026-06-15 08:00:00 PDT,6.792705
 20,Steamer Lane,Point,2026-06-15 11:00:00 PDT,6.7649903
 20,Steamer Lane,Point,2026-06-15 14:00:00 PDT,6.6083984
 20,Steamer Lane,Point,2026-06-15 17:00:00 PDT,6.5573473
@@ -1096,12 +1096,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 21,Steamer Lane,Middle Peak,2026-06-14 08:00:00 PDT,7.0721436
 21,Steamer Lane,Middle Peak,2026-06-14 11:00:00 PDT,7.2827106
 21,Steamer Lane,Middle Peak,2026-06-14 14:00:00 PDT,7.032382
-21,Steamer Lane,Middle Peak,2026-06-14 17:00:00 PDT,6.7479234
-21,Steamer Lane,Middle Peak,2026-06-14 20:00:00 PDT,6.7497787
-21,Steamer Lane,Middle Peak,2026-06-14 23:00:00 PDT,6.985921
-21,Steamer Lane,Middle Peak,2026-06-15 02:00:00 PDT,6.933912
-21,Steamer Lane,Middle Peak,2026-06-15 05:00:00 PDT,7.190261
-21,Steamer Lane,Middle Peak,2026-06-15 08:00:00 PDT,7.290992
+21,Steamer Lane,Middle Peak,2026-06-14 17:00:00 PDT,6.3613014
+21,Steamer Lane,Middle Peak,2026-06-14 20:00:00 PDT,5.9164515
+21,Steamer Lane,Middle Peak,2026-06-14 23:00:00 PDT,5.9844127
+21,Steamer Lane,Middle Peak,2026-06-15 02:00:00 PDT,6.3875017
+21,Steamer Lane,Middle Peak,2026-06-15 05:00:00 PDT,7.0849876
+21,Steamer Lane,Middle Peak,2026-06-15 08:00:00 PDT,7.361518
 21,Steamer Lane,Middle Peak,2026-06-15 11:00:00 PDT,7.52053
 21,Steamer Lane,Middle Peak,2026-06-15 14:00:00 PDT,7.5522575
 21,Steamer Lane,Middle Peak,2026-06-15 17:00:00 PDT,7.4853845
@@ -1149,12 +1149,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 22,Steamer Lane,Indicators,2026-06-14 08:00:00 PDT,3.0703492
 22,Steamer Lane,Indicators,2026-06-14 11:00:00 PDT,3.2609262
 22,Steamer Lane,Indicators,2026-06-14 14:00:00 PDT,3.1747758
-22,Steamer Lane,Indicators,2026-06-14 17:00:00 PDT,3.1624804
-22,Steamer Lane,Indicators,2026-06-14 20:00:00 PDT,3.0894833
-22,Steamer Lane,Indicators,2026-06-14 23:00:00 PDT,3.3938806
-22,Steamer Lane,Indicators,2026-06-15 02:00:00 PDT,3.3355217
-22,Steamer Lane,Indicators,2026-06-15 05:00:00 PDT,3.2885807
-22,Steamer Lane,Indicators,2026-06-15 08:00:00 PDT,2.813896
+22,Steamer Lane,Indicators,2026-06-14 17:00:00 PDT,2.8786647
+22,Steamer Lane,Indicators,2026-06-14 20:00:00 PDT,2.4486947
+22,Steamer Lane,Indicators,2026-06-14 23:00:00 PDT,2.5506508
+22,Steamer Lane,Indicators,2026-06-15 02:00:00 PDT,2.691789
+22,Steamer Lane,Indicators,2026-06-15 05:00:00 PDT,3.0009606
+22,Steamer Lane,Indicators,2026-06-15 08:00:00 PDT,2.7273636
 22,Steamer Lane,Indicators,2026-06-15 11:00:00 PDT,2.8562336
 22,Steamer Lane,Indicators,2026-06-15 14:00:00 PDT,3.068505
 22,Steamer Lane,Indicators,2026-06-15 17:00:00 PDT,3.0238316
@@ -1202,12 +1202,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 23,Cowells,Cowells,2026-06-14 08:00:00 PDT,0.992124
 23,Cowells,Cowells,2026-06-14 11:00:00 PDT,1.0486314
 23,Cowells,Cowells,2026-06-14 14:00:00 PDT,0.9110788
-23,Cowells,Cowells,2026-06-14 17:00:00 PDT,0.8629499
-23,Cowells,Cowells,2026-06-14 20:00:00 PDT,0.9802915
-23,Cowells,Cowells,2026-06-14 23:00:00 PDT,1.0256524
-23,Cowells,Cowells,2026-06-15 02:00:00 PDT,0.79446733
-23,Cowells,Cowells,2026-06-15 05:00:00 PDT,0.90602833
-23,Cowells,Cowells,2026-06-15 08:00:00 PDT,0.95568764
+23,Cowells,Cowells,2026-06-14 17:00:00 PDT,0.5049619
+23,Cowells,Cowells,2026-06-14 20:00:00 PDT,0.2462718
+23,Cowells,Cowells,2026-06-14 23:00:00 PDT,0.1351484
+23,Cowells,Cowells,2026-06-15 02:00:00 PDT,0.360147
+23,Cowells,Cowells,2026-06-15 05:00:00 PDT,0.849525
+23,Cowells,Cowells,2026-06-15 08:00:00 PDT,1.0594151
 23,Cowells,Cowells,2026-06-15 11:00:00 PDT,1.1847366
 23,Cowells,Cowells,2026-06-15 14:00:00 PDT,0.95236087
 23,Cowells,Cowells,2026-06-15 17:00:00 PDT,0.9240522
@@ -1218,8 +1218,8 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 23,Cowells,Cowells,2026-06-16 08:00:00 PDT,3.5016747
 23,Cowells,Cowells,2026-06-16 11:00:00 PDT,2.4790235
 23,Cowells,Cowells,2026-06-16 14:00:00 PDT,1.6407976
-24,26th Ave,26th Ave,2026-06-10 02:00:00 PDT,6.8398366
-24,26th Ave,26th Ave,2026-06-10 05:00:00 PDT,6.557758
+24,26th Ave,26th Ave,2026-06-10 02:00:00 PDT,6.839467
+24,26th Ave,26th Ave,2026-06-10 05:00:00 PDT,6.557513
 24,26th Ave,26th Ave,2026-06-10 08:00:00 PDT,6.222824
 24,26th Ave,26th Ave,2026-06-10 11:00:00 PDT,6.0072265
 24,26th Ave,26th Ave,2026-06-10 14:00:00 PDT,5.778088
@@ -1255,12 +1255,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 24,26th Ave,26th Ave,2026-06-14 08:00:00 PDT,4.936035
 24,26th Ave,26th Ave,2026-06-14 11:00:00 PDT,4.6609693
 24,26th Ave,26th Ave,2026-06-14 14:00:00 PDT,4.478968
-24,26th Ave,26th Ave,2026-06-14 17:00:00 PDT,4.4178643
-24,26th Ave,26th Ave,2026-06-14 20:00:00 PDT,4.207747
-24,26th Ave,26th Ave,2026-06-14 23:00:00 PDT,4.359642
-24,26th Ave,26th Ave,2026-06-15 02:00:00 PDT,4.778147
-24,26th Ave,26th Ave,2026-06-15 05:00:00 PDT,4.738887
-24,26th Ave,26th Ave,2026-06-15 08:00:00 PDT,4.1894226
+24,26th Ave,26th Ave,2026-06-14 17:00:00 PDT,3.951289
+24,26th Ave,26th Ave,2026-06-14 20:00:00 PDT,3.2153776
+24,26th Ave,26th Ave,2026-06-14 23:00:00 PDT,2.9229703
+24,26th Ave,26th Ave,2026-06-15 02:00:00 PDT,3.2554224
+24,26th Ave,26th Ave,2026-06-15 05:00:00 PDT,3.7344832
+24,26th Ave,26th Ave,2026-06-15 08:00:00 PDT,3.6298769
 24,26th Ave,26th Ave,2026-06-15 11:00:00 PDT,3.400589
 24,26th Ave,26th Ave,2026-06-15 14:00:00 PDT,3.2772017
 24,26th Ave,26th Ave,2026-06-15 17:00:00 PDT,3.2855663
@@ -1308,12 +1308,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 25,Wind and Sea,Wind and Sea,2026-06-14 08:00:00 PDT,2.5277119
 25,Wind and Sea,Wind and Sea,2026-06-14 11:00:00 PDT,2.3369358
 25,Wind and Sea,Wind and Sea,2026-06-14 14:00:00 PDT,2.157533
-25,Wind and Sea,Wind and Sea,2026-06-14 17:00:00 PDT,2.0239651
-25,Wind and Sea,Wind and Sea,2026-06-14 20:00:00 PDT,1.8900859
-25,Wind and Sea,Wind and Sea,2026-06-14 23:00:00 PDT,2.001245
-25,Wind and Sea,Wind and Sea,2026-06-15 02:00:00 PDT,2.3356094
-25,Wind and Sea,Wind and Sea,2026-06-15 05:00:00 PDT,2.7424278
-25,Wind and Sea,Wind and Sea,2026-06-15 08:00:00 PDT,2.7560446
+25,Wind and Sea,Wind and Sea,2026-06-14 17:00:00 PDT,2.0723538
+25,Wind and Sea,Wind and Sea,2026-06-14 20:00:00 PDT,1.9892048
+25,Wind and Sea,Wind and Sea,2026-06-14 23:00:00 PDT,2.1695082
+25,Wind and Sea,Wind and Sea,2026-06-15 02:00:00 PDT,2.5319858
+25,Wind and Sea,Wind and Sea,2026-06-15 05:00:00 PDT,2.8889675
+25,Wind and Sea,Wind and Sea,2026-06-15 08:00:00 PDT,2.8333237
 25,Wind and Sea,Wind and Sea,2026-06-15 11:00:00 PDT,2.6579032
 25,Wind and Sea,Wind and Sea,2026-06-15 14:00:00 PDT,2.5819685
 25,Wind and Sea,Wind and Sea,2026-06-15 17:00:00 PDT,2.490206
@@ -1361,12 +1361,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 26,Pleasure Point,Rockview,2026-06-14 08:00:00 PDT,2.2848158
 26,Pleasure Point,Rockview,2026-06-14 11:00:00 PDT,2.1335716
 26,Pleasure Point,Rockview,2026-06-14 14:00:00 PDT,1.986097
-26,Pleasure Point,Rockview,2026-06-14 17:00:00 PDT,1.8740095
-26,Pleasure Point,Rockview,2026-06-14 20:00:00 PDT,1.7522923
-26,Pleasure Point,Rockview,2026-06-14 23:00:00 PDT,1.8524058
-26,Pleasure Point,Rockview,2026-06-15 02:00:00 PDT,2.1492484
-26,Pleasure Point,Rockview,2026-06-15 05:00:00 PDT,2.5036511
-26,Pleasure Point,Rockview,2026-06-15 08:00:00 PDT,2.4940777
+26,Pleasure Point,Rockview,2026-06-14 17:00:00 PDT,1.9187675
+26,Pleasure Point,Rockview,2026-06-14 20:00:00 PDT,1.844128
+26,Pleasure Point,Rockview,2026-06-14 23:00:00 PDT,2.0081549
+26,Pleasure Point,Rockview,2026-06-15 02:00:00 PDT,2.3299558
+26,Pleasure Point,Rockview,2026-06-15 05:00:00 PDT,2.6376863
+26,Pleasure Point,Rockview,2026-06-15 08:00:00 PDT,2.564053
 26,Pleasure Point,Rockview,2026-06-15 11:00:00 PDT,2.3929186
 26,Pleasure Point,Rockview,2026-06-15 14:00:00 PDT,2.3219073
 26,Pleasure Point,Rockview,2026-06-15 17:00:00 PDT,2.2447312
@@ -1414,12 +1414,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 27,Pleasure Point,Sewers,2026-06-14 08:00:00 PDT,6.5900908
 27,Pleasure Point,Sewers,2026-06-14 11:00:00 PDT,6.503178
 27,Pleasure Point,Sewers,2026-06-14 14:00:00 PDT,6.2276382
-27,Pleasure Point,Sewers,2026-06-14 17:00:00 PDT,5.971499
-27,Pleasure Point,Sewers,2026-06-14 20:00:00 PDT,6.229022
-27,Pleasure Point,Sewers,2026-06-14 23:00:00 PDT,6.268755
-27,Pleasure Point,Sewers,2026-06-15 02:00:00 PDT,6.2420726
-27,Pleasure Point,Sewers,2026-06-15 05:00:00 PDT,6.374481
-27,Pleasure Point,Sewers,2026-06-15 08:00:00 PDT,6.7104387
+27,Pleasure Point,Sewers,2026-06-14 17:00:00 PDT,5.824397
+27,Pleasure Point,Sewers,2026-06-14 20:00:00 PDT,5.942227
+27,Pleasure Point,Sewers,2026-06-14 23:00:00 PDT,6.1505876
+27,Pleasure Point,Sewers,2026-06-15 02:00:00 PDT,6.6220675
+27,Pleasure Point,Sewers,2026-06-15 05:00:00 PDT,6.895332
+27,Pleasure Point,Sewers,2026-06-15 08:00:00 PDT,7.063298
 27,Pleasure Point,Sewers,2026-06-15 11:00:00 PDT,6.940486
 27,Pleasure Point,Sewers,2026-06-15 14:00:00 PDT,7.0220356
 27,Pleasure Point,Sewers,2026-06-15 17:00:00 PDT,7.2065163
@@ -1467,12 +1467,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 28,Pleasure Point,First Peak,2026-06-14 08:00:00 PDT,5.3208914
 28,Pleasure Point,First Peak,2026-06-14 11:00:00 PDT,5.315791
 28,Pleasure Point,First Peak,2026-06-14 14:00:00 PDT,5.1393123
-28,Pleasure Point,First Peak,2026-06-14 17:00:00 PDT,4.890071
-28,Pleasure Point,First Peak,2026-06-14 20:00:00 PDT,5.0469065
-28,Pleasure Point,First Peak,2026-06-14 23:00:00 PDT,5.054958
-28,Pleasure Point,First Peak,2026-06-15 02:00:00 PDT,4.9627576
-28,Pleasure Point,First Peak,2026-06-15 05:00:00 PDT,5.091517
-28,Pleasure Point,First Peak,2026-06-15 08:00:00 PDT,5.42317
+28,Pleasure Point,First Peak,2026-06-14 17:00:00 PDT,4.7949934
+28,Pleasure Point,First Peak,2026-06-14 20:00:00 PDT,4.86312
+28,Pleasure Point,First Peak,2026-06-14 23:00:00 PDT,5.1096473
+28,Pleasure Point,First Peak,2026-06-15 02:00:00 PDT,5.5246058
+28,Pleasure Point,First Peak,2026-06-15 05:00:00 PDT,5.7439084
+28,Pleasure Point,First Peak,2026-06-15 08:00:00 PDT,5.837658
 28,Pleasure Point,First Peak,2026-06-15 11:00:00 PDT,5.7160454
 28,Pleasure Point,First Peak,2026-06-15 14:00:00 PDT,5.9000125
 28,Pleasure Point,First Peak,2026-06-15 17:00:00 PDT,5.993329
@@ -1520,12 +1520,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 29,Pleasure Point,Second Peak,2026-06-14 08:00:00 PDT,3.8874753
 29,Pleasure Point,Second Peak,2026-06-14 11:00:00 PDT,4.228167
 29,Pleasure Point,Second Peak,2026-06-14 14:00:00 PDT,4.248601
-29,Pleasure Point,Second Peak,2026-06-14 17:00:00 PDT,4.170114
-29,Pleasure Point,Second Peak,2026-06-14 20:00:00 PDT,4.2570057
-29,Pleasure Point,Second Peak,2026-06-14 23:00:00 PDT,4.4388766
-29,Pleasure Point,Second Peak,2026-06-15 02:00:00 PDT,4.3271728
-29,Pleasure Point,Second Peak,2026-06-15 05:00:00 PDT,4.770348
-29,Pleasure Point,Second Peak,2026-06-15 08:00:00 PDT,4.9350257
+29,Pleasure Point,Second Peak,2026-06-14 17:00:00 PDT,4.1057997
+29,Pleasure Point,Second Peak,2026-06-14 20:00:00 PDT,4.1041646
+29,Pleasure Point,Second Peak,2026-06-14 23:00:00 PDT,4.5148625
+29,Pleasure Point,Second Peak,2026-06-15 02:00:00 PDT,4.9140735
+29,Pleasure Point,Second Peak,2026-06-15 05:00:00 PDT,5.451031
+29,Pleasure Point,Second Peak,2026-06-15 08:00:00 PDT,5.3861957
 29,Pleasure Point,Second Peak,2026-06-15 11:00:00 PDT,5.333094
 29,Pleasure Point,Second Peak,2026-06-15 14:00:00 PDT,5.117345
 29,Pleasure Point,Second Peak,2026-06-15 17:00:00 PDT,5.055711
@@ -1573,12 +1573,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 30,Pleasure Point,Privates,2026-06-14 08:00:00 PDT,1.4169533
 30,Pleasure Point,Privates,2026-06-14 11:00:00 PDT,1.4500982
 30,Pleasure Point,Privates,2026-06-14 14:00:00 PDT,1.370407
-30,Pleasure Point,Privates,2026-06-14 17:00:00 PDT,1.3718349
-30,Pleasure Point,Privates,2026-06-14 20:00:00 PDT,1.5677534
-30,Pleasure Point,Privates,2026-06-14 23:00:00 PDT,1.651155
-30,Pleasure Point,Privates,2026-06-15 02:00:00 PDT,1.5699165
-30,Pleasure Point,Privates,2026-06-15 05:00:00 PDT,2.0764825
-30,Pleasure Point,Privates,2026-06-15 08:00:00 PDT,2.4154727
+30,Pleasure Point,Privates,2026-06-14 17:00:00 PDT,1.4247596
+30,Pleasure Point,Privates,2026-06-14 20:00:00 PDT,1.6388199
+30,Pleasure Point,Privates,2026-06-14 23:00:00 PDT,1.9758171
+30,Pleasure Point,Privates,2026-06-15 02:00:00 PDT,2.2788825
+30,Pleasure Point,Privates,2026-06-15 05:00:00 PDT,2.783804
+30,Pleasure Point,Privates,2026-06-15 08:00:00 PDT,2.8705845
 30,Pleasure Point,Privates,2026-06-15 11:00:00 PDT,2.738693
 30,Pleasure Point,Privates,2026-06-15 14:00:00 PDT,2.5237882
 30,Pleasure Point,Privates,2026-06-15 17:00:00 PDT,2.5562797
@@ -1626,12 +1626,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 31,Pleasure Point,Jacks,2026-06-14 08:00:00 PDT,3.7238324
 31,Pleasure Point,Jacks,2026-06-14 11:00:00 PDT,4.287795
 31,Pleasure Point,Jacks,2026-06-14 14:00:00 PDT,4.3047204
-31,Pleasure Point,Jacks,2026-06-14 17:00:00 PDT,4.2191434
-31,Pleasure Point,Jacks,2026-06-14 20:00:00 PDT,4.2801766
-31,Pleasure Point,Jacks,2026-06-14 23:00:00 PDT,4.5737867
-31,Pleasure Point,Jacks,2026-06-15 02:00:00 PDT,4.4016004
-31,Pleasure Point,Jacks,2026-06-15 05:00:00 PDT,3.898583
-31,Pleasure Point,Jacks,2026-06-15 08:00:00 PDT,3.2023206
+31,Pleasure Point,Jacks,2026-06-14 17:00:00 PDT,3.6299334
+31,Pleasure Point,Jacks,2026-06-14 20:00:00 PDT,3.1154194
+31,Pleasure Point,Jacks,2026-06-14 23:00:00 PDT,2.9681208
+31,Pleasure Point,Jacks,2026-06-15 02:00:00 PDT,3.244112
+31,Pleasure Point,Jacks,2026-06-15 05:00:00 PDT,3.3123047
+31,Pleasure Point,Jacks,2026-06-15 08:00:00 PDT,3.0519798
 31,Pleasure Point,Jacks,2026-06-15 11:00:00 PDT,2.8000777
 31,Pleasure Point,Jacks,2026-06-15 14:00:00 PDT,2.9216218
 31,Pleasure Point,Jacks,2026-06-15 17:00:00 PDT,2.8773425
@@ -1679,12 +1679,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 32,Pleasure Point,The Hook,2026-06-14 08:00:00 PDT,2.6948543
 32,Pleasure Point,The Hook,2026-06-14 11:00:00 PDT,2.62102
 32,Pleasure Point,The Hook,2026-06-14 14:00:00 PDT,2.4051764
-32,Pleasure Point,The Hook,2026-06-14 17:00:00 PDT,2.3027515
-32,Pleasure Point,The Hook,2026-06-14 20:00:00 PDT,2.177292
-32,Pleasure Point,The Hook,2026-06-14 23:00:00 PDT,2.6865153
-32,Pleasure Point,The Hook,2026-06-15 02:00:00 PDT,3.5352576
-32,Pleasure Point,The Hook,2026-06-15 05:00:00 PDT,3.9485266
-32,Pleasure Point,The Hook,2026-06-15 08:00:00 PDT,3.2960794
+32,Pleasure Point,The Hook,2026-06-14 17:00:00 PDT,2.012333
+32,Pleasure Point,The Hook,2026-06-14 20:00:00 PDT,1.4179937
+32,Pleasure Point,The Hook,2026-06-14 23:00:00 PDT,1.3976064
+32,Pleasure Point,The Hook,2026-06-15 02:00:00 PDT,2.164283
+32,Pleasure Point,The Hook,2026-06-15 05:00:00 PDT,3.0335662
+32,Pleasure Point,The Hook,2026-06-15 08:00:00 PDT,2.910018
 32,Pleasure Point,The Hook,2026-06-15 11:00:00 PDT,2.5826843
 32,Pleasure Point,The Hook,2026-06-15 14:00:00 PDT,2.5513098
 32,Pleasure Point,The Hook,2026-06-15 17:00:00 PDT,2.3606918
@@ -1732,12 +1732,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 33,Capitola,Capitola,2026-06-14 08:00:00 PDT,1.1487336
 33,Capitola,Capitola,2026-06-14 11:00:00 PDT,1.3428023
 33,Capitola,Capitola,2026-06-14 14:00:00 PDT,1.3499502
-33,Capitola,Capitola,2026-06-14 17:00:00 PDT,1.3120536
-33,Capitola,Capitola,2026-06-14 20:00:00 PDT,1.4857408
-33,Capitola,Capitola,2026-06-14 23:00:00 PDT,1.561849
-33,Capitola,Capitola,2026-06-15 02:00:00 PDT,1.4246956
-33,Capitola,Capitola,2026-06-15 05:00:00 PDT,1.7104567
-33,Capitola,Capitola,2026-06-15 08:00:00 PDT,2.073416
+33,Capitola,Capitola,2026-06-14 17:00:00 PDT,1.2268595
+33,Capitola,Capitola,2026-06-14 20:00:00 PDT,1.3037782
+33,Capitola,Capitola,2026-06-14 23:00:00 PDT,1.4595813
+33,Capitola,Capitola,2026-06-15 02:00:00 PDT,1.6239084
+33,Capitola,Capitola,2026-06-15 05:00:00 PDT,2.0163593
+33,Capitola,Capitola,2026-06-15 08:00:00 PDT,2.2964437
 33,Capitola,Capitola,2026-06-15 11:00:00 PDT,2.6170824
 33,Capitola,Capitola,2026-06-15 14:00:00 PDT,2.739848
 33,Capitola,Capitola,2026-06-15 17:00:00 PDT,2.8707922
@@ -1785,12 +1785,12 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 34,Manresa,Manresa,2026-06-14 08:00:00 PDT,2.8342855
 34,Manresa,Manresa,2026-06-14 11:00:00 PDT,2.9537687
 34,Manresa,Manresa,2026-06-14 14:00:00 PDT,3.0679452
-34,Manresa,Manresa,2026-06-14 17:00:00 PDT,3.2823513
-34,Manresa,Manresa,2026-06-14 20:00:00 PDT,3.2853255
-34,Manresa,Manresa,2026-06-14 23:00:00 PDT,3.1626642
-34,Manresa,Manresa,2026-06-15 02:00:00 PDT,2.9573371
-34,Manresa,Manresa,2026-06-15 05:00:00 PDT,2.4830253
-34,Manresa,Manresa,2026-06-15 08:00:00 PDT,2.1050093
+34,Manresa,Manresa,2026-06-14 17:00:00 PDT,2.8351011
+34,Manresa,Manresa,2026-06-14 20:00:00 PDT,2.3552814
+34,Manresa,Manresa,2026-06-14 23:00:00 PDT,1.8644251
+34,Manresa,Manresa,2026-06-15 02:00:00 PDT,1.7483032
+34,Manresa,Manresa,2026-06-15 05:00:00 PDT,1.7578896
+34,Manresa,Manresa,2026-06-15 08:00:00 PDT,1.7473053
 34,Manresa,Manresa,2026-06-15 11:00:00 PDT,1.7227361
 34,Manresa,Manresa,2026-06-15 14:00:00 PDT,1.7718304
 34,Manresa,Manresa,2026-06-15 17:00:00 PDT,1.8275684
@@ -1801,59 +1801,59 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 34,Manresa,Manresa,2026-06-16 08:00:00 PDT,1.7808664
 34,Manresa,Manresa,2026-06-16 11:00:00 PDT,1.7341012
 34,Manresa,Manresa,2026-06-16 14:00:00 PDT,1.8356173
-35,Moss Landing,Moss Landing,2026-06-10 02:00:00 PDT,5.6647377
-35,Moss Landing,Moss Landing,2026-06-10 05:00:00 PDT,6.2497883
-35,Moss Landing,Moss Landing,2026-06-10 08:00:00 PDT,6.38763
-35,Moss Landing,Moss Landing,2026-06-10 11:00:00 PDT,6.4986625
-35,Moss Landing,Moss Landing,2026-06-10 14:00:00 PDT,6.6304526
-35,Moss Landing,Moss Landing,2026-06-10 17:00:00 PDT,6.7783732
-35,Moss Landing,Moss Landing,2026-06-10 20:00:00 PDT,6.8082914
-35,Moss Landing,Moss Landing,2026-06-10 23:00:00 PDT,6.858781
-35,Moss Landing,Moss Landing,2026-06-11 02:00:00 PDT,6.638427
-35,Moss Landing,Moss Landing,2026-06-11 05:00:00 PDT,6.635441
-35,Moss Landing,Moss Landing,2026-06-11 08:00:00 PDT,6.0870423
-35,Moss Landing,Moss Landing,2026-06-11 11:00:00 PDT,5.5402226
-35,Moss Landing,Moss Landing,2026-06-11 14:00:00 PDT,5.2154665
-35,Moss Landing,Moss Landing,2026-06-11 17:00:00 PDT,5.1404
-35,Moss Landing,Moss Landing,2026-06-11 20:00:00 PDT,5.026711
-35,Moss Landing,Moss Landing,2026-06-11 23:00:00 PDT,4.9167056
-35,Moss Landing,Moss Landing,2026-06-12 02:00:00 PDT,4.721951
-35,Moss Landing,Moss Landing,2026-06-12 05:00:00 PDT,4.5158477
-35,Moss Landing,Moss Landing,2026-06-12 08:00:00 PDT,4.211079
-35,Moss Landing,Moss Landing,2026-06-12 11:00:00 PDT,3.8193367
-35,Moss Landing,Moss Landing,2026-06-12 14:00:00 PDT,3.650117
-35,Moss Landing,Moss Landing,2026-06-12 17:00:00 PDT,3.6154368
-35,Moss Landing,Moss Landing,2026-06-12 20:00:00 PDT,3.6920905
-35,Moss Landing,Moss Landing,2026-06-12 23:00:00 PDT,3.7064316
-35,Moss Landing,Moss Landing,2026-06-13 02:00:00 PDT,3.6344628
-35,Moss Landing,Moss Landing,2026-06-13 05:00:00 PDT,3.436574
-35,Moss Landing,Moss Landing,2026-06-13 08:00:00 PDT,3.3105602
-35,Moss Landing,Moss Landing,2026-06-13 11:00:00 PDT,3.1407828
-35,Moss Landing,Moss Landing,2026-06-13 14:00:00 PDT,3.0603707
-35,Moss Landing,Moss Landing,2026-06-13 17:00:00 PDT,3.0122855
-35,Moss Landing,Moss Landing,2026-06-13 20:00:00 PDT,3.106448
-35,Moss Landing,Moss Landing,2026-06-13 23:00:00 PDT,3.0008233
-35,Moss Landing,Moss Landing,2026-06-14 02:00:00 PDT,2.8810086
-35,Moss Landing,Moss Landing,2026-06-14 05:00:00 PDT,2.733166
-35,Moss Landing,Moss Landing,2026-06-14 08:00:00 PDT,2.5989885
-35,Moss Landing,Moss Landing,2026-06-14 11:00:00 PDT,2.4152768
-35,Moss Landing,Moss Landing,2026-06-14 14:00:00 PDT,2.2769365
-35,Moss Landing,Moss Landing,2026-06-14 17:00:00 PDT,2.2586057
-35,Moss Landing,Moss Landing,2026-06-14 20:00:00 PDT,2.2922533
-35,Moss Landing,Moss Landing,2026-06-14 23:00:00 PDT,2.2526233
-35,Moss Landing,Moss Landing,2026-06-15 02:00:00 PDT,2.242216
-35,Moss Landing,Moss Landing,2026-06-15 05:00:00 PDT,1.9809014
-35,Moss Landing,Moss Landing,2026-06-15 08:00:00 PDT,1.7557726
-35,Moss Landing,Moss Landing,2026-06-15 11:00:00 PDT,1.439017
-35,Moss Landing,Moss Landing,2026-06-15 14:00:00 PDT,1.3638489
-35,Moss Landing,Moss Landing,2026-06-15 17:00:00 PDT,1.4160664
-35,Moss Landing,Moss Landing,2026-06-15 20:00:00 PDT,1.5416893
-35,Moss Landing,Moss Landing,2026-06-15 23:00:00 PDT,1.3332993
-35,Moss Landing,Moss Landing,2026-06-16 02:00:00 PDT,1.733122
-35,Moss Landing,Moss Landing,2026-06-16 05:00:00 PDT,1.4170823
-35,Moss Landing,Moss Landing,2026-06-16 08:00:00 PDT,1.7572734
-35,Moss Landing,Moss Landing,2026-06-16 11:00:00 PDT,1.4536198
-35,Moss Landing,Moss Landing,2026-06-16 14:00:00 PDT,1.6726251
+35,Moss Landing,Moss Landing,2026-06-10 02:00:00 PDT,5.6624017
+35,Moss Landing,Moss Landing,2026-06-10 05:00:00 PDT,6.2470264
+35,Moss Landing,Moss Landing,2026-06-10 08:00:00 PDT,6.3843265
+35,Moss Landing,Moss Landing,2026-06-10 11:00:00 PDT,6.4959702
+35,Moss Landing,Moss Landing,2026-06-10 14:00:00 PDT,6.628871
+35,Moss Landing,Moss Landing,2026-06-10 17:00:00 PDT,6.7778625
+35,Moss Landing,Moss Landing,2026-06-10 20:00:00 PDT,6.807262
+35,Moss Landing,Moss Landing,2026-06-10 23:00:00 PDT,6.8582835
+35,Moss Landing,Moss Landing,2026-06-11 02:00:00 PDT,6.637269
+35,Moss Landing,Moss Landing,2026-06-11 05:00:00 PDT,6.634792
+35,Moss Landing,Moss Landing,2026-06-11 08:00:00 PDT,6.0849085
+35,Moss Landing,Moss Landing,2026-06-11 11:00:00 PDT,5.5381384
+35,Moss Landing,Moss Landing,2026-06-11 14:00:00 PDT,5.214717
+35,Moss Landing,Moss Landing,2026-06-11 17:00:00 PDT,5.141413
+35,Moss Landing,Moss Landing,2026-06-11 20:00:00 PDT,5.0283046
+35,Moss Landing,Moss Landing,2026-06-11 23:00:00 PDT,4.9193263
+35,Moss Landing,Moss Landing,2026-06-12 02:00:00 PDT,4.7249904
+35,Moss Landing,Moss Landing,2026-06-12 05:00:00 PDT,4.5186787
+35,Moss Landing,Moss Landing,2026-06-12 08:00:00 PDT,4.212804
+35,Moss Landing,Moss Landing,2026-06-12 11:00:00 PDT,3.820069
+35,Moss Landing,Moss Landing,2026-06-12 14:00:00 PDT,3.651565
+35,Moss Landing,Moss Landing,2026-06-12 17:00:00 PDT,3.6177742
+35,Moss Landing,Moss Landing,2026-06-12 20:00:00 PDT,3.6953073
+35,Moss Landing,Moss Landing,2026-06-12 23:00:00 PDT,3.7102811
+35,Moss Landing,Moss Landing,2026-06-13 02:00:00 PDT,3.6387713
+35,Moss Landing,Moss Landing,2026-06-13 05:00:00 PDT,3.4403043
+35,Moss Landing,Moss Landing,2026-06-13 08:00:00 PDT,3.3136714
+35,Moss Landing,Moss Landing,2026-06-13 11:00:00 PDT,3.143034
+35,Moss Landing,Moss Landing,2026-06-13 14:00:00 PDT,3.0631714
+35,Moss Landing,Moss Landing,2026-06-13 17:00:00 PDT,3.0156074
+35,Moss Landing,Moss Landing,2026-06-13 20:00:00 PDT,3.1103897
+35,Moss Landing,Moss Landing,2026-06-13 23:00:00 PDT,3.0047774
+35,Moss Landing,Moss Landing,2026-06-14 02:00:00 PDT,2.8854375
+35,Moss Landing,Moss Landing,2026-06-14 05:00:00 PDT,2.737667
+35,Moss Landing,Moss Landing,2026-06-14 08:00:00 PDT,2.6033757
+35,Moss Landing,Moss Landing,2026-06-14 11:00:00 PDT,2.4189887
+35,Moss Landing,Moss Landing,2026-06-14 14:00:00 PDT,2.2804234
+35,Moss Landing,Moss Landing,2026-06-14 17:00:00 PDT,1.991411
+35,Moss Landing,Moss Landing,2026-06-14 20:00:00 PDT,1.7662771
+35,Moss Landing,Moss Landing,2026-06-14 23:00:00 PDT,1.5043417
+35,Moss Landing,Moss Landing,2026-06-15 02:00:00 PDT,1.497909
+35,Moss Landing,Moss Landing,2026-06-15 05:00:00 PDT,1.4981364
+35,Moss Landing,Moss Landing,2026-06-15 08:00:00 PDT,1.5034136
+35,Moss Landing,Moss Landing,2026-06-15 11:00:00 PDT,1.442683
+35,Moss Landing,Moss Landing,2026-06-15 14:00:00 PDT,1.36728
+35,Moss Landing,Moss Landing,2026-06-15 17:00:00 PDT,1.4203815
+35,Moss Landing,Moss Landing,2026-06-15 20:00:00 PDT,1.5483866
+35,Moss Landing,Moss Landing,2026-06-15 23:00:00 PDT,1.3395612
+35,Moss Landing,Moss Landing,2026-06-16 02:00:00 PDT,1.7430028
+35,Moss Landing,Moss Landing,2026-06-16 05:00:00 PDT,1.4245493
+35,Moss Landing,Moss Landing,2026-06-16 08:00:00 PDT,1.7673137
+35,Moss Landing,Moss Landing,2026-06-16 11:00:00 PDT,1.461029
+35,Moss Landing,Moss Landing,2026-06-16 14:00:00 PDT,1.6813713
 36,Cronkite,Cronkite,2026-06-10 02:00:00 PDT,6.9251227
 36,Cronkite,Cronkite,2026-06-10 05:00:00 PDT,6.829836
 36,Cronkite,Cronkite,2026-06-10 08:00:00 PDT,6.7973413
@@ -2172,271 +2172,271 @@ break_id,spot_name,break_name,wave_time_pst,significant_wave_height
 41,Stinson Beach,Stinson Beach,2026-06-16 08:00:00 PDT,3.1233575
 41,Stinson Beach,Stinson Beach,2026-06-16 11:00:00 PDT,3.157911
 41,Stinson Beach,Stinson Beach,2026-06-16 14:00:00 PDT,3.2123365
-43,Blacks,Blacks,2026-06-10 02:00:00 PDT,6.029653
-43,Blacks,Blacks,2026-06-10 05:00:00 PDT,5.9574833
-43,Blacks,Blacks,2026-06-10 08:00:00 PDT,5.780387
-43,Blacks,Blacks,2026-06-10 11:00:00 PDT,5.7424035
-43,Blacks,Blacks,2026-06-10 14:00:00 PDT,5.823794
-43,Blacks,Blacks,2026-06-10 17:00:00 PDT,5.963418
-43,Blacks,Blacks,2026-06-10 20:00:00 PDT,5.8455157
-43,Blacks,Blacks,2026-06-10 23:00:00 PDT,5.6954927
-43,Blacks,Blacks,2026-06-11 02:00:00 PDT,5.3084483
-43,Blacks,Blacks,2026-06-11 05:00:00 PDT,5.0956807
-43,Blacks,Blacks,2026-06-11 08:00:00 PDT,4.6681285
-43,Blacks,Blacks,2026-06-11 11:00:00 PDT,4.425669
-43,Blacks,Blacks,2026-06-11 14:00:00 PDT,4.3925886
-43,Blacks,Blacks,2026-06-11 17:00:00 PDT,4.4960947
-43,Blacks,Blacks,2026-06-11 20:00:00 PDT,4.458611
-43,Blacks,Blacks,2026-06-11 23:00:00 PDT,4.3887987
-43,Blacks,Blacks,2026-06-12 02:00:00 PDT,4.2413197
-43,Blacks,Blacks,2026-06-12 05:00:00 PDT,4.098681
-43,Blacks,Blacks,2026-06-12 08:00:00 PDT,3.899605
-43,Blacks,Blacks,2026-06-12 11:00:00 PDT,3.7120643
-43,Blacks,Blacks,2026-06-12 14:00:00 PDT,3.7760572
-43,Blacks,Blacks,2026-06-12 17:00:00 PDT,3.9287686
-43,Blacks,Blacks,2026-06-12 20:00:00 PDT,4.0882483
-43,Blacks,Blacks,2026-06-12 23:00:00 PDT,4.150235
-43,Blacks,Blacks,2026-06-13 02:00:00 PDT,4.209144
-43,Blacks,Blacks,2026-06-13 05:00:00 PDT,4.172238
-43,Blacks,Blacks,2026-06-13 08:00:00 PDT,4.135155
-43,Blacks,Blacks,2026-06-13 11:00:00 PDT,3.8654137
-43,Blacks,Blacks,2026-06-13 14:00:00 PDT,3.761488
-43,Blacks,Blacks,2026-06-13 17:00:00 PDT,3.8157697
-43,Blacks,Blacks,2026-06-13 20:00:00 PDT,3.980663
-43,Blacks,Blacks,2026-06-13 23:00:00 PDT,4.1598525
-43,Blacks,Blacks,2026-06-14 02:00:00 PDT,4.4043474
-43,Blacks,Blacks,2026-06-14 05:00:00 PDT,4.495102
-43,Blacks,Blacks,2026-06-14 08:00:00 PDT,4.5649953
-43,Blacks,Blacks,2026-06-14 11:00:00 PDT,4.3942113
-43,Blacks,Blacks,2026-06-14 14:00:00 PDT,4.2441416
-43,Blacks,Blacks,2026-06-14 17:00:00 PDT,4.2966027
-43,Blacks,Blacks,2026-06-14 20:00:00 PDT,4.496607
-43,Blacks,Blacks,2026-06-14 23:00:00 PDT,4.5900273
-43,Blacks,Blacks,2026-06-15 02:00:00 PDT,4.7325664
-43,Blacks,Blacks,2026-06-15 05:00:00 PDT,4.2658834
-43,Blacks,Blacks,2026-06-15 08:00:00 PDT,3.8561053
-43,Blacks,Blacks,2026-06-15 11:00:00 PDT,3.243455
-43,Blacks,Blacks,2026-06-15 14:00:00 PDT,3.156039
-43,Blacks,Blacks,2026-06-15 17:00:00 PDT,3.3270066
-43,Blacks,Blacks,2026-06-15 20:00:00 PDT,3.5952897
-43,Blacks,Blacks,2026-06-15 23:00:00 PDT,4.12582
-43,Blacks,Blacks,2026-06-16 02:00:00 PDT,4.52688
-43,Blacks,Blacks,2026-06-16 05:00:00 PDT,4.8709393
-43,Blacks,Blacks,2026-06-16 08:00:00 PDT,4.855128
-43,Blacks,Blacks,2026-06-16 11:00:00 PDT,4.8668885
-43,Blacks,Blacks,2026-06-16 14:00:00 PDT,4.7027116
-44,Santa Maria,Santa Maria,2026-06-10 02:00:00 PDT,4.832032
-44,Santa Maria,Santa Maria,2026-06-10 05:00:00 PDT,4.7711754
-44,Santa Maria,Santa Maria,2026-06-10 08:00:00 PDT,4.5772367
-44,Santa Maria,Santa Maria,2026-06-10 11:00:00 PDT,4.5016885
-44,Santa Maria,Santa Maria,2026-06-10 14:00:00 PDT,4.5666924
-44,Santa Maria,Santa Maria,2026-06-10 17:00:00 PDT,4.7075067
-44,Santa Maria,Santa Maria,2026-06-10 20:00:00 PDT,4.5954127
-44,Santa Maria,Santa Maria,2026-06-10 23:00:00 PDT,4.4465384
-44,Santa Maria,Santa Maria,2026-06-11 02:00:00 PDT,4.125561
-44,Santa Maria,Santa Maria,2026-06-11 05:00:00 PDT,3.9943104
-44,Santa Maria,Santa Maria,2026-06-11 08:00:00 PDT,3.7037103
-44,Santa Maria,Santa Maria,2026-06-11 11:00:00 PDT,3.5578835
-44,Santa Maria,Santa Maria,2026-06-11 14:00:00 PDT,3.5588436
-44,Santa Maria,Santa Maria,2026-06-11 17:00:00 PDT,3.6458318
-44,Santa Maria,Santa Maria,2026-06-11 20:00:00 PDT,3.611339
-44,Santa Maria,Santa Maria,2026-06-11 23:00:00 PDT,3.5599167
-44,Santa Maria,Santa Maria,2026-06-12 02:00:00 PDT,3.4572375
-44,Santa Maria,Santa Maria,2026-06-12 05:00:00 PDT,3.371563
-44,Santa Maria,Santa Maria,2026-06-12 08:00:00 PDT,3.2514677
-44,Santa Maria,Santa Maria,2026-06-12 11:00:00 PDT,3.1569438
-44,Santa Maria,Santa Maria,2026-06-12 14:00:00 PDT,3.2825842
-44,Santa Maria,Santa Maria,2026-06-12 17:00:00 PDT,3.4797642
-44,Santa Maria,Santa Maria,2026-06-12 20:00:00 PDT,3.6845698
-44,Santa Maria,Santa Maria,2026-06-12 23:00:00 PDT,3.8055081
-44,Santa Maria,Santa Maria,2026-06-13 02:00:00 PDT,3.9088395
-44,Santa Maria,Santa Maria,2026-06-13 05:00:00 PDT,3.9068792
-44,Santa Maria,Santa Maria,2026-06-13 08:00:00 PDT,3.927708
-44,Santa Maria,Santa Maria,2026-06-13 11:00:00 PDT,3.7477458
-44,Santa Maria,Santa Maria,2026-06-13 14:00:00 PDT,3.6994348
-44,Santa Maria,Santa Maria,2026-06-13 17:00:00 PDT,3.7551413
-44,Santa Maria,Santa Maria,2026-06-13 20:00:00 PDT,3.8799062
-44,Santa Maria,Santa Maria,2026-06-13 23:00:00 PDT,4.021157
-44,Santa Maria,Santa Maria,2026-06-14 02:00:00 PDT,4.160445
-44,Santa Maria,Santa Maria,2026-06-14 05:00:00 PDT,4.1350837
-44,Santa Maria,Santa Maria,2026-06-14 08:00:00 PDT,4.0935826
-44,Santa Maria,Santa Maria,2026-06-14 11:00:00 PDT,3.9135053
-44,Santa Maria,Santa Maria,2026-06-14 14:00:00 PDT,3.7617564
-44,Santa Maria,Santa Maria,2026-06-14 17:00:00 PDT,3.7835636
-44,Santa Maria,Santa Maria,2026-06-14 20:00:00 PDT,3.9109697
-44,Santa Maria,Santa Maria,2026-06-14 23:00:00 PDT,3.9479632
-44,Santa Maria,Santa Maria,2026-06-15 02:00:00 PDT,4.0363007
-44,Santa Maria,Santa Maria,2026-06-15 05:00:00 PDT,3.6196485
-44,Santa Maria,Santa Maria,2026-06-15 08:00:00 PDT,3.2689738
-44,Santa Maria,Santa Maria,2026-06-15 11:00:00 PDT,2.7599118
-44,Santa Maria,Santa Maria,2026-06-15 14:00:00 PDT,2.7024968
-44,Santa Maria,Santa Maria,2026-06-15 17:00:00 PDT,2.8659356
-44,Santa Maria,Santa Maria,2026-06-15 20:00:00 PDT,3.2726486
-44,Santa Maria,Santa Maria,2026-06-15 23:00:00 PDT,3.8202655
-44,Santa Maria,Santa Maria,2026-06-16 02:00:00 PDT,4.1545143
-44,Santa Maria,Santa Maria,2026-06-16 05:00:00 PDT,4.30375
-44,Santa Maria,Santa Maria,2026-06-16 08:00:00 PDT,4.235584
-44,Santa Maria,Santa Maria,2026-06-16 11:00:00 PDT,4.2382526
-44,Santa Maria,Santa Maria,2026-06-16 14:00:00 PDT,4.1003857
-45,Asilomar,Roadsides,2026-06-10 02:00:00 PDT,4.9508348
-45,Asilomar,Roadsides,2026-06-10 05:00:00 PDT,5.2491884
-45,Asilomar,Roadsides,2026-06-10 08:00:00 PDT,5.1434283
-45,Asilomar,Roadsides,2026-06-10 11:00:00 PDT,5.247044
-45,Asilomar,Roadsides,2026-06-10 14:00:00 PDT,5.3808093
-45,Asilomar,Roadsides,2026-06-10 17:00:00 PDT,5.529414
-45,Asilomar,Roadsides,2026-06-10 20:00:00 PDT,5.551849
-45,Asilomar,Roadsides,2026-06-10 23:00:00 PDT,5.6291623
-45,Asilomar,Roadsides,2026-06-11 02:00:00 PDT,5.509384
-45,Asilomar,Roadsides,2026-06-11 05:00:00 PDT,5.7131863
-45,Asilomar,Roadsides,2026-06-11 08:00:00 PDT,5.5144935
-45,Asilomar,Roadsides,2026-06-11 11:00:00 PDT,5.357973
-45,Asilomar,Roadsides,2026-06-11 14:00:00 PDT,5.383601
-45,Asilomar,Roadsides,2026-06-11 17:00:00 PDT,5.545231
-45,Asilomar,Roadsides,2026-06-11 20:00:00 PDT,5.5421357
-45,Asilomar,Roadsides,2026-06-11 23:00:00 PDT,5.4236345
-45,Asilomar,Roadsides,2026-06-12 02:00:00 PDT,5.2974777
-45,Asilomar,Roadsides,2026-06-12 05:00:00 PDT,5.2387104
-45,Asilomar,Roadsides,2026-06-12 08:00:00 PDT,5.1381364
-45,Asilomar,Roadsides,2026-06-12 11:00:00 PDT,4.870898
-45,Asilomar,Roadsides,2026-06-12 14:00:00 PDT,4.7574444
-45,Asilomar,Roadsides,2026-06-12 17:00:00 PDT,4.748973
-45,Asilomar,Roadsides,2026-06-12 20:00:00 PDT,4.8470683
-45,Asilomar,Roadsides,2026-06-12 23:00:00 PDT,4.8331037
-45,Asilomar,Roadsides,2026-06-13 02:00:00 PDT,4.7853117
-45,Asilomar,Roadsides,2026-06-13 05:00:00 PDT,4.6624084
-45,Asilomar,Roadsides,2026-06-13 08:00:00 PDT,4.7019553
-45,Asilomar,Roadsides,2026-06-13 11:00:00 PDT,4.5980496
-45,Asilomar,Roadsides,2026-06-13 14:00:00 PDT,4.6559176
-45,Asilomar,Roadsides,2026-06-13 17:00:00 PDT,4.645709
-45,Asilomar,Roadsides,2026-06-13 20:00:00 PDT,4.634835
-45,Asilomar,Roadsides,2026-06-13 23:00:00 PDT,4.5316076
-45,Asilomar,Roadsides,2026-06-14 02:00:00 PDT,4.440767
-45,Asilomar,Roadsides,2026-06-14 05:00:00 PDT,4.249509
-45,Asilomar,Roadsides,2026-06-14 08:00:00 PDT,4.1059923
-45,Asilomar,Roadsides,2026-06-14 11:00:00 PDT,3.8291607
-45,Asilomar,Roadsides,2026-06-14 14:00:00 PDT,3.6494093
-45,Asilomar,Roadsides,2026-06-14 17:00:00 PDT,3.6410296
-45,Asilomar,Roadsides,2026-06-14 20:00:00 PDT,3.6740193
-45,Asilomar,Roadsides,2026-06-14 23:00:00 PDT,3.5900505
-45,Asilomar,Roadsides,2026-06-15 02:00:00 PDT,3.5643215
-45,Asilomar,Roadsides,2026-06-15 05:00:00 PDT,3.1210387
-45,Asilomar,Roadsides,2026-06-15 08:00:00 PDT,2.7401457
-45,Asilomar,Roadsides,2026-06-15 11:00:00 PDT,2.2247865
-45,Asilomar,Roadsides,2026-06-15 14:00:00 PDT,2.0737846
-45,Asilomar,Roadsides,2026-06-15 17:00:00 PDT,2.212405
-45,Asilomar,Roadsides,2026-06-15 20:00:00 PDT,2.1508431
-45,Asilomar,Roadsides,2026-06-15 23:00:00 PDT,2.297526
-45,Asilomar,Roadsides,2026-06-16 02:00:00 PDT,2.2373893
-45,Asilomar,Roadsides,2026-06-16 05:00:00 PDT,2.2795167
-45,Asilomar,Roadsides,2026-06-16 08:00:00 PDT,2.2220118
-45,Asilomar,Roadsides,2026-06-16 11:00:00 PDT,2.1155453
-45,Asilomar,Roadsides,2026-06-16 14:00:00 PDT,2.0810847
-46,Asilomar,Middles,2026-06-10 02:00:00 PDT,4.9508348
-46,Asilomar,Middles,2026-06-10 05:00:00 PDT,5.2491884
-46,Asilomar,Middles,2026-06-10 08:00:00 PDT,5.1434283
-46,Asilomar,Middles,2026-06-10 11:00:00 PDT,5.247044
-46,Asilomar,Middles,2026-06-10 14:00:00 PDT,5.3808093
-46,Asilomar,Middles,2026-06-10 17:00:00 PDT,5.529414
-46,Asilomar,Middles,2026-06-10 20:00:00 PDT,5.551849
-46,Asilomar,Middles,2026-06-10 23:00:00 PDT,5.6291623
-46,Asilomar,Middles,2026-06-11 02:00:00 PDT,5.509384
-46,Asilomar,Middles,2026-06-11 05:00:00 PDT,5.7131863
-46,Asilomar,Middles,2026-06-11 08:00:00 PDT,5.5144935
-46,Asilomar,Middles,2026-06-11 11:00:00 PDT,5.357973
-46,Asilomar,Middles,2026-06-11 14:00:00 PDT,5.383601
-46,Asilomar,Middles,2026-06-11 17:00:00 PDT,5.545231
-46,Asilomar,Middles,2026-06-11 20:00:00 PDT,5.5421357
-46,Asilomar,Middles,2026-06-11 23:00:00 PDT,5.4236345
-46,Asilomar,Middles,2026-06-12 02:00:00 PDT,5.2974777
-46,Asilomar,Middles,2026-06-12 05:00:00 PDT,5.2387104
-46,Asilomar,Middles,2026-06-12 08:00:00 PDT,5.1381364
-46,Asilomar,Middles,2026-06-12 11:00:00 PDT,4.870898
-46,Asilomar,Middles,2026-06-12 14:00:00 PDT,4.7574444
-46,Asilomar,Middles,2026-06-12 17:00:00 PDT,4.748973
-46,Asilomar,Middles,2026-06-12 20:00:00 PDT,4.8470683
-46,Asilomar,Middles,2026-06-12 23:00:00 PDT,4.8331037
-46,Asilomar,Middles,2026-06-13 02:00:00 PDT,4.7853117
-46,Asilomar,Middles,2026-06-13 05:00:00 PDT,4.6624084
-46,Asilomar,Middles,2026-06-13 08:00:00 PDT,4.7019553
-46,Asilomar,Middles,2026-06-13 11:00:00 PDT,4.5980496
-46,Asilomar,Middles,2026-06-13 14:00:00 PDT,4.6559176
-46,Asilomar,Middles,2026-06-13 17:00:00 PDT,4.645709
-46,Asilomar,Middles,2026-06-13 20:00:00 PDT,4.634835
-46,Asilomar,Middles,2026-06-13 23:00:00 PDT,4.5316076
-46,Asilomar,Middles,2026-06-14 02:00:00 PDT,4.440767
-46,Asilomar,Middles,2026-06-14 05:00:00 PDT,4.249509
-46,Asilomar,Middles,2026-06-14 08:00:00 PDT,4.1059923
-46,Asilomar,Middles,2026-06-14 11:00:00 PDT,3.8291607
-46,Asilomar,Middles,2026-06-14 14:00:00 PDT,3.6494093
-46,Asilomar,Middles,2026-06-14 17:00:00 PDT,3.6410296
-46,Asilomar,Middles,2026-06-14 20:00:00 PDT,3.6740193
-46,Asilomar,Middles,2026-06-14 23:00:00 PDT,3.5900505
-46,Asilomar,Middles,2026-06-15 02:00:00 PDT,3.5643215
-46,Asilomar,Middles,2026-06-15 05:00:00 PDT,3.1210387
-46,Asilomar,Middles,2026-06-15 08:00:00 PDT,2.7401457
-46,Asilomar,Middles,2026-06-15 11:00:00 PDT,2.2247865
-46,Asilomar,Middles,2026-06-15 14:00:00 PDT,2.0737846
-46,Asilomar,Middles,2026-06-15 17:00:00 PDT,2.212405
-46,Asilomar,Middles,2026-06-15 20:00:00 PDT,2.1508431
-46,Asilomar,Middles,2026-06-15 23:00:00 PDT,2.297526
-46,Asilomar,Middles,2026-06-16 02:00:00 PDT,2.2373893
-46,Asilomar,Middles,2026-06-16 05:00:00 PDT,2.2795167
-46,Asilomar,Middles,2026-06-16 08:00:00 PDT,2.2220118
-46,Asilomar,Middles,2026-06-16 11:00:00 PDT,2.1155453
-46,Asilomar,Middles,2026-06-16 14:00:00 PDT,2.0810847
-47,Asilomar,Reef,2026-06-10 02:00:00 PDT,7.66034
-47,Asilomar,Reef,2026-06-10 05:00:00 PDT,8.05589
-47,Asilomar,Reef,2026-06-10 08:00:00 PDT,7.879983
-47,Asilomar,Reef,2026-06-10 11:00:00 PDT,8.023622
-47,Asilomar,Reef,2026-06-10 14:00:00 PDT,8.225395
-47,Asilomar,Reef,2026-06-10 17:00:00 PDT,8.513477
-47,Asilomar,Reef,2026-06-10 20:00:00 PDT,8.608324
-47,Asilomar,Reef,2026-06-10 23:00:00 PDT,8.72711
-47,Asilomar,Reef,2026-06-11 02:00:00 PDT,8.468643
-47,Asilomar,Reef,2026-06-11 05:00:00 PDT,8.743568
-47,Asilomar,Reef,2026-06-11 08:00:00 PDT,8.470855
-47,Asilomar,Reef,2026-06-11 11:00:00 PDT,8.235635
-47,Asilomar,Reef,2026-06-11 14:00:00 PDT,8.275071
-47,Asilomar,Reef,2026-06-11 17:00:00 PDT,8.527195
-47,Asilomar,Reef,2026-06-11 20:00:00 PDT,8.523919
-47,Asilomar,Reef,2026-06-11 23:00:00 PDT,8.341694
-47,Asilomar,Reef,2026-06-12 02:00:00 PDT,8.139344
-47,Asilomar,Reef,2026-06-12 05:00:00 PDT,8.0281
-47,Asilomar,Reef,2026-06-12 08:00:00 PDT,7.844432
-47,Asilomar,Reef,2026-06-12 11:00:00 PDT,7.4285097
-47,Asilomar,Reef,2026-06-12 14:00:00 PDT,7.2572074
-47,Asilomar,Reef,2026-06-12 17:00:00 PDT,7.2385564
-47,Asilomar,Reef,2026-06-12 20:00:00 PDT,7.37624
-47,Asilomar,Reef,2026-06-12 23:00:00 PDT,7.3638253
-47,Asilomar,Reef,2026-06-13 02:00:00 PDT,7.3002706
-47,Asilomar,Reef,2026-06-13 05:00:00 PDT,7.1054926
-47,Asilomar,Reef,2026-06-13 08:00:00 PDT,7.1474185
-47,Asilomar,Reef,2026-06-13 11:00:00 PDT,6.9735947
-47,Asilomar,Reef,2026-06-13 14:00:00 PDT,7.026934
-47,Asilomar,Reef,2026-06-13 17:00:00 PDT,7.014425
-47,Asilomar,Reef,2026-06-13 20:00:00 PDT,7.0160713
-47,Asilomar,Reef,2026-06-13 23:00:00 PDT,6.8676558
-47,Asilomar,Reef,2026-06-14 02:00:00 PDT,6.731356
-47,Asilomar,Reef,2026-06-14 05:00:00 PDT,6.4416165
-47,Asilomar,Reef,2026-06-14 08:00:00 PDT,6.234287
-47,Asilomar,Reef,2026-06-14 11:00:00 PDT,5.8183746
-47,Asilomar,Reef,2026-06-14 14:00:00 PDT,5.5459805
-47,Asilomar,Reef,2026-06-14 17:00:00 PDT,5.538436
-47,Asilomar,Reef,2026-06-14 20:00:00 PDT,5.5870953
-47,Asilomar,Reef,2026-06-14 23:00:00 PDT,5.450149
-47,Asilomar,Reef,2026-06-15 02:00:00 PDT,5.4123187
-47,Asilomar,Reef,2026-06-15 05:00:00 PDT,4.7388687
-47,Asilomar,Reef,2026-06-15 08:00:00 PDT,4.1536093
-47,Asilomar,Reef,2026-06-15 11:00:00 PDT,3.3663414
-47,Asilomar,Reef,2026-06-15 14:00:00 PDT,3.1376002
-47,Asilomar,Reef,2026-06-15 17:00:00 PDT,3.359393
-47,Asilomar,Reef,2026-06-15 20:00:00 PDT,3.2642336
-47,Asilomar,Reef,2026-06-15 23:00:00 PDT,3.4965978
-47,Asilomar,Reef,2026-06-16 02:00:00 PDT,3.3996565
-47,Asilomar,Reef,2026-06-16 05:00:00 PDT,3.461707
-47,Asilomar,Reef,2026-06-16 08:00:00 PDT,3.3590546
-47,Asilomar,Reef,2026-06-16 11:00:00 PDT,3.1994596
-47,Asilomar,Reef,2026-06-16 14:00:00 PDT,3.1429772
+43,Blacks,Blacks,2026-06-10 02:00:00 PDT,6.0214634
+43,Blacks,Blacks,2026-06-10 05:00:00 PDT,5.9506755
+43,Blacks,Blacks,2026-06-10 08:00:00 PDT,5.7760005
+43,Blacks,Blacks,2026-06-10 11:00:00 PDT,5.740243
+43,Blacks,Blacks,2026-06-10 14:00:00 PDT,5.823765
+43,Blacks,Blacks,2026-06-10 17:00:00 PDT,5.965475
+43,Blacks,Blacks,2026-06-10 20:00:00 PDT,5.8485694
+43,Blacks,Blacks,2026-06-10 23:00:00 PDT,5.6997237
+43,Blacks,Blacks,2026-06-11 02:00:00 PDT,5.31205
+43,Blacks,Blacks,2026-06-11 05:00:00 PDT,5.099232
+43,Blacks,Blacks,2026-06-11 08:00:00 PDT,4.6705136
+43,Blacks,Blacks,2026-06-11 11:00:00 PDT,4.428453
+43,Blacks,Blacks,2026-06-11 14:00:00 PDT,4.3969197
+43,Blacks,Blacks,2026-06-11 17:00:00 PDT,4.5022774
+43,Blacks,Blacks,2026-06-11 20:00:00 PDT,4.4653635
+43,Blacks,Blacks,2026-06-11 23:00:00 PDT,4.3965635
+43,Blacks,Blacks,2026-06-12 02:00:00 PDT,4.2495646
+43,Blacks,Blacks,2026-06-12 05:00:00 PDT,4.1067758
+43,Blacks,Blacks,2026-06-12 08:00:00 PDT,3.906696
+43,Blacks,Blacks,2026-06-12 11:00:00 PDT,3.7184217
+43,Blacks,Blacks,2026-06-12 14:00:00 PDT,3.7834713
+43,Blacks,Blacks,2026-06-12 17:00:00 PDT,3.9372213
+43,Blacks,Blacks,2026-06-12 20:00:00 PDT,4.097676
+43,Blacks,Blacks,2026-06-12 23:00:00 PDT,4.160801
+43,Blacks,Blacks,2026-06-13 02:00:00 PDT,4.2213078
+43,Blacks,Blacks,2026-06-13 05:00:00 PDT,4.1844335
+43,Blacks,Blacks,2026-06-13 08:00:00 PDT,4.1461763
+43,Blacks,Blacks,2026-06-13 11:00:00 PDT,3.8722732
+43,Blacks,Blacks,2026-06-13 14:00:00 PDT,3.7648413
+43,Blacks,Blacks,2026-06-13 17:00:00 PDT,3.8167608
+43,Blacks,Blacks,2026-06-13 20:00:00 PDT,3.9829593
+43,Blacks,Blacks,2026-06-13 23:00:00 PDT,4.165404
+43,Blacks,Blacks,2026-06-14 02:00:00 PDT,4.414145
+43,Blacks,Blacks,2026-06-14 05:00:00 PDT,4.5068913
+43,Blacks,Blacks,2026-06-14 08:00:00 PDT,4.5772977
+43,Blacks,Blacks,2026-06-14 11:00:00 PDT,4.4041386
+43,Blacks,Blacks,2026-06-14 14:00:00 PDT,4.2519226
+43,Blacks,Blacks,2026-06-14 17:00:00 PDT,3.7955084
+43,Blacks,Blacks,2026-06-14 20:00:00 PDT,3.4572563
+43,Blacks,Blacks,2026-06-14 23:00:00 PDT,3.06456
+43,Blacks,Blacks,2026-06-15 02:00:00 PDT,3.160465
+43,Blacks,Blacks,2026-06-15 05:00:00 PDT,3.2212803
+43,Blacks,Blacks,2026-06-15 08:00:00 PDT,3.2944915
+43,Blacks,Blacks,2026-06-15 11:00:00 PDT,3.2465591
+43,Blacks,Blacks,2026-06-15 14:00:00 PDT,3.1570067
+43,Blacks,Blacks,2026-06-15 17:00:00 PDT,3.3277895
+43,Blacks,Blacks,2026-06-15 20:00:00 PDT,3.5964036
+43,Blacks,Blacks,2026-06-15 23:00:00 PDT,4.128768
+43,Blacks,Blacks,2026-06-16 02:00:00 PDT,4.532003
+43,Blacks,Blacks,2026-06-16 05:00:00 PDT,4.8779573
+43,Blacks,Blacks,2026-06-16 08:00:00 PDT,4.8602295
+43,Blacks,Blacks,2026-06-16 11:00:00 PDT,4.869745
+43,Blacks,Blacks,2026-06-16 14:00:00 PDT,4.7029405
+44,Santa Maria,Santa Maria,2026-06-10 02:00:00 PDT,4.8301005
+44,Santa Maria,Santa Maria,2026-06-10 05:00:00 PDT,4.7697353
+44,Santa Maria,Santa Maria,2026-06-10 08:00:00 PDT,4.5764275
+44,Santa Maria,Santa Maria,2026-06-10 11:00:00 PDT,4.501444
+44,Santa Maria,Santa Maria,2026-06-10 14:00:00 PDT,4.5675726
+44,Santa Maria,Santa Maria,2026-06-10 17:00:00 PDT,4.709896
+44,Santa Maria,Santa Maria,2026-06-10 20:00:00 PDT,4.5977073
+44,Santa Maria,Santa Maria,2026-06-10 23:00:00 PDT,4.4487433
+44,Santa Maria,Santa Maria,2026-06-11 02:00:00 PDT,4.126415
+44,Santa Maria,Santa Maria,2026-06-11 05:00:00 PDT,3.9950807
+44,Santa Maria,Santa Maria,2026-06-11 08:00:00 PDT,3.7035298
+44,Santa Maria,Santa Maria,2026-06-11 11:00:00 PDT,3.5580063
+44,Santa Maria,Santa Maria,2026-06-11 14:00:00 PDT,3.5601568
+44,Santa Maria,Santa Maria,2026-06-11 17:00:00 PDT,3.648583
+44,Santa Maria,Santa Maria,2026-06-11 20:00:00 PDT,3.614632
+44,Santa Maria,Santa Maria,2026-06-11 23:00:00 PDT,3.5641782
+44,Santa Maria,Santa Maria,2026-06-12 02:00:00 PDT,3.4620702
+44,Santa Maria,Santa Maria,2026-06-12 05:00:00 PDT,3.376469
+44,Santa Maria,Santa Maria,2026-06-12 08:00:00 PDT,3.25583
+44,Santa Maria,Santa Maria,2026-06-12 11:00:00 PDT,3.1610339
+44,Santa Maria,Santa Maria,2026-06-12 14:00:00 PDT,3.2878497
+44,Santa Maria,Santa Maria,2026-06-12 17:00:00 PDT,3.4861643
+44,Santa Maria,Santa Maria,2026-06-12 20:00:00 PDT,3.6920228
+44,Santa Maria,Santa Maria,2026-06-12 23:00:00 PDT,3.8141024
+44,Santa Maria,Santa Maria,2026-06-13 02:00:00 PDT,3.9187202
+44,Santa Maria,Santa Maria,2026-06-13 05:00:00 PDT,3.9161923
+44,Santa Maria,Santa Maria,2026-06-13 08:00:00 PDT,3.9359543
+44,Santa Maria,Santa Maria,2026-06-13 11:00:00 PDT,3.7529302
+44,Santa Maria,Santa Maria,2026-06-13 14:00:00 PDT,3.7026772
+44,Santa Maria,Santa Maria,2026-06-13 17:00:00 PDT,3.7569425
+44,Santa Maria,Santa Maria,2026-06-13 20:00:00 PDT,3.8827322
+44,Santa Maria,Santa Maria,2026-06-13 23:00:00 PDT,4.026442
+44,Santa Maria,Santa Maria,2026-06-14 02:00:00 PDT,4.168152
+44,Santa Maria,Santa Maria,2026-06-14 05:00:00 PDT,4.1433015
+44,Santa Maria,Santa Maria,2026-06-14 08:00:00 PDT,4.1014056
+44,Santa Maria,Santa Maria,2026-06-14 11:00:00 PDT,3.9199708
+44,Santa Maria,Santa Maria,2026-06-14 14:00:00 PDT,3.7672396
+44,Santa Maria,Santa Maria,2026-06-14 17:00:00 PDT,3.3429031
+44,Santa Maria,Santa Maria,2026-06-14 20:00:00 PDT,3.0087636
+44,Santa Maria,Santa Maria,2026-06-14 23:00:00 PDT,2.6353555
+44,Santa Maria,Santa Maria,2026-06-15 02:00:00 PDT,2.69484
+44,Santa Maria,Santa Maria,2026-06-15 05:00:00 PDT,2.7326207
+44,Santa Maria,Santa Maria,2026-06-15 08:00:00 PDT,2.7920642
+44,Santa Maria,Santa Maria,2026-06-15 11:00:00 PDT,2.7615263
+44,Santa Maria,Santa Maria,2026-06-15 14:00:00 PDT,2.702048
+44,Santa Maria,Santa Maria,2026-06-15 17:00:00 PDT,2.8650064
+44,Santa Maria,Santa Maria,2026-06-15 20:00:00 PDT,3.2732453
+44,Santa Maria,Santa Maria,2026-06-15 23:00:00 PDT,3.822552
+44,Santa Maria,Santa Maria,2026-06-16 02:00:00 PDT,4.1580606
+44,Santa Maria,Santa Maria,2026-06-16 05:00:00 PDT,4.3067117
+44,Santa Maria,Santa Maria,2026-06-16 08:00:00 PDT,4.236158
+44,Santa Maria,Santa Maria,2026-06-16 11:00:00 PDT,4.236842
+44,Santa Maria,Santa Maria,2026-06-16 14:00:00 PDT,4.096813
+45,Asilomar,Roadsides,2026-06-10 02:00:00 PDT,4.9865184
+45,Asilomar,Roadsides,2026-06-10 05:00:00 PDT,5.287361
+45,Asilomar,Roadsides,2026-06-10 08:00:00 PDT,5.181684
+45,Asilomar,Roadsides,2026-06-10 11:00:00 PDT,5.2873287
+45,Asilomar,Roadsides,2026-06-10 14:00:00 PDT,5.423999
+45,Asilomar,Roadsides,2026-06-10 17:00:00 PDT,5.575886
+45,Asilomar,Roadsides,2026-06-10 20:00:00 PDT,5.59867
+45,Asilomar,Roadsides,2026-06-10 23:00:00 PDT,5.6763344
+45,Asilomar,Roadsides,2026-06-11 02:00:00 PDT,5.55277
+45,Asilomar,Roadsides,2026-06-11 05:00:00 PDT,5.7558064
+45,Asilomar,Roadsides,2026-06-11 08:00:00 PDT,5.5517545
+45,Asilomar,Roadsides,2026-06-11 11:00:00 PDT,5.3918552
+45,Asilomar,Roadsides,2026-06-11 14:00:00 PDT,5.4170537
+45,Asilomar,Roadsides,2026-06-11 17:00:00 PDT,5.5802016
+45,Asilomar,Roadsides,2026-06-11 20:00:00 PDT,5.576882
+45,Asilomar,Roadsides,2026-06-11 23:00:00 PDT,5.458306
+45,Asilomar,Roadsides,2026-06-12 02:00:00 PDT,5.3316298
+45,Asilomar,Roadsides,2026-06-12 05:00:00 PDT,5.2721467
+45,Asilomar,Roadsides,2026-06-12 08:00:00 PDT,5.1694646
+45,Asilomar,Roadsides,2026-06-12 11:00:00 PDT,4.899155
+45,Asilomar,Roadsides,2026-06-12 14:00:00 PDT,4.785622
+45,Asilomar,Roadsides,2026-06-12 17:00:00 PDT,4.777993
+45,Asilomar,Roadsides,2026-06-12 20:00:00 PDT,4.8776684
+45,Asilomar,Roadsides,2026-06-12 23:00:00 PDT,4.86452
+45,Asilomar,Roadsides,2026-06-13 02:00:00 PDT,4.817225
+45,Asilomar,Roadsides,2026-06-13 05:00:00 PDT,4.6929293
+45,Asilomar,Roadsides,2026-06-13 08:00:00 PDT,4.731777
+45,Asilomar,Roadsides,2026-06-13 11:00:00 PDT,4.6254826
+45,Asilomar,Roadsides,2026-06-13 14:00:00 PDT,4.6839666
+45,Asilomar,Roadsides,2026-06-13 17:00:00 PDT,4.6746774
+45,Asilomar,Roadsides,2026-06-13 20:00:00 PDT,4.6651354
+45,Asilomar,Roadsides,2026-06-13 23:00:00 PDT,4.562133
+45,Asilomar,Roadsides,2026-06-14 02:00:00 PDT,4.471879
+45,Asilomar,Roadsides,2026-06-14 05:00:00 PDT,4.279717
+45,Asilomar,Roadsides,2026-06-14 08:00:00 PDT,4.135264
+45,Asilomar,Roadsides,2026-06-14 11:00:00 PDT,3.85564
+45,Asilomar,Roadsides,2026-06-14 14:00:00 PDT,3.6744695
+45,Asilomar,Roadsides,2026-06-14 17:00:00 PDT,3.2236671
+45,Asilomar,Roadsides,2026-06-14 20:00:00 PDT,2.8432636
+45,Asilomar,Roadsides,2026-06-14 23:00:00 PDT,2.4102397
+45,Asilomar,Roadsides,2026-06-15 02:00:00 PDT,2.3934112
+45,Asilomar,Roadsides,2026-06-15 05:00:00 PDT,2.3688815
+45,Asilomar,Roadsides,2026-06-15 08:00:00 PDT,2.354752
+45,Asilomar,Roadsides,2026-06-15 11:00:00 PDT,2.2409363
+45,Asilomar,Roadsides,2026-06-15 14:00:00 PDT,2.0882165
+45,Asilomar,Roadsides,2026-06-15 17:00:00 PDT,2.2285984
+45,Asilomar,Roadsides,2026-06-15 20:00:00 PDT,2.1672723
+45,Asilomar,Roadsides,2026-06-15 23:00:00 PDT,2.3155854
+45,Asilomar,Roadsides,2026-06-16 02:00:00 PDT,2.255398
+45,Asilomar,Roadsides,2026-06-16 05:00:00 PDT,2.2979586
+45,Asilomar,Roadsides,2026-06-16 08:00:00 PDT,2.2399426
+45,Asilomar,Roadsides,2026-06-16 11:00:00 PDT,2.1320374
+45,Asilomar,Roadsides,2026-06-16 14:00:00 PDT,2.096865
+46,Asilomar,Middles,2026-06-10 02:00:00 PDT,4.9865184
+46,Asilomar,Middles,2026-06-10 05:00:00 PDT,5.287361
+46,Asilomar,Middles,2026-06-10 08:00:00 PDT,5.181684
+46,Asilomar,Middles,2026-06-10 11:00:00 PDT,5.2873287
+46,Asilomar,Middles,2026-06-10 14:00:00 PDT,5.423999
+46,Asilomar,Middles,2026-06-10 17:00:00 PDT,5.575886
+46,Asilomar,Middles,2026-06-10 20:00:00 PDT,5.59867
+46,Asilomar,Middles,2026-06-10 23:00:00 PDT,5.6763344
+46,Asilomar,Middles,2026-06-11 02:00:00 PDT,5.55277
+46,Asilomar,Middles,2026-06-11 05:00:00 PDT,5.7558064
+46,Asilomar,Middles,2026-06-11 08:00:00 PDT,5.5517545
+46,Asilomar,Middles,2026-06-11 11:00:00 PDT,5.3918552
+46,Asilomar,Middles,2026-06-11 14:00:00 PDT,5.4170537
+46,Asilomar,Middles,2026-06-11 17:00:00 PDT,5.5802016
+46,Asilomar,Middles,2026-06-11 20:00:00 PDT,5.576882
+46,Asilomar,Middles,2026-06-11 23:00:00 PDT,5.458306
+46,Asilomar,Middles,2026-06-12 02:00:00 PDT,5.3316298
+46,Asilomar,Middles,2026-06-12 05:00:00 PDT,5.2721467
+46,Asilomar,Middles,2026-06-12 08:00:00 PDT,5.1694646
+46,Asilomar,Middles,2026-06-12 11:00:00 PDT,4.899155
+46,Asilomar,Middles,2026-06-12 14:00:00 PDT,4.785622
+46,Asilomar,Middles,2026-06-12 17:00:00 PDT,4.777993
+46,Asilomar,Middles,2026-06-12 20:00:00 PDT,4.8776684
+46,Asilomar,Middles,2026-06-12 23:00:00 PDT,4.86452
+46,Asilomar,Middles,2026-06-13 02:00:00 PDT,4.817225
+46,Asilomar,Middles,2026-06-13 05:00:00 PDT,4.6929293
+46,Asilomar,Middles,2026-06-13 08:00:00 PDT,4.731777
+46,Asilomar,Middles,2026-06-13 11:00:00 PDT,4.6254826
+46,Asilomar,Middles,2026-06-13 14:00:00 PDT,4.6839666
+46,Asilomar,Middles,2026-06-13 17:00:00 PDT,4.6746774
+46,Asilomar,Middles,2026-06-13 20:00:00 PDT,4.6651354
+46,Asilomar,Middles,2026-06-13 23:00:00 PDT,4.562133
+46,Asilomar,Middles,2026-06-14 02:00:00 PDT,4.471879
+46,Asilomar,Middles,2026-06-14 05:00:00 PDT,4.279717
+46,Asilomar,Middles,2026-06-14 08:00:00 PDT,4.135264
+46,Asilomar,Middles,2026-06-14 11:00:00 PDT,3.85564
+46,Asilomar,Middles,2026-06-14 14:00:00 PDT,3.6744695
+46,Asilomar,Middles,2026-06-14 17:00:00 PDT,3.2236671
+46,Asilomar,Middles,2026-06-14 20:00:00 PDT,2.8432636
+46,Asilomar,Middles,2026-06-14 23:00:00 PDT,2.4102397
+46,Asilomar,Middles,2026-06-15 02:00:00 PDT,2.3934112
+46,Asilomar,Middles,2026-06-15 05:00:00 PDT,2.3688815
+46,Asilomar,Middles,2026-06-15 08:00:00 PDT,2.354752
+46,Asilomar,Middles,2026-06-15 11:00:00 PDT,2.2409363
+46,Asilomar,Middles,2026-06-15 14:00:00 PDT,2.0882165
+46,Asilomar,Middles,2026-06-15 17:00:00 PDT,2.2285984
+46,Asilomar,Middles,2026-06-15 20:00:00 PDT,2.1672723
+46,Asilomar,Middles,2026-06-15 23:00:00 PDT,2.3155854
+46,Asilomar,Middles,2026-06-16 02:00:00 PDT,2.255398
+46,Asilomar,Middles,2026-06-16 05:00:00 PDT,2.2979586
+46,Asilomar,Middles,2026-06-16 08:00:00 PDT,2.2399426
+46,Asilomar,Middles,2026-06-16 11:00:00 PDT,2.1320374
+46,Asilomar,Middles,2026-06-16 14:00:00 PDT,2.096865
+47,Asilomar,Reef,2026-06-10 02:00:00 PDT,5.4779315
+47,Asilomar,Reef,2026-06-10 05:00:00 PDT,5.7610893
+47,Asilomar,Reef,2026-06-10 08:00:00 PDT,5.636112
+47,Asilomar,Reef,2026-06-10 11:00:00 PDT,5.7402406
+47,Asilomar,Reef,2026-06-10 14:00:00 PDT,5.8867574
+47,Asilomar,Reef,2026-06-10 17:00:00 PDT,6.0795455
+47,Asilomar,Reef,2026-06-10 20:00:00 PDT,6.133329
+47,Asilomar,Reef,2026-06-10 23:00:00 PDT,6.21814
+47,Asilomar,Reef,2026-06-11 02:00:00 PDT,6.0466976
+47,Asilomar,Reef,2026-06-11 05:00:00 PDT,6.254244
+47,Asilomar,Reef,2026-06-11 08:00:00 PDT,6.054744
+47,Asilomar,Reef,2026-06-11 11:00:00 PDT,5.883888
+47,Asilomar,Reef,2026-06-11 14:00:00 PDT,5.9112544
+47,Asilomar,Reef,2026-06-11 17:00:00 PDT,6.0918217
+47,Asilomar,Reef,2026-06-11 20:00:00 PDT,6.0892053
+47,Asilomar,Reef,2026-06-11 23:00:00 PDT,5.9597273
+47,Asilomar,Reef,2026-06-12 02:00:00 PDT,5.81545
+47,Asilomar,Reef,2026-06-12 05:00:00 PDT,5.73558
+47,Asilomar,Reef,2026-06-12 08:00:00 PDT,5.6027546
+47,Asilomar,Reef,2026-06-12 11:00:00 PDT,5.304112
+47,Asilomar,Reef,2026-06-12 14:00:00 PDT,5.18241
+47,Asilomar,Reef,2026-06-12 17:00:00 PDT,5.170044
+47,Asilomar,Reef,2026-06-12 20:00:00 PDT,5.2694345
+47,Asilomar,Reef,2026-06-12 23:00:00 PDT,5.2615414
+47,Asilomar,Reef,2026-06-13 02:00:00 PDT,5.217009
+47,Asilomar,Reef,2026-06-13 05:00:00 PDT,5.0772014
+47,Asilomar,Reef,2026-06-13 08:00:00 PDT,5.106131
+47,Asilomar,Reef,2026-06-13 11:00:00 PDT,4.980087
+47,Asilomar,Reef,2026-06-13 14:00:00 PDT,5.0184555
+47,Asilomar,Reef,2026-06-13 17:00:00 PDT,5.0105495
+47,Asilomar,Reef,2026-06-13 20:00:00 PDT,5.0132046
+47,Asilomar,Reef,2026-06-13 23:00:00 PDT,4.908101
+47,Asilomar,Reef,2026-06-14 02:00:00 PDT,4.811964
+47,Asilomar,Reef,2026-06-14 05:00:00 PDT,4.6052895
+47,Asilomar,Reef,2026-06-14 08:00:00 PDT,4.457132
+47,Asilomar,Reef,2026-06-14 11:00:00 PDT,4.158874
+47,Asilomar,Reef,2026-06-14 14:00:00 PDT,3.9639647
+47,Asilomar,Reef,2026-06-14 17:00:00 PDT,3.4809093
+47,Asilomar,Reef,2026-06-14 20:00:00 PDT,3.069292
+47,Asilomar,Reef,2026-06-14 23:00:00 PDT,2.5974402
+47,Asilomar,Reef,2026-06-15 02:00:00 PDT,2.579891
+47,Asilomar,Reef,2026-06-15 05:00:00 PDT,2.553199
+47,Asilomar,Reef,2026-06-15 08:00:00 PDT,2.5337598
+47,Asilomar,Reef,2026-06-15 11:00:00 PDT,2.4070082
+47,Asilomar,Reef,2026-06-15 14:00:00 PDT,2.2427926
+47,Asilomar,Reef,2026-06-15 17:00:00 PDT,2.4022036
+47,Asilomar,Reef,2026-06-15 20:00:00 PDT,2.334905
+47,Asilomar,Reef,2026-06-15 23:00:00 PDT,2.5016744
+47,Asilomar,Reef,2026-06-16 02:00:00 PDT,2.432778
+47,Asilomar,Reef,2026-06-16 05:00:00 PDT,2.4772894
+47,Asilomar,Reef,2026-06-16 08:00:00 PDT,2.4037874
+47,Asilomar,Reef,2026-06-16 11:00:00 PDT,2.2889616
+47,Asilomar,Reef,2026-06-16 14:00:00 PDT,2.248083
 48,Moss Beach,Moss Beach,2026-06-10 02:00:00 PDT,6.652965
 48,Moss Beach,Moss Beach,2026-06-10 05:00:00 PDT,7.0285006
 48,Moss Beach,Moss Beach,2026-06-10 08:00:00 PDT,7.060091
