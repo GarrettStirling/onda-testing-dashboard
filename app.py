@@ -23,9 +23,9 @@ st.set_page_config(
 tabs = st.tabs(
     [
         "20260610 South Swell validation",
+        "QC Calibration",
         "K Coefficients",
         "Forecasts",
-        "QC Calibration",
         "CDIP buoy spectra",
         "GFS wave components",
         "CDIP MOP Comparison",
@@ -37,13 +37,13 @@ with tabs[0]:
     render_south_swell_validation_tab()
 
 with tabs[1]:
-    render_k_coefficients_tab()
+    render_qc_calibration_tab()
 
 with tabs[2]:
-    render_forecast_tab()
+    render_k_coefficients_tab()
 
 with tabs[3]:
-    render_qc_calibration_tab()
+    render_forecast_tab()
 
 with tabs[4]:
     render_cdip_buoy_spectra_tab()

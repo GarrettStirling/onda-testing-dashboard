@@ -127,7 +127,8 @@ def _hover_text_for_row(row: pd.Series) -> str:
 
 
 @st.cache_data(show_spinner=False)
-def _load_qc_csv(path_str: str) -> pd.DataFrame:
+def _load_qc_csv(path_str: str, mtime: float) -> pd.DataFrame:
+    # `mtime` is part of the cache key so edits to the CSV invalidate the cache.
     df = pd.read_csv(path_str)
     for col in list(REQUIRED_FOR_HOVER) + list(REQUIRED_INDEX) + [c for c, _ in X_PANELS] + [Y_COL]:
         if col not in df.columns:
@@ -233,7 +234,7 @@ def render_qc_calibration_tab() -> None:
         return
 
     try:
-        df = _load_qc_csv(str(csv_path))
+        df = _load_qc_csv(str(csv_path), csv_path.stat().st_mtime)
     except Exception as exc:
         st.error(f"Failed to load QC CSV: {exc}")
         return
