@@ -24,6 +24,15 @@ import pytz
 import streamlit as st
 from plotly.subplots import make_subplots
 
+from streamlit_dashboard.field_observations import (
+    DEFAULT_MIN_SELECTED_OBS,
+    FIELD_OBS_CSV,
+    default_break_ids_with_min_obs,
+    load_field_observations,
+    obs_counts_by_break_id,
+    sort_break_ids_by_obs_count,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUOY_CSV = REPO_ROOT / "data" / "forecasts" / "buoy_scaled_components.csv"
 CDIP_CSV = REPO_ROOT / "data" / "forecasts" / "cdip_data_p.csv"
@@ -1050,40 +1059,13 @@ def render_forecast_tab() -> None:
 
     labels = _load_break_labels(str(BREAKS_CSV))
 
-    def _resolve_default_break_ids() -> list[int]:
-        # Resolve user-friendly spot names to `break_id`s as defined in
-        # `data/reference/breaks_with_names.csv`.
-        breaks_df = pd.read_csv(BREAKS_CSV)
-        spot_col = "spot_name" if "spot_name" in breaks_df.columns else "spot"
-        break_col = "break_name" if "break_name" in breaks_df.columns else "break"
-
-        # Each entry is (spot_name_substring, break_name_substring_or_None).
-        # (Matches are case-insensitive via `str.contains`.)
-        targets: list[tuple[str, str | None]] = [
-            ("Ocean Beach", "North"),
-            ("Ocean Beach", "Central"),
-            ("Waddell Creek", "Reef"),
-            ("Davenport", "Landing"),
-            ("Four Mile", None),
-            ("Swift Street", None),
-            ("Steamer Lane", "Point"),
-            ("Steamer Lane", "Middle Peak"),
-            ("Cowells", None),
-            ("Pleasure Point", "Sewers"),
-            ("Pleasure Point", "First Peak"),
-            ("Capitola", None),
-        ]
-
-        ids: list[int] = []
-        for spot_sub, break_sub in targets:
-            m = breaks_df[spot_col].astype(str).str.contains(spot_sub, case=False, na=False)
-            if break_sub:
-                m = m & breaks_df[break_col].astype(str).str.contains(break_sub, case=False, na=False)
-            found = sorted(breaks_df.loc[m, "break_id"].dropna().astype(int).unique().tolist())
-            ids.extend(found)
-
-        # Deduplicate, keep sorted stable.
-        return sorted(set(ids))
+    obs_mtime = FIELD_OBS_CSV.stat().st_mtime if FIELD_OBS_CSV.exists() else 0.0
+    field_obs, unmatched_obs_spots = load_field_observations(
+        str(FIELD_OBS_CSV),
+        obs_mtime,
+        str(BREAKS_CSV),
+    )
+    obs_counts = obs_counts_by_break_id(field_obs)
 
     tol_h = float(DEFAULT_NEAREST_TOLERANCE_HOURS)
 
@@ -1114,6 +1096,13 @@ def render_forecast_tab() -> None:
         st.warning("No rows in buoy forecast file.")
         return
 
+    sorted_break_ids, obs_count_by_bid = sort_break_ids_by_obs_count(break_ids, obs_counts)
+    default_selected = default_break_ids_with_min_obs(
+        sorted_break_ids,
+        obs_count_by_bid,
+        min_obs=DEFAULT_MIN_SELECTED_OBS,
+    )
+
     with st.expander("Data sources", expanded=False):
         if use_bigquery:
             st.write(
@@ -1129,6 +1118,14 @@ def render_forecast_tab() -> None:
             st.write(f"Offshore buoy (optional): `{OFFSHORE_CSV}`")
             st.write(f"Nearest join (saved on load): `{JOINED_CSV}`")
         st.write(f"Break labels: `{BREAKS_CSV}`")
+        st.write(f"Field observations (ranking / defaults): `{FIELD_OBS_CSV}`")
+        if not field_obs.empty:
+            st.write(f"- {len(field_obs):,} rows matched to breaks")
+        if unmatched_obs_spots:
+            st.warning(
+                "Could not match these observation spot names to a break:\n"
+                + "\n".join(f"- `{s}`" for s in unmatched_obs_spots)
+            )
 
     show_cdip_sig = st.checkbox(
         "Show CDIP significant wave height",
@@ -1144,21 +1141,30 @@ def render_forecast_tab() -> None:
         help="Semi-transparent CDIP component lines. Off by default.",
     )
 
-    options = break_ids
-    labels_opt = [labels.get(bid, f"Break {bid}") for bid in options]
-    id_to_label = dict(zip(options, labels_opt))
-    selected = st.multiselect(
-        "Surf spots (breaks)",
-        options=options,
-        format_func=lambda bid: id_to_label.get(bid, f"Break {bid}"),
-        default=[bid for bid in _resolve_default_break_ids() if bid in set(options)],
+    id_to_label = {bid: labels.get(bid, f"Break {bid}") for bid in sorted_break_ids}
+    selected: list[int] = st.multiselect(
+        f"Surf spots (breaks, ranked most → least observations; ≥{DEFAULT_MIN_SELECTED_OBS} obs selected by default)",
+        options=sorted_break_ids,
+        format_func=lambda bid: (
+            f"{id_to_label[bid]}  ({obs_count_by_bid[bid]:,} obs)"
+            if obs_count_by_bid[bid]
+            else f"{id_to_label[bid]}  (0 obs)"
+        ),
+        default=default_selected,
+        help=(
+            f"Break order and default selection come from `{FIELD_OBS_CSV.name}`. "
+            f"Spots with at least {DEFAULT_MIN_SELECTED_OBS} matched observations are selected on load."
+        ),
     )
 
     if not selected:
         st.info("Select at least one break.")
         return
 
-    for bid in selected:
+    selected_set = set(selected)
+    for bid in sorted_break_ids:
+        if bid not in selected_set:
+            continue
         st.subheader(id_to_label.get(bid, f"Break {bid}"))
         jsub = df_joined[df_joined["break_id"] == bid]
 
