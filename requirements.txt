@@ -6,6 +6,7 @@ matplotlib
 plotly
 pytz
 google-cloud-bigquery
+google-cloud-firestore
 folium
 streamlit-folium
 db-dtypes

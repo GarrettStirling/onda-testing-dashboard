@@ -12,7 +12,7 @@ from streamlit_dashboard.k_coefficients import render_k_coefficients_tab
 from streamlit_dashboard.qc_calibration_tab import render_qc_calibration_tab
 from streamlit_dashboard.obs_vs_cdip_mop_tab import render_obs_vs_cdip_mop_tab
 from streamlit_dashboard.obs_qc_tab import render_obs_qc_tab
-from streamlit_dashboard.south_swell_validation_tab import render_south_swell_validation_tab
+from streamlit_dashboard.forecast_16day_tab import render_forecast_16day_tab
 
 
 st.set_page_config(
@@ -22,10 +22,10 @@ st.set_page_config(
 
 tabs = st.tabs(
     [
-        "20260610 South Swell validation",
         "QC Calibration",
         "K Coefficients",
         "Forecasts",
+        "Forecast (16 day)",
         "CDIP buoy spectra",
         "GFS wave components",
         "CDIP MOP Comparison",
@@ -34,16 +34,16 @@ tabs = st.tabs(
 )
 
 with tabs[0]:
-    render_south_swell_validation_tab()
-
-with tabs[1]:
     render_qc_calibration_tab()
 
-with tabs[2]:
+with tabs[1]:
     render_k_coefficients_tab()
 
-with tabs[3]:
+with tabs[2]:
     render_forecast_tab()
+
+with tabs[3]:
+    render_forecast_16day_tab()
 
 with tabs[4]:
     render_cdip_buoy_spectra_tab()

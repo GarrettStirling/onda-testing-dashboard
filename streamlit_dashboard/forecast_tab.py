@@ -24,6 +24,7 @@ import pytz
 import streamlit as st
 from plotly.subplots import make_subplots
 
+from streamlit_dashboard.bq_forecast_loader import load_calibration_observation_counts_bigquery
 from streamlit_dashboard.field_observations import (
     DEFAULT_MIN_SELECTED_OBS,
     FIELD_OBS_CSV,
@@ -462,11 +463,33 @@ def _add_ts_line(
     )
 
 
+def _forecast_panel_layout(
+    show_direction: bool,
+    show_period: bool,
+) -> tuple[list[str], list[float], int | None, int | None, int]:
+    titles = ["Height (ft)"]
+    weights = [0.38]
+    if show_direction:
+        titles.append("Direction (° from north)")
+        weights.append(0.31)
+    if show_period:
+        titles.append("Period (s)")
+        weights.append(0.31)
+    total = sum(weights)
+    row_heights = [w / total for w in weights]
+    dir_row = 2 if show_direction else None
+    period_row = (3 if show_direction else 2) if show_period else None
+    plot_height = 420 + 200 * (len(titles) - 1)
+    return titles, row_heights, dir_row, period_row, plot_height
+
+
 def _plot_break_forecast(
     joined_g: pd.DataFrame,
     *,
     show_cdip_sig: bool,
     overlay_cdip_mop: bool,
+    show_direction: bool,
+    show_period: bool,
     label: str,
 ) -> go.Figure:
     """Interactive Plotly figure: shared x, vertical spike across panels, unified hover per row."""
@@ -520,13 +543,16 @@ def _plot_break_forecast(
     else:
         cdip_note = " — buoy (CDIP on, no data for selected layers)"
 
+    panel_titles, row_heights, dir_row, period_row, plot_height = _forecast_panel_layout(
+        show_direction, show_period,
+    )
     fig = make_subplots(
-        rows=3,
+        rows=len(panel_titles),
         cols=1,
         shared_xaxes=True,
         vertical_spacing=0.07,
-        row_heights=[0.38, 0.31, 0.31],
-        subplot_titles=("Height (ft)", "Direction (° from north)", "Period (s)"),
+        row_heights=row_heights,
+        subplot_titles=panel_titles,
     )
 
     leg: set[str] = set()
@@ -644,132 +670,134 @@ def _plot_break_forecast(
             showlegend=_legend_show_once(leg, "Sig. height (Calibrated CDIP)"),
         )
 
-    # --- Row 2: direction (raw 0–360°; no artificial NaNs — steep segments = wrap past north) ---
-    def _add_dir(name: str, series: pd.Series, color: str, dash: str, width: float, opacity: float = 1.0) -> None:
-        y = pd.to_numeric(series, errors="coerce")
-        line_color = _hex_to_rgba(color, opacity) if opacity < 1.0 else color
-        fig.add_trace(
-            go.Scatter(
-                x=t_b,
-                y=y,
-                mode="lines",
-                name=name,
-                showlegend=_legend_show_once(leg, name),
-                line=dict(color=line_color, width=width, dash=dash),
-                hovertemplate=f"<b>{name}</b><br>%{{y:.1f}}°<extra></extra>",
-            ),
-            row=2,
-            col=1,
-        )
+    # --- Direction ---
+    if show_direction and dir_row is not None:
+        def _add_dir(name: str, series: pd.Series, color: str, dash: str, width: float, opacity: float = 1.0) -> None:
+            y = pd.to_numeric(series, errors="coerce")
+            line_color = _hex_to_rgba(color, opacity) if opacity < 1.0 else color
+            fig.add_trace(
+                go.Scatter(
+                    x=t_b,
+                    y=y,
+                    mode="lines",
+                    name=name,
+                    showlegend=_legend_show_once(leg, name),
+                    line=dict(color=line_color, width=width, dash=dash),
+                    hovertemplate=f"<b>{name}</b><br>%{{y:.1f}}°<extra></extra>",
+                ),
+                row=dir_row,
+                col=1,
+            )
 
-    _add_dir("Primary (buoy components)", joined_g["primary_direction"], C_PRIMARY, "solid", LW_MAIN)
-    _add_dir("Secondary (buoy components)", joined_g["secondary_direction"], C_SECONDARY, "dash", LW_SEC)
-    _add_dir("Tertiary (buoy components)", joined_g["tertiary_direction"], C_TERTIARY, "dot", LW_TER)
+        _add_dir("Primary (buoy components)", joined_g["primary_direction"], C_PRIMARY, "solid", LW_MAIN)
+        _add_dir("Secondary (buoy components)", joined_g["secondary_direction"], C_SECONDARY, "dash", LW_SEC)
+        _add_dir("Tertiary (buoy components)", joined_g["tertiary_direction"], C_TERTIARY, "dot", LW_TER)
 
-    if overlay_cdip_mop and has_mop:
-        _add_dir(
-            "Primary (CDIP MOP)",
-            pd.to_numeric(joined_g["cdip_primary_direction"], errors="coerce"),
-            C_PRIMARY,
-            "solid",
-            LW_OVERLAY,
-            ALPHA_OVERLAY,
-        )
-        _add_dir(
-            "Secondary (CDIP MOP)",
-            pd.to_numeric(joined_g["cdip_secondary_direction"], errors="coerce"),
-            C_SECONDARY,
-            "dash",
-            LW_OVERLAY,
-            ALPHA_OVERLAY,
-        )
-        if "cdip_tertiary_direction" in joined_g.columns and joined_g["cdip_tertiary_direction"].notna().any():
+        if overlay_cdip_mop and has_mop:
             _add_dir(
-                "Tertiary (CDIP MOP)",
-                pd.to_numeric(joined_g["cdip_tertiary_direction"], errors="coerce"),
-                C_TERTIARY,
-                "dot",
+                "Primary (CDIP MOP)",
+                pd.to_numeric(joined_g["cdip_primary_direction"], errors="coerce"),
+                C_PRIMARY,
+                "solid",
                 LW_OVERLAY,
                 ALPHA_OVERLAY,
             )
+            _add_dir(
+                "Secondary (CDIP MOP)",
+                pd.to_numeric(joined_g["cdip_secondary_direction"], errors="coerce"),
+                C_SECONDARY,
+                "dash",
+                LW_OVERLAY,
+                ALPHA_OVERLAY,
+            )
+            if "cdip_tertiary_direction" in joined_g.columns and joined_g["cdip_tertiary_direction"].notna().any():
+                _add_dir(
+                    "Tertiary (CDIP MOP)",
+                    pd.to_numeric(joined_g["cdip_tertiary_direction"], errors="coerce"),
+                    C_TERTIARY,
+                    "dot",
+                    LW_OVERLAY,
+                    ALPHA_OVERLAY,
+                )
 
-    # --- Row 3: period ---
-    _add_ts_line(
-        fig,
-        3,
-        t_b,
-        pd.to_numeric(joined_g["primary_period"], errors="coerce"),
-        name="Primary (buoy components)",
-        color=C_PRIMARY,
-        width=LW_MAIN,
-        unit=" s",
-        showlegend=_legend_show_once(leg, "Primary (buoy components)"),
-    )
-    _add_ts_line(
-        fig,
-        3,
-        t_b,
-        pd.to_numeric(joined_g["secondary_period"], errors="coerce"),
-        name="Secondary (buoy components)",
-        color=C_SECONDARY,
-        dash="dash",
-        width=LW_SEC,
-        unit=" s",
-        showlegend=_legend_show_once(leg, "Secondary (buoy components)"),
-    )
-    _add_ts_line(
-        fig,
-        3,
-        t_b,
-        pd.to_numeric(joined_g["tertiary_period"], errors="coerce"),
-        name="Tertiary (buoy components)",
-        color=C_TERTIARY,
-        dash="dot",
-        width=LW_TER,
-        unit=" s",
-        showlegend=_legend_show_once(leg, "Tertiary (buoy components)"),
-    )
-
-    if overlay_cdip_mop and has_mop:
+    # --- Period ---
+    if show_period and period_row is not None:
         _add_ts_line(
             fig,
-            3,
+            period_row,
             t_b,
-            pd.to_numeric(joined_g["cdip_primary_period"], errors="coerce"),
-            name="Primary (CDIP MOP)",
+            pd.to_numeric(joined_g["primary_period"], errors="coerce"),
+            name="Primary (buoy components)",
             color=C_PRIMARY,
-            width=LW_OVERLAY,
+            width=LW_MAIN,
             unit=" s",
-            opacity=ALPHA_OVERLAY,
-            showlegend=_legend_show_once(leg, "Primary (CDIP MOP)"),
+            showlegend=_legend_show_once(leg, "Primary (buoy components)"),
         )
         _add_ts_line(
             fig,
-            3,
+            period_row,
             t_b,
-            pd.to_numeric(joined_g["cdip_secondary_period"], errors="coerce"),
-            name="Secondary (CDIP MOP)",
+            pd.to_numeric(joined_g["secondary_period"], errors="coerce"),
+            name="Secondary (buoy components)",
             color=C_SECONDARY,
             dash="dash",
-            width=LW_OVERLAY,
+            width=LW_SEC,
             unit=" s",
-            opacity=ALPHA_OVERLAY,
-            showlegend=_legend_show_once(leg, "Secondary (CDIP MOP)"),
+            showlegend=_legend_show_once(leg, "Secondary (buoy components)"),
         )
-        if "cdip_tertiary_period" in joined_g.columns and joined_g["cdip_tertiary_period"].notna().any():
+        _add_ts_line(
+            fig,
+            period_row,
+            t_b,
+            pd.to_numeric(joined_g["tertiary_period"], errors="coerce"),
+            name="Tertiary (buoy components)",
+            color=C_TERTIARY,
+            dash="dot",
+            width=LW_TER,
+            unit=" s",
+            showlegend=_legend_show_once(leg, "Tertiary (buoy components)"),
+        )
+
+        if overlay_cdip_mop and has_mop:
             _add_ts_line(
                 fig,
-                3,
+                period_row,
                 t_b,
-                pd.to_numeric(joined_g["cdip_tertiary_period"], errors="coerce"),
-                name="Tertiary (CDIP MOP)",
-                color=C_TERTIARY,
-                dash="dot",
+                pd.to_numeric(joined_g["cdip_primary_period"], errors="coerce"),
+                name="Primary (CDIP MOP)",
+                color=C_PRIMARY,
                 width=LW_OVERLAY,
                 unit=" s",
                 opacity=ALPHA_OVERLAY,
-                showlegend=_legend_show_once(leg, "Tertiary (CDIP MOP)"),
+                showlegend=_legend_show_once(leg, "Primary (CDIP MOP)"),
             )
+            _add_ts_line(
+                fig,
+                period_row,
+                t_b,
+                pd.to_numeric(joined_g["cdip_secondary_period"], errors="coerce"),
+                name="Secondary (CDIP MOP)",
+                color=C_SECONDARY,
+                dash="dash",
+                width=LW_OVERLAY,
+                unit=" s",
+                opacity=ALPHA_OVERLAY,
+                showlegend=_legend_show_once(leg, "Secondary (CDIP MOP)"),
+            )
+            if "cdip_tertiary_period" in joined_g.columns and joined_g["cdip_tertiary_period"].notna().any():
+                _add_ts_line(
+                    fig,
+                    period_row,
+                    t_b,
+                    pd.to_numeric(joined_g["cdip_tertiary_period"], errors="coerce"),
+                    name="Tertiary (CDIP MOP)",
+                    color=C_TERTIARY,
+                    dash="dot",
+                    width=LW_OVERLAY,
+                    unit=" s",
+                    opacity=ALPHA_OVERLAY,
+                    showlegend=_legend_show_once(leg, "Tertiary (CDIP MOP)"),
+                )
 
     # Y ranges from everything drawn on each row (small padding; not fixed 0–360 / tozero)
     h_for_range: list[pd.Series] = [
@@ -788,29 +816,33 @@ def _plot_break_forecast(
         h_for_range.append(_heights_to_ft(joined_g["cdip_significant_wave_height_raw"]))
     y_r_h = _y_range_padded(*h_for_range, frac=0.08, floor_zero=True, min_span=0.35)
 
-    d_for_range: list[pd.Series] = [
-        joined_g["primary_direction"],
-        joined_g["secondary_direction"],
-        joined_g["tertiary_direction"],
-    ]
-    if overlay_cdip_mop and has_mop:
-        d_for_range.append(joined_g["cdip_primary_direction"])
-        d_for_range.append(joined_g["cdip_secondary_direction"])
-        if "cdip_tertiary_direction" in joined_g.columns:
-            d_for_range.append(joined_g["cdip_tertiary_direction"])
-    y_r_d = _y_range_padded(*d_for_range, frac=0.08, floor_zero=False, min_span=12.0)
+    y_r_d = None
+    if show_direction:
+        d_for_range: list[pd.Series] = [
+            joined_g["primary_direction"],
+            joined_g["secondary_direction"],
+            joined_g["tertiary_direction"],
+        ]
+        if overlay_cdip_mop and has_mop:
+            d_for_range.append(joined_g["cdip_primary_direction"])
+            d_for_range.append(joined_g["cdip_secondary_direction"])
+            if "cdip_tertiary_direction" in joined_g.columns:
+                d_for_range.append(joined_g["cdip_tertiary_direction"])
+        y_r_d = _y_range_padded(*d_for_range, frac=0.08, floor_zero=False, min_span=12.0)
 
-    p_for_range: list[pd.Series] = [
-        joined_g["primary_period"],
-        joined_g["secondary_period"],
-        joined_g["tertiary_period"],
-    ]
-    if overlay_cdip_mop and has_mop:
-        p_for_range.append(joined_g["cdip_primary_period"])
-        p_for_range.append(joined_g["cdip_secondary_period"])
-        if "cdip_tertiary_period" in joined_g.columns:
-            p_for_range.append(joined_g["cdip_tertiary_period"])
-    y_r_p = _y_range_padded(*p_for_range, frac=0.08, floor_zero=False, min_span=0.75)
+    y_r_p = None
+    if show_period:
+        p_for_range: list[pd.Series] = [
+            joined_g["primary_period"],
+            joined_g["secondary_period"],
+            joined_g["tertiary_period"],
+        ]
+        if overlay_cdip_mop and has_mop:
+            p_for_range.append(joined_g["cdip_primary_period"])
+            p_for_range.append(joined_g["cdip_secondary_period"])
+            if "cdip_tertiary_period" in joined_g.columns:
+                p_for_range.append(joined_g["cdip_tertiary_period"])
+        y_r_p = _y_range_padded(*p_for_range, frac=0.08, floor_zero=False, min_span=0.75)
 
     tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
     x_tickvals = _pacific_daily_midnight_ticks(
@@ -841,7 +873,7 @@ def _plot_break_forecast(
             font=dict(size=10),
         ),
         margin=dict(l=56, r=20, t=96, b=48),
-        height=820,
+        height=plot_height,
     )
     fig.update_xaxes(
         showspikes=True,
@@ -856,14 +888,17 @@ def _plot_break_forecast(
         zeroline=False,
         tickformat=tick_fmt,
     )
-    fig.update_xaxes(showticklabels=False, row=1, col=1)
-    fig.update_xaxes(showticklabels=False, row=2, col=1)
-    fig.update_xaxes(title_text="Date (US/Pacific)", row=3, col=1)
+    bottom_row = period_row or dir_row or 1
+    for r in range(1, bottom_row):
+        fig.update_xaxes(showticklabels=False, row=r, col=1)
+    fig.update_xaxes(title_text="Date (US/Pacific)", row=bottom_row, col=1)
 
     fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
     fig.update_yaxes(range=list(y_r_h), row=1, col=1)
-    fig.update_yaxes(range=list(y_r_d), row=2, col=1)
-    fig.update_yaxes(range=list(y_r_p), row=3, col=1)
+    if show_direction and dir_row is not None and y_r_d is not None:
+        fig.update_yaxes(range=list(y_r_d), row=dir_row, col=1)
+    if show_period and period_row is not None and y_r_p is not None:
+        fig.update_yaxes(range=list(y_r_p), row=period_row, col=1)
 
     fig.update_annotations(font=dict(color=TEXT_COLOR, size=12))
 
@@ -1059,17 +1094,17 @@ def render_forecast_tab() -> None:
 
     labels = _load_break_labels(str(BREAKS_CSV))
 
-    obs_mtime = FIELD_OBS_CSV.stat().st_mtime if FIELD_OBS_CSV.exists() else 0.0
-    field_obs, unmatched_obs_spots = load_field_observations(
-        str(FIELD_OBS_CSV),
-        obs_mtime,
-        str(BREAKS_CSV),
-    )
-    obs_counts = obs_counts_by_break_id(field_obs)
+    field_obs = pd.DataFrame()
+    unmatched_obs_spots: list[str] = []
+    obs_counts = pd.Series(dtype=int)
 
     tol_h = float(DEFAULT_NEAREST_TOLERANCE_HOURS)
 
     if use_bigquery:
+        try:
+            obs_counts = load_calibration_observation_counts_bigquery()
+        except Exception as exc:
+            st.warning(f"Could not load observation counts from BigQuery: {exc}")
         try:
             df_joined, df_offshore = _bq_forecast_bundle(tol_h)
         except Exception as exc:
@@ -1080,6 +1115,14 @@ def render_forecast_tab() -> None:
             )
             return
     else:
+        obs_mtime = FIELD_OBS_CSV.stat().st_mtime if FIELD_OBS_CSV.exists() else 0.0
+        field_obs, unmatched_obs_spots = load_field_observations(
+            str(FIELD_OBS_CSV),
+            obs_mtime,
+            str(BREAKS_CSV),
+        )
+        obs_counts = obs_counts_by_break_id(field_obs)
+
         if not BUOY_CSV.exists():
             st.error(f"Missing buoy forecast CSV: `{BUOY_CSV}`")
             return
@@ -1112,21 +1155,39 @@ def render_forecast_tab() -> None:
             st.write("- `buoy_scaled_components_p` — break-scaled buoy components")
             st.write("- `cdip_data_p` — CDIP / WW3 mop + significant height")
             st.write("- `offshore_buoy_data_p` — offshore buoy hourly series (`buoy_id`)")
+            st.write(
+                "- `surf_calibration_data.calibration_observations` — observation counts per break"
+            )
         else:
             st.write(f"Buoy scaled components: `{BUOY_CSV}`")
             st.write(f"CDIP MOP processed: `{CDIP_CSV}`")
             st.write(f"Offshore buoy (optional): `{OFFSHORE_CSV}`")
             st.write(f"Nearest join (saved on load): `{JOINED_CSV}`")
         st.write(f"Break labels: `{BREAKS_CSV}`")
-        st.write(f"Field observations (ranking / defaults): `{FIELD_OBS_CSV}`")
-        if not field_obs.empty:
-            st.write(f"- {len(field_obs):,} rows matched to breaks")
-        if unmatched_obs_spots:
-            st.warning(
-                "Could not match these observation spot names to a break:\n"
-                + "\n".join(f"- `{s}`" for s in unmatched_obs_spots)
-            )
+        if use_bigquery:
+            st.write("- Observation counts / ranking: BigQuery `calibration_observations`")
+            if not obs_counts.empty:
+                st.write(f"- {int(obs_counts.sum()):,} total observations across breaks")
+        else:
+            st.write(f"Field observations (ranking / defaults): `{FIELD_OBS_CSV}`")
+            if not field_obs.empty:
+                st.write(f"- {len(field_obs):,} rows matched to breaks")
+            if unmatched_obs_spots:
+                st.warning(
+                    "Could not match these observation spot names to a break:\n"
+                    + "\n".join(f"- `{s}`" for s in unmatched_obs_spots)
+                )
 
+    show_direction = st.checkbox(
+        "Show direction subplot",
+        value=False,
+        help="Direction (° from north) for buoy components and optional CDIP MOP overlay.",
+    )
+    show_period = st.checkbox(
+        "Show period subplot",
+        value=False,
+        help="Period (s) for buoy components and optional CDIP MOP overlay.",
+    )
     show_cdip_sig = st.checkbox(
         "Show CDIP significant wave height",
         value=True,
@@ -1136,7 +1197,7 @@ def render_forecast_tab() -> None:
         ),
     )
     overlay_cdip_mop = st.checkbox(
-        "Overlay CDIP MOP (pri/sec/ter on all three panels)",
+        "Overlay CDIP MOP (pri/sec/ter on enabled panels)",
         value=False,
         help="Semi-transparent CDIP component lines. Off by default.",
     )
@@ -1152,8 +1213,13 @@ def render_forecast_tab() -> None:
         ),
         default=default_selected,
         help=(
-            f"Break order and default selection come from `{FIELD_OBS_CSV.name}`. "
-            f"Spots with at least {DEFAULT_MIN_SELECTED_OBS} matched observations are selected on load."
+            "Break order and default selection use observation counts from "
+            + (
+                "BigQuery `calibration_observations`. "
+                if use_bigquery
+                else f"`{FIELD_OBS_CSV.name}`. "
+            )
+            + f"Spots with at least {DEFAULT_MIN_SELECTED_OBS} observations are selected on load."
         ),
     )
 
@@ -1165,7 +1231,9 @@ def render_forecast_tab() -> None:
     for bid in sorted_break_ids:
         if bid not in selected_set:
             continue
-        st.subheader(id_to_label.get(bid, f"Break {bid}"))
+        n_obs = obs_count_by_bid.get(bid, 0)
+        break_title = id_to_label.get(bid, f"Break {bid}")
+        st.subheader(f"{break_title} ({n_obs:,} obs)")
         jsub = df_joined[df_joined["break_id"] == bid]
 
         try:
@@ -1173,7 +1241,9 @@ def render_forecast_tab() -> None:
                 jsub,
                 show_cdip_sig=show_cdip_sig,
                 overlay_cdip_mop=overlay_cdip_mop,
-                label=id_to_label.get(bid, f"Break {bid}"),
+                show_direction=show_direction,
+                show_period=show_period,
+                label=break_title,
             )
             st.plotly_chart(fig, width="stretch")
         except Exception as exc:

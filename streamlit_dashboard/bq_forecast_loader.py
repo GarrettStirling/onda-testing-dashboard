@@ -19,6 +19,10 @@ PROJECT_ID = "onda-maverick"
 BUOY_SCALED_TABLE = f"`{PROJECT_ID}.surf_forecast_data.buoy_scaled_components_p`"
 CDIP_TABLE = f"`{PROJECT_ID}.surf_forecast_data.cdip_data_p`"
 OFFSHORE_BUOY_TABLE = f"`{PROJECT_ID}.surf_forecast_data.offshore_buoy_data_p`"
+GFS_OFFSHORE_TABLE = f"`{PROJECT_ID}.surf_forecast_data.gfs_offshore_wave_data_p`"
+BREAK_TO_BUOY_TABLE = f"`{PROJECT_ID}.surf_intermediates.break_to_buoy_map`"
+BREAK_TO_GFS_TABLE = f"`{PROJECT_ID}.surf_intermediates.break_to_gfs_map`"
+CALIBRATION_OBS_TABLE = f"`{PROJECT_ID}.surf_calibration_data.calibration_observations`"
 
 
 def _query_to_df(client: bigquery.Client, sql: str) -> pd.DataFrame:
@@ -109,3 +113,113 @@ def load_forecast_tables_bigquery() -> tuple[pd.DataFrame, pd.DataFrame, pd.Data
     df_off = _query_to_df(client, q_off)
 
     return df_buoy, df_cdip, df_off
+
+
+def _break_ids_sql(break_ids: tuple[int, ...]) -> str:
+    return ", ".join(str(int(b)) for b in break_ids)
+
+
+@st.cache_data(ttl=300, show_spinner="Loading CDIP / buoy / GFS reference heights from BigQuery…")
+def load_reference_heights_bigquery(
+    break_ids: tuple[int, ...],
+    min_wave_time_utc: str,
+    max_wave_time_utc: str,
+) -> pd.DataFrame:
+    """Per-break reference bulk Hs series aligned to the served forecast window.
+
+    Returns columns:
+      break_id, wave_time_utc,
+      cdip_mop_hs_raw_m  — ``cdip_data_p.significant_wave_height_raw``
+      offshore_buoy_hs_m — ``offshore_buoy_data_p.significant_wave_height`` at mapped buoy
+      gfs_htsgw_m        — ``gfs_offshore_wave_data_p.hs_total_m_gfs`` at mapped GFS point
+    """
+    if not break_ids:
+        return pd.DataFrame()
+
+    client = forecast_bigquery_client()
+    ids_sql = _break_ids_sql(break_ids)
+    sql = f"""
+    WITH b2b AS (
+      SELECT break_id, buoy_id
+      FROM {BREAK_TO_BUOY_TABLE}
+      WHERE break_id IN ({ids_sql})
+    ),
+    b2g AS (
+      SELECT break_id, buoy_id AS gfs_point_id
+      FROM {BREAK_TO_GFS_TABLE}
+      WHERE break_id IN ({ids_sql})
+    ),
+    cdip AS (
+      SELECT
+        break_id,
+        wave_time_utc,
+        significant_wave_height_raw AS cdip_mop_hs_raw_m
+      FROM {CDIP_TABLE}
+      WHERE break_id IN ({ids_sql})
+        AND wave_time_utc >= TIMESTAMP('{min_wave_time_utc}')
+        AND wave_time_utc <= TIMESTAMP('{max_wave_time_utc}')
+      QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY break_id, wave_time_utc
+        ORDER BY ingested_at DESC
+      ) = 1
+    ),
+    buoy AS (
+      SELECT
+        b.break_id,
+        o.wave_time_utc,
+        o.significant_wave_height AS offshore_buoy_hs_m
+      FROM {OFFSHORE_BUOY_TABLE} o
+      INNER JOIN b2b b ON o.buoy_id = b.buoy_id
+      WHERE o.wave_time_utc >= TIMESTAMP('{min_wave_time_utc}')
+        AND o.wave_time_utc <= TIMESTAMP('{max_wave_time_utc}')
+      QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY b.break_id, o.wave_time_utc
+        ORDER BY o.ingested_at DESC
+      ) = 1
+    ),
+    gfs AS (
+      SELECT
+        b.break_id,
+        g.wave_time_utc,
+        g.hs_total_m_gfs AS gfs_htsgw_m
+      FROM {GFS_OFFSHORE_TABLE} g
+      INNER JOIN b2g b ON g.gfs_point_id = b.gfs_point_id
+      WHERE g.wave_time_utc >= TIMESTAMP('{min_wave_time_utc}')
+        AND g.wave_time_utc <= TIMESTAMP('{max_wave_time_utc}')
+      QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY b.break_id, g.wave_time_utc
+        ORDER BY g.ingested_at DESC
+      ) = 1
+    )
+    SELECT
+      COALESCE(c.break_id, b.break_id, g.break_id) AS break_id,
+      COALESCE(c.wave_time_utc, b.wave_time_utc, g.wave_time_utc) AS wave_time_utc,
+      c.cdip_mop_hs_raw_m,
+      b.offshore_buoy_hs_m,
+      g.gfs_htsgw_m
+    FROM cdip c
+    FULL OUTER JOIN buoy b
+      ON c.break_id = b.break_id AND c.wave_time_utc = b.wave_time_utc
+    FULL OUTER JOIN gfs g
+      ON COALESCE(c.break_id, b.break_id) = g.break_id
+     AND COALESCE(c.wave_time_utc, b.wave_time_utc) = g.wave_time_utc
+    ORDER BY break_id, wave_time_utc
+    """
+    return _query_to_df(client, sql)
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_calibration_observation_counts_bigquery() -> pd.Series:
+    """Observation counts per ``break_id`` from ``calibration_observations``."""
+    client = forecast_bigquery_client()
+    sql = f"""
+    SELECT break_id, COUNT(*) AS obs_count
+    FROM {CALIBRATION_OBS_TABLE}
+    WHERE break_id IS NOT NULL
+    GROUP BY break_id
+    """
+    df = _query_to_df(client, sql)
+    if df.empty:
+        return pd.Series(dtype=int)
+    out = df.set_index("break_id")["obs_count"]
+    return pd.to_numeric(out, errors="coerce").dropna().astype(int)
