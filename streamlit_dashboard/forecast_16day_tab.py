@@ -16,13 +16,13 @@ from plotly.subplots import make_subplots
 
 from streamlit_dashboard.field_observations import (
     DEFAULT_MIN_SELECTED_OBS,
-    FIELD_OBS_CSV,
     default_break_ids_with_min_obs,
-    load_field_observations,
-    obs_counts_by_break_id,
     sort_break_ids_by_obs_count,
 )
-from streamlit_dashboard.bq_forecast_loader import load_reference_heights_bigquery
+from streamlit_dashboard.bq_forecast_loader import (
+    load_calibration_observation_counts_bigquery,
+    load_reference_heights_bigquery,
+)
 from streamlit_dashboard.firestore_forecast_loader import PROJECT_ID, load_served_swell_forecast
 from streamlit_dashboard.forecast_tab import (
     ALPHA_OVERLAY,
@@ -47,13 +47,14 @@ from streamlit_dashboard.forecast_tab import (
     TEXT_COLOR,
     XAXIS_DAY_GRID_COLOR,
     _add_ts_line,
-    _coerce_datetime_to_ns,
     _forecast_hover_xaxis_tickformat,
     _forecast_panel_layout,
     _heights_to_ft,
     _legend_show_once,
     _load_break_labels,
-    _pacific_daily_midnight_ticks,
+    _pacific_midnight_ticks_for_plot,
+    pacific_wall_clock_for_plot,
+    stored_utc_instant_to_pacific,
     _y_range_padded,
 )
 
@@ -82,7 +83,8 @@ def _records_to_dataframe(records: list[dict[str, Any]]) -> pd.DataFrame:
     if "forecast_datetime" not in df.columns:
         return pd.DataFrame()
 
-    df["wave_time_pst"] = pd.to_datetime(df["forecast_datetime"], utc=True).dt.tz_convert(PST)
+    # Firestore stores UTC instants (see ingest_swell); display as US/Pacific.
+    df["wave_time_pst"] = stored_utc_instant_to_pacific(df["forecast_datetime"])
     df = df.sort_values("wave_time_pst").reset_index(drop=True)
     return df
 
@@ -105,9 +107,7 @@ def _merge_reference_heights(
         return fs_df
     out = fs_df.sort_values("wave_time_pst").copy()
     ref = ref_df.copy()
-    ref["wave_time_pst"] = _coerce_datetime_to_ns(
-        pd.to_datetime(ref["wave_time_utc"], utc=True).dt.tz_convert(PST)
-    )
+    ref["wave_time_pst"] = stored_utc_instant_to_pacific(ref["wave_time_utc"])
     ref = ref.sort_values("wave_time_pst")
     tol = pd.Timedelta(hours=tolerance_hours)
     for col in REF_HEIGHT_COLS:
@@ -151,7 +151,7 @@ def _plot_served_forecast(
         fig.update_layout(paper_bgcolor=BG_DARK, plot_bgcolor=BG_PANEL, height=220)
         return fig
 
-    t_x = df["wave_time_pst"]
+    t_x = pacific_wall_clock_for_plot(df["wave_time_pst"])
     span_days = max((t_x.max() - t_x.min()).total_seconds() / 86400.0, 0.25)
     part = _partition_columns(df, partition_prefix)
     part_label = "WW3 deep water" if partition_prefix == "ww3Swell" else "Nearshore"
@@ -326,7 +326,7 @@ def _plot_served_forecast(
             y_r_p = _y_range_padded(*p_for_range, frac=0.08, floor_zero=False, min_span=0.75)
 
     tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
-    x_tickvals = _pacific_daily_midnight_ticks(t_x.min(), t_x.max())
+    x_tickvals = _pacific_midnight_ticks_for_plot(df["wave_time_pst"].min(), df["wave_time_pst"].max())
 
     fig.update_layout(
         title=dict(
@@ -385,7 +385,10 @@ def _plot_served_forecast(
 def _fmt_ts(dt: datetime | None) -> str:
     if dt is None:
         return "—"
-    return pd.Timestamp(dt).tz_convert(PST).strftime("%Y-%m-%d %H:%M %Z")
+    ts = pd.Timestamp(dt)
+    if ts.tzinfo is None:
+        ts = ts.tz_localize("UTC")
+    return ts.tz_convert(PST).strftime("%Y-%m-%d %H:%M %Z")
 
 
 def render_forecast_16day_tab() -> None:
@@ -394,7 +397,8 @@ def render_forecast_16day_tab() -> None:
         "Production swell in the app: Firestore `surfing_breaks/{geohash}` → "
         "`surfingConditions`. Calibrated Height is the coalesced CDIP/GFS bulk Hs "
         "(`COALESCE(cdip_calibrated_hs, gfs_calibrated_hs)`); the window extends to the "
-        "GFS f384 horizon (~16 days)."
+        "GFS f384 horizon (~16 days). Chart times are **US/Pacific**; Firestore "
+        "`forecast_datetime` values are stored as UTC instants from `ingest_swell`."
     )
 
     labels = _load_break_labels(str(BREAKS_CSV))
@@ -404,13 +408,12 @@ def render_forecast_16day_tab() -> None:
 
     break_ids = sorted(pd.read_csv(BREAKS_CSV, usecols=["break_id"])["break_id"].astype(int).unique())
 
-    obs_mtime = FIELD_OBS_CSV.stat().st_mtime if FIELD_OBS_CSV.exists() else 0.0
-    field_obs, unmatched_obs_spots = load_field_observations(
-        str(FIELD_OBS_CSV),
-        obs_mtime,
-        str(BREAKS_CSV),
-    )
-    obs_counts = obs_counts_by_break_id(field_obs)
+    obs_counts = pd.Series(dtype=int)
+    try:
+        obs_counts = load_calibration_observation_counts_bigquery()
+    except Exception as exc:
+        st.warning(f"Could not load observation counts from BigQuery: {exc}")
+
     sorted_break_ids, obs_count_by_bid = sort_break_ids_by_obs_count(
         [int(b) for b in break_ids],
         obs_counts,
@@ -456,8 +459,9 @@ def render_forecast_16day_tab() -> None:
         ),
         default=default_selected,
         help=(
-            f"Break order and default selection come from `{FIELD_OBS_CSV.name}`. "
-            f"Spots with at least {DEFAULT_MIN_SELECTED_OBS} matched observations are selected on load."
+            "Break order and default selection use observation counts from "
+            f"BigQuery `calibration_observations`. "
+            f"Spots with at least {DEFAULT_MIN_SELECTED_OBS} observations are selected on load."
         ),
     )
     if not selected:
@@ -467,6 +471,11 @@ def render_forecast_16day_tab() -> None:
     with st.expander("Data source", expanded=False):
         st.write(f"- GCP project: `{PROJECT_ID}`")
         st.write("- Calibrated Height: Firestore `surfing_breaks` → `surfingConditions` (`wavesHeight`)")
+        st.write(
+            "  - `forecast_datetime` / start/end metadata: **UTC instants** "
+            "(CDIP `wave_time_utc`; buoy/GFS `TIMESTAMP(wave_time_pst, 'America/Los_Angeles')`)"
+        )
+        st.write("  - Charts: converted to **US/Pacific** for display")
         st.write("- Reference overlays (BigQuery):")
         st.write(f"  - {REF_HEIGHT_LABELS['cdip_mop_hs_raw_m']} — `cdip_data_p.significant_wave_height_raw`")
         st.write(f"  - {REF_HEIGHT_LABELS['offshore_buoy_hs_m']} — `offshore_buoy_data_p.significant_wave_height`")
@@ -474,14 +483,9 @@ def render_forecast_16day_tab() -> None:
         st.write("  - Buoy mapping: `surf_intermediates.break_to_buoy_map`")
         st.write("  - GFS point mapping: `surf_intermediates.break_to_gfs_map`")
         st.write("- Cache TTL: 5 minutes (Firestore) / 5 minutes (BigQuery overlays)")
-        st.write(f"Field observations (ranking / defaults): `{FIELD_OBS_CSV}`")
-        if not field_obs.empty:
-            st.write(f"- {len(field_obs):,} rows matched to breaks")
-        if unmatched_obs_spots:
-            st.warning(
-                "Could not match these observation spot names to a break:\n"
-                + "\n".join(f"- `{s}`" for s in unmatched_obs_spots)
-            )
+        st.write("- Observation counts / ranking: BigQuery `calibration_observations`")
+        if not obs_counts.empty:
+            st.write(f"- {int(obs_counts.sum()):,} total observations across breaks")
 
     selected_set = set(int(b) for b in selected)
     selected_tuple = tuple(sorted(selected_set))

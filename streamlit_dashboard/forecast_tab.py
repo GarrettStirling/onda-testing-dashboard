@@ -158,6 +158,34 @@ def _coerce_datetime_to_ns(s: pd.Series) -> pd.Series:
     return pd.Series(idx, index=s.index)
 
 
+def stored_utc_instant_to_pacific(ts: pd.Series) -> pd.Series:
+    """Parse UTC forecast instants and return tz-aware US/Pacific.
+
+    ``ingest_swell`` writes Firestore ``forecast_datetime`` as UTC TIMESTAMP values:
+    CDIP rows use ``wave_time_utc``; buoy/GFS extension uses
+    ``TIMESTAMP(wave_time_pst, 'America/Los_Angeles')``. BQ ``wave_time_utc`` is the
+    same convention. Do not treat these as Pacific wall-clock literals.
+    """
+    parsed = pd.to_datetime(ts, utc=True, errors="coerce")
+    return _coerce_datetime_to_ns(parsed.dt.tz_convert(PST))
+
+
+def pacific_wall_clock_for_plot(ts: pd.Series) -> pd.Series:
+    """Naive US/Pacific local times for Plotly (axis/hover match wall clock)."""
+    parsed = pd.to_datetime(ts, errors="coerce")
+    if hasattr(parsed.dt, "tz") and parsed.dt.tz is not None:
+        parsed = parsed.dt.tz_convert(PST)
+    else:
+        parsed = parsed.dt.tz_localize(PST, ambiguous="infer", nonexistent="shift_forward")
+    return parsed.dt.tz_localize(None)
+
+
+def _pacific_midnight_ticks_for_plot(t_min: pd.Timestamp, t_max: pd.Timestamp) -> list[pd.Timestamp]:
+    """Daily midnight tick marks as naive US/Pacific (for Plotly with naive x)."""
+    ticks = _pacific_daily_midnight_ticks(t_min, t_max)
+    return [t.tz_convert(PST).tz_localize(None) for t in ticks]
+
+
 def _prepare_buoy_forecast_df(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize buoy forecast columns (CSV or BigQuery)."""
     if df.empty:
