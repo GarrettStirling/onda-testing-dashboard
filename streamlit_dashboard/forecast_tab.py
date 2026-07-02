@@ -460,6 +460,39 @@ def _y_range_padded(
     return (lo2, hi2)
 
 
+def _height_ft_yaxis_ticks(y_lo: float, y_hi: float) -> list[int]:
+    """Integer foot labels from floor(lo) through ceil(hi)."""
+    start = max(0, int(np.floor(y_lo)))
+    end = max(start + 1, int(np.ceil(y_hi)))
+    return list(range(start, end + 1))
+
+
+def _apply_height_ft_yaxis(
+    fig: go.Figure,
+    *,
+    row: int = 1,
+    col: int = 1,
+    y_range: tuple[float, float] | None = None,
+) -> None:
+    """Height panel: y-axis labels at every integer foot (1, 2, 3, …)."""
+    opts: dict[str, object] = {
+        "gridcolor": GRID_COLOR,
+        "showgrid": True,
+        "zeroline": False,
+    }
+    if y_range is not None:
+        lo, hi = y_range
+        opts["range"] = [lo, hi]
+        opts["tickmode"] = "array"
+        opts["tickvals"] = _height_ft_yaxis_ticks(lo, hi)
+    else:
+        opts["tickmode"] = "linear"
+        opts["dtick"] = 1
+        opts["tick0"] = 0
+        opts["tickformat"] = "d"
+    fig.update_yaxes(**opts, row=row, col=col)
+
+
 def _add_ts_line(
     fig: go.Figure,
     row: int,
@@ -922,7 +955,7 @@ def _plot_break_forecast(
     fig.update_xaxes(title_text="Date (US/Pacific)", row=bottom_row, col=1)
 
     fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
-    fig.update_yaxes(range=list(y_r_h), row=1, col=1)
+    _apply_height_ft_yaxis(fig, row=1, col=1, y_range=y_r_h)
     if show_direction and dir_row is not None and y_r_d is not None:
         fig.update_yaxes(range=list(y_r_d), row=dir_row, col=1)
     if show_period and period_row is not None and y_r_p is not None:
@@ -1064,6 +1097,22 @@ def _plot_offshore_buoy_forecast(df_sub: pd.DataFrame, *, title: str) -> go.Figu
 
     tick_fmt = _forecast_hover_xaxis_tickformat(span_days)
     x_tickvals = _pacific_daily_midnight_ticks(df_sub["wave_time_pst"].min(), df_sub["wave_time_pst"].max())
+
+    h_for_range: list[pd.Series] = []
+    for col in (
+        "significant_wave_height",
+        "primary_wave_height",
+        "secondary_wave_height",
+        "tertiary_wave_height",
+    ):
+        if col in df_sub.columns:
+            h_for_range.append(_heights_to_ft(df_sub[col]))
+    y_r_h = (
+        _y_range_padded(*h_for_range, frac=0.08, floor_zero=True, min_span=0.35)
+        if h_for_range
+        else None
+    )
+
     fig.update_layout(
         title=dict(text=title, font=dict(color=TEXT_COLOR, size=15), x=0.5, xanchor="center"),
         paper_bgcolor=BG_DARK,
@@ -1102,6 +1151,9 @@ def _plot_offshore_buoy_forecast(df_sub: pd.DataFrame, *, title: str) -> go.Figu
     fig.update_xaxes(showticklabels=False, row=2, col=1)
     fig.update_xaxes(title_text="Date (US/Pacific)", row=3, col=1)
     fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
+    _apply_height_ft_yaxis(fig, row=1, col=1, y_range=y_r_h)
+    fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False, row=2, col=1)
+    fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False, row=3, col=1)
     fig.update_annotations(font=dict(color=TEXT_COLOR, size=12))
     return fig
 

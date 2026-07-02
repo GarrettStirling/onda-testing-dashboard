@@ -20,6 +20,7 @@ from streamlit_dashboard.field_observations import (
     sort_break_ids_by_obs_count,
 )
 from streamlit_dashboard.bq_forecast_loader import (
+    load_buoy_pipeline_calibrated_bigquery,
     load_calibration_observation_counts_bigquery,
     load_reference_heights_bigquery,
 )
@@ -55,6 +56,7 @@ from streamlit_dashboard.forecast_tab import (
     _pacific_midnight_ticks_for_plot,
     pacific_wall_clock_for_plot,
     stored_utc_instant_to_pacific,
+    _apply_height_ft_yaxis,
     _y_range_padded,
 )
 
@@ -64,6 +66,9 @@ C_GFS_HTSGW = "#f472b6"
 
 REF_HEIGHT_COLS = ("cdip_mop_hs_raw_m", "offshore_buoy_hs_m", "gfs_htsgw_m")
 CALIBRATED_HEIGHT_LABEL = "Calibrated Height"
+FIRESTORE_HEIGHT_LABEL = "Calibrated Height (Firestore)"
+PIPELINE_HEIGHT_LABEL = "Calibrated Height (BQ pipeline)"
+SHORT_FIRESTORE_SPAN_DAYS = 12.0
 REF_HEIGHT_LABELS = {
     "cdip_mop_hs_raw_m": "Uncalibrated CDIP MOP Height",
     "offshore_buoy_hs_m": "Uncalibrated CDIP Buoy Height",
@@ -124,6 +129,33 @@ def _merge_reference_heights(
     return out
 
 
+def _build_plot_dataframe(
+    fs_df: pd.DataFrame,
+    pipeline_df: pd.DataFrame,
+    ref_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Union Firestore served rows with BQ pipeline hours (GFS extension beyond CDIP)."""
+    if pipeline_df.empty:
+        plot = fs_df.copy()
+    else:
+        plot = pipeline_df.copy()
+        plot["wave_time_pst"] = stored_utc_instant_to_pacific(plot["wave_time_utc"])
+        plot = plot.sort_values("wave_time_pst").reset_index(drop=True)
+        if not fs_df.empty:
+            fs_cols = [
+                c for c in fs_df.columns
+                if c not in {"wave_time_pst", "wave_time_utc", "forecast_datetime"}
+            ]
+            plot = plot.merge(
+                fs_df[["wave_time_pst", *fs_cols]],
+                on="wave_time_pst",
+                how="left",
+            )
+    if not ref_df.empty:
+        plot = _merge_reference_heights(plot, ref_df)
+    return plot.sort_values("wave_time_pst").reset_index(drop=True)
+
+
 def _plot_served_forecast(
     df: pd.DataFrame,
     *,
@@ -135,6 +167,8 @@ def _plot_served_forecast(
     show_gfs_htsgw: bool,
     show_direction: bool,
     show_period: bool,
+    show_pipeline_calibrated: bool,
+    firestore_span_days: float,
 ) -> go.Figure:
     df = df.copy().sort_values("wave_time_pst")
     if df.empty:
@@ -169,17 +203,41 @@ def _plot_served_forecast(
     )
     leg: set[str] = set()
 
+    served_label = (
+        FIRESTORE_HEIGHT_LABEL
+        if show_pipeline_calibrated and firestore_span_days < SHORT_FIRESTORE_SPAN_DAYS
+        else CALIBRATED_HEIGHT_LABEL
+    )
     if "wavesHeight" in df.columns and df["wavesHeight"].notna().any():
         _add_ts_line(
             fig,
             1,
             t_x,
             _heights_to_ft(df["wavesHeight"]),
-            name=CALIBRATED_HEIGHT_LABEL,
+            name=served_label,
             color=C_SIG,
             width=LW_SIG,
             unit=" ft",
-            showlegend=_legend_show_once(leg, CALIBRATED_HEIGHT_LABEL),
+            showlegend=_legend_show_once(leg, served_label),
+        )
+
+    if (
+        show_pipeline_calibrated
+        and "pipeline_calibrated_hs_m" in df.columns
+        and df["pipeline_calibrated_hs_m"].notna().any()
+    ):
+        _add_ts_line(
+            fig,
+            1,
+            t_x,
+            _heights_to_ft(df["pipeline_calibrated_hs_m"]),
+            name=PIPELINE_HEIGHT_LABEL,
+            color=C_PRIMARY,
+            dash="dash",
+            width=LW_MAIN,
+            unit=" ft",
+            opacity=ALPHA_OVERLAY,
+            showlegend=_legend_show_once(leg, PIPELINE_HEIGHT_LABEL),
         )
 
     if show_raw_height and "wavesHeightRaw" in df.columns and df["wavesHeightRaw"].notna().any():
@@ -292,6 +350,8 @@ def _plot_served_forecast(
     h_for_range: list[pd.Series] = []
     if "wavesHeight" in df.columns:
         h_for_range.append(_heights_to_ft(df["wavesHeight"]))
+    if "pipeline_calibrated_hs_m" in df.columns and df["pipeline_calibrated_hs_m"].notna().any():
+        h_for_range.append(_heights_to_ft(df["pipeline_calibrated_hs_m"]))
     for col in REF_HEIGHT_COLS:
         if col in df.columns and df[col].notna().any():
             h_for_range.append(_heights_to_ft(df[col]))
@@ -372,8 +432,7 @@ def _plot_served_forecast(
         fig.update_xaxes(showticklabels=False, row=r, col=1)
     fig.update_xaxes(title_text="Date (US/Pacific)", row=bottom_row, col=1)
     fig.update_yaxes(gridcolor=GRID_COLOR, showgrid=True, zeroline=False)
-    if y_r_h:
-        fig.update_yaxes(range=list(y_r_h), row=1, col=1)
+    _apply_height_ft_yaxis(fig, row=1, col=1, y_range=y_r_h)
     if show_direction and dir_row is not None and y_r_d is not None:
         fig.update_yaxes(range=list(y_r_d), row=dir_row, col=1)
     if show_period and period_row is not None and y_r_p is not None:
@@ -448,6 +507,14 @@ def render_forecast_16day_tab() -> None:
         f"Overlay {REF_HEIGHT_LABELS['gfs_htsgw_m']} (`gfs_offshore_wave_data_p.hs_total_m_gfs`)",
         value=True,
     )
+    show_pipeline_calibrated = st.checkbox(
+        f"Overlay {PIPELINE_HEIGHT_LABEL} (`buoy_scaled_components_p`, full GFS horizon)",
+        value=True,
+        help=(
+            "Coalesced CDIP/GFS calibrated height from the ingest_swell BQ source. "
+            "Shown when Firestore is shorter than ~16 days."
+        ),
+    )
 
     selected: list[int] = st.multiselect(
         f"Surf spots (breaks, ranked most → least observations; ≥{DEFAULT_MIN_SELECTED_OBS} obs selected by default)",
@@ -514,20 +581,41 @@ def render_forecast_16day_tab() -> None:
         time_maxs.append(df_fs["wave_time_pst"].max())
 
     ref_by_break: dict[int, pd.DataFrame] = {}
-    if payloads and (show_cdip_mop_raw or show_offshore_buoy or show_gfs_htsgw):
+    pipeline_by_break: dict[int, pd.DataFrame] = {}
+    if payloads and (
+        show_cdip_mop_raw
+        or show_offshore_buoy
+        or show_gfs_htsgw
+        or show_pipeline_calibrated
+    ):
         min_utc = min(time_mins).tz_convert("UTC").strftime("%Y-%m-%d %H:%M:%S")
-        max_utc = max(time_maxs).tz_convert("UTC").strftime("%Y-%m-%d %H:%M:%S")
+        max_utc_ref = max(time_maxs).tz_convert("UTC").strftime("%Y-%m-%d %H:%M:%S")
+        max_utc_pipeline = (
+            min(time_mins).tz_convert("UTC") + pd.Timedelta(days=17)
+        ).strftime("%Y-%m-%d %H:%M:%S")
         try:
-            ref_all = load_reference_heights_bigquery(selected_tuple, min_utc, max_utc)
-            if not ref_all.empty:
-                ref_all["break_id"] = pd.to_numeric(ref_all["break_id"], errors="coerce").astype("Int64")
-                for bid in selected_tuple:
-                    sub = ref_all[ref_all["break_id"].astype(int) == int(bid)].copy()
-                    if not sub.empty:
-                        ref_by_break[bid] = sub
+            if show_cdip_mop_raw or show_offshore_buoy or show_gfs_htsgw:
+                ref_all = load_reference_heights_bigquery(selected_tuple, min_utc, max_utc_ref)
+                if not ref_all.empty:
+                    ref_all["break_id"] = pd.to_numeric(ref_all["break_id"], errors="coerce").astype("Int64")
+                    for bid in selected_tuple:
+                        sub = ref_all[ref_all["break_id"].astype(int) == int(bid)].copy()
+                        if not sub.empty:
+                            ref_by_break[bid] = sub
+            if show_pipeline_calibrated:
+                pipe_all = load_buoy_pipeline_calibrated_bigquery(
+                    selected_tuple, min_utc, max_utc_pipeline,
+                )
+                if not pipe_all.empty:
+                    pipe_all["break_id"] = pd.to_numeric(pipe_all["break_id"], errors="coerce").astype(int)
+                    for bid in selected_tuple:
+                        sub = pipe_all[pipe_all["break_id"] == int(bid)].copy()
+                        if not sub.empty:
+                            pipeline_by_break[bid] = sub
         except Exception as exc:
             st.warning(f"BigQuery reference-height load failed: {exc}")
 
+    short_firestore_any = False
     for bid in sorted_break_ids:
         if bid not in selected_set or bid not in payloads:
             continue
@@ -536,23 +624,56 @@ def render_forecast_16day_tab() -> None:
         st.subheader(f"{label} ({n_obs:,} obs)")
 
         payload = payloads[bid]
-        df = _records_to_dataframe(payload["surfingConditions"])
-        if bid in ref_by_break:
-            df = _merge_reference_heights(df, ref_by_break[bid])
+        fs_df = _records_to_dataframe(payload["surfingConditions"])
+        firestore_span_days = 0.0
+        if len(fs_df) >= 2:
+            firestore_span_days = (
+                fs_df["wave_time_pst"].max() - fs_df["wave_time_pst"].min()
+            ).total_seconds() / 86400.0
+        if firestore_span_days < SHORT_FIRESTORE_SPAN_DAYS:
+            short_firestore_any = True
 
-        n = len(df)
+        pipeline_df = pipeline_by_break.get(bid, pd.DataFrame())
+        ref_df = ref_by_break.get(bid, pd.DataFrame())
+        if not pipeline_df.empty and not ref_df.empty:
+            pipe_max = pipeline_df["wave_time_utc"].max()
+            ref_max = ref_df["wave_time_utc"].max()
+            if pd.notna(pipe_max) and pd.notna(ref_max) and pipe_max > ref_max:
+                min_utc_b = fs_df["wave_time_pst"].min().tz_convert("UTC").strftime("%Y-%m-%d %H:%M:%S")
+                max_utc_b = pd.Timestamp(pipe_max).strftime("%Y-%m-%d %H:%M:%S")
+                try:
+                    ref_ext = load_reference_heights_bigquery((int(bid),), min_utc_b, max_utc_b)
+                    if not ref_ext.empty:
+                        ref_df = ref_ext
+                        ref_by_break[bid] = ref_df
+                except Exception:
+                    pass
+
+        df = _build_plot_dataframe(fs_df, pipeline_df, ref_df)
+
+        n = len(fs_df)
         span_days = 0.0
-        if n >= 2:
+        if len(df) >= 2:
             span_days = (df["wave_time_pst"].max() - df["wave_time_pst"].min()).total_seconds() / 86400.0
 
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Records", f"{n:,}")
-        c2.metric("Span (days)", f"{span_days:.1f}")
-        c3.metric("Step (h)", str(payload.get("period_hours") or "—"))
+        c1.metric("Firestore records", f"{n:,}")
+        c2.metric("Chart span (days)", f"{span_days:.1f}")
+        c3.metric("Firestore span (days)", f"{firestore_span_days:.1f}")
         c4.metric("Geohash", str(payload.get("geohash") or "—"))
+
+        if firestore_span_days < SHORT_FIRESTORE_SPAN_DAYS:
+            st.warning(
+                f"Firestore `surfingConditions` for this break is only **{firestore_span_days:.1f} days** "
+                f"({n} rows) — typically the CDIP MOP window. BQ `buoy_scaled_components_p` still has "
+                f"~16+ days; `ingest_swell` should append the GFS extension when "
+                f"`job_config/ingest-swell.use_buoy_scaled_components` is true. "
+                f"Enable **{PIPELINE_HEIGHT_LABEL}** to see the full BQ horizon on the chart."
+            )
 
         st.caption(
             f"Window: {_fmt_ts(payload.get('start_time'))} → {_fmt_ts(payload.get('end_time'))} · "
+            f"Step: {payload.get('period_hours') or '—'} h · "
             f"Updated: {_fmt_ts(payload.get('updated_at'))}"
         )
 
@@ -580,5 +701,14 @@ def render_forecast_16day_tab() -> None:
             show_gfs_htsgw=show_gfs_htsgw,
             show_direction=show_direction,
             show_period=show_period,
+            show_pipeline_calibrated=show_pipeline_calibrated,
+            firestore_span_days=firestore_span_days,
         )
         st.plotly_chart(fig, use_container_width=True)
+
+    if short_firestore_any:
+        st.info(
+            "One or more breaks have a short Firestore window. The app only serves what is in "
+            "`surfingConditions` today; check that `ingest-swell` ran successfully with "
+            "`use_buoy_scaled_components: true`."
+        )

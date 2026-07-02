@@ -208,6 +208,40 @@ def load_reference_heights_bigquery(
     return _query_to_df(client, sql)
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def load_buoy_pipeline_calibrated_bigquery(
+    break_ids: tuple[int, ...],
+    min_wave_time_utc: str,
+    max_wave_time_utc: str,
+) -> pd.DataFrame:
+    """Coalesced calibrated bulk Hs from ``buoy_scaled_components_p`` (ingest_swell source).
+
+    ``COALESCE(cdip_calibrated_hs, gfs_calibrated_hs)`` — the value written as
+    ``wavesHeight`` when ``use_buoy_scaled_components`` merges the GFS extension.
+    """
+    if not break_ids:
+        return pd.DataFrame()
+    client = forecast_bigquery_client()
+    ids_sql = _break_ids_sql(break_ids)
+    sql = f"""
+    SELECT
+      break_id,
+      TIMESTAMP(wave_time_pst, 'America/Los_Angeles') AS wave_time_utc,
+      COALESCE(cdip_calibrated_hs, gfs_calibrated_hs) AS pipeline_calibrated_hs_m
+    FROM {BUOY_SCALED_TABLE}
+    WHERE break_id IN ({ids_sql})
+      AND TIMESTAMP(wave_time_pst, 'America/Los_Angeles') >= TIMESTAMP('{min_wave_time_utc}')
+      AND TIMESTAMP(wave_time_pst, 'America/Los_Angeles') <= TIMESTAMP('{max_wave_time_utc}')
+      AND ingested_at > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 48 HOUR)
+    QUALIFY ROW_NUMBER() OVER (
+      PARTITION BY break_id, wave_time_pst
+      ORDER BY ingested_at DESC
+    ) = 1
+    ORDER BY break_id, wave_time_utc
+    """
+    return _query_to_df(client, sql)
+
+
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_calibration_observation_counts_bigquery() -> pd.Series:
     """Observation counts per ``break_id`` from ``calibration_observations``."""

@@ -1,6 +1,6 @@
 """Observation QC tab: distribution of captured observations per break.
 
-Data source: ``onda-maverick.surf_calibration_data.observations_with_cdip`` (BigQuery).
+Data source: ``onda-maverick.surf_calibration_data.observations_enriched`` (BigQuery).
 Breaks ranked most → least by observation count; 4 histograms per break.
 Display labels follow the SURF_SPOT_MAPPING_GUIDE format: ``Spot — Break``.
 """
@@ -13,7 +13,7 @@ import streamlit as st
 from plotly.subplots import make_subplots
 
 PROJECT_ID = "onda-maverick"
-OBS_TABLE = f"`{PROJECT_ID}.surf_calibration_data.observations_with_cdip`"
+OBS_TABLE = f"`{PROJECT_ID}.surf_calibration_data.observations_enriched`"
 
 BG_DARK = "#0e1117"
 BG_PANEL = "#161b22"
@@ -35,7 +35,7 @@ HIST_PANELS: list[tuple[str, str, str]] = [
 
 @st.cache_data(ttl=600, show_spinner="Loading observations from BigQuery…")
 def _load_obs_bigquery(_cache_buster: int = 0) -> pd.DataFrame:
-    """Fetch all rows from observations_with_cdip.  Cache busted via _cache_buster."""
+    """Fetch all rows from observations_enriched.  Cache busted via _cache_buster."""
     from streamlit_dashboard.bq_forecast_loader import forecast_bigquery_client
 
     client = forecast_bigquery_client()
